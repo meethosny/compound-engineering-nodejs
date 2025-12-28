@@ -1,0 +1,34 @@
+{
+  "name": "every-marketplace-nodejs",
+  "owner": {
+    "name": "Hosni Mohamed",
+    "url": "https://github.com/meethosny/"
+  },
+  "metadata": {
+    "description": "Official Every plugin marketplace for Claude Code extensions",
+    "version": "1.0.0"
+  },
+  "plugins": [
+    {
+      "name": "compound-engineering-nodejs",
+      "description": "AI-powered development tools that get smarter with every use. Make each unit of engineering work easier than the last. Includes 27 specialized agents, 19 commands, and 12 skills.",
+      "version": "2.15.1",
+      "author": {
+        "name": "Hosni Mohamed",
+        "url": "https://github.com/meethosny",
+        "email": "hosni@meethosny.com"
+      },
+      "homepage": "https://github.com/meethosny/compound-engineering-nodejs",
+      "tags": [
+        "ai-powered",
+        "compound-engineering",
+        "workflow-automation",
+        "code-review",
+        "quality",
+        "knowledge-management",
+        "image-generation"
+      ],
+      "source": "./plugins/compound-engineering-nodejs"
+    }
+  ]
+}
