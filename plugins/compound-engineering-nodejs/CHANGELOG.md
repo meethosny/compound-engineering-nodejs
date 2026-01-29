@@ -5,6 +5,67 @@ All notable changes to the compound-engineering plugin will be documented in thi
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [3.1.0] - 2026-01-29
+
+### Major Update: Sync with Original Plugin v2.28.0
+
+This release brings the Node.js fork up to feature parity with the original compound-engineering plugin v2.28.0, with all content adapted for Node.js/TypeScript development.
+
+### Added
+
+**New Agent (1):**
+- `learnings-researcher` - Search documented learnings in `docs/solutions/` for institutional knowledge. Uses grep-first filtering to find relevant past solutions.
+
+**New Commands (6):**
+- `/workflows:brainstorm` - Pre-planning command for exploring WHAT to build before HOW
+- `/deepen-plan` - Enhance plans with parallel research agents, skills discovery, and learnings integration
+- `/lfg` - Full autonomous engineering workflow: plan → deepen-plan → work → review → resolve_todo_parallel → test-browser → feature-video
+- `/feature-video` - Record video walkthroughs using agent-browser CLI and add to PR descriptions
+- `/test-browser` - Run browser tests on PR-affected pages using agent-browser CLI (replaces `/playwright-test`)
+- `/agent-native-audit` - Comprehensive agent-native architecture review with 8 scored principles
+
+**New Skills (3):**
+- `agent-browser` - Headless browser automation using Vercel's agent-browser CLI with ref-based element selection
+- `brainstorming` - Framework for exploring requirements before implementation
+- `rclone` - Cloud file transfer and sync using rclone CLI
+
+### Changed
+
+**Browser Automation:**
+- Replaced Playwright MCP with `agent-browser` CLI skill (following original plugin's direction)
+- All browser-related commands now use agent-browser instead of Playwright MCP tools
+- Removed `playwright` MCP server from plugin.json, kept only `context7`
+
+**`/workflows:work` Command - Major Enhancements:**
+- Added incremental commits feature with decision table (when to commit vs wait)
+- Added branch safety checks (detects if on default branch, requires explicit confirmation)
+- Added checkbox tracking (automatically marks `[ ]` → `[x]` in plan files)
+- Added Compound Engineered badge to PR template
+- Updated reviewer agents list to include `modern-nodejs-reviewer` and `kieran-typescript-reviewer`
+- Changed screenshot capture from Playwright MCP to agent-browser CLI
+
+**Node.js Adaptations:**
+- All route mappings adapted for Node.js frameworks (Next.js Pages/App Router, Express, Fastify, Hono, Remix)
+- All `bin/dev` references changed to `npm run dev`
+- All `dhh-rails-style` skill references changed to `modern-nodejs-style`
+- All `kieran-rails-reviewer` references changed to `kieran-nodejs-reviewer`
+
+### Removed
+
+- `/playwright-test` command (replaced by `/test-browser`)
+- `playwright` MCP server (browser automation now via agent-browser skill)
+
+### Component Summary
+
+| Component | v3.0.0 | v3.1.0 | Change |
+|-----------|--------|--------|--------|
+| Agents | 27 | 28 | +1 |
+| Commands | 19 | 24 | +5 (net, after removing playwright-test) |
+| Skills | 12 | 15 | +3 |
+| MCP Servers | 2 | 1 | -1 (removed Playwright) |
+
+---
+
 ## [3.0.0] - 2025-12-18
 
 ### ⚠️ Breaking Changes

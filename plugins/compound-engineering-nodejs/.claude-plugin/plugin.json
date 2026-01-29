@@ -1,7 +1,7 @@
 {
   "name": "compound-engineering-nodejs",
-  "version": "2.15.1",
-  "description": "AI-powered development tools. 27 agents, 19 commands, 12 skills, 2 MCP servers for code review, research, design, and workflow automation.",
+  "version": "3.1.0",
+  "description": "AI-powered development tools. 28 agents, 24 commands, 15 skills, 1 MCP server for code review, research, design, and workflow automation.",
   "author": {
     "name": "Hosni Mohamed",
     "email": "hosni@meethosny.com",
@@ -20,19 +20,10 @@
     "typescript",
     "knowledge-management",
     "image-generation",
-    "playwright",
+    "agent-browser",
     "browser-automation"
   ],
   "mcpServers": {
-    "pw": {
-      "type": "stdio",
-      "command": "npx",
-      "args": [
-        "-y",
-        "@playwright/mcp@latest"
-      ],
-      "env": {}
-    },
     "context7": {
       "type": "http",
       "url": "https://mcp.context7.com/mcp"

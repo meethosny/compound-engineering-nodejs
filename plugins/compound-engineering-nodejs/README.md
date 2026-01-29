@@ -8,10 +8,10 @@ AI-powered development tools that get smarter with every use. Make each unit of 
 
 | Component | Count |
 |-----------|-------|
-| Agents | 27 |
-| Commands | 19 |
-| Skills | 12 |
-| MCP Servers | 2 |
+| Agents | 28 |
+| Commands | 24 |
+| Skills | 15 |
+| MCP Servers | 1 |
 
 ## Agents
 
@@ -36,7 +36,7 @@ Agents are organized into categories for easier discovery.
 | `security-sentinel` | Security audits and vulnerability assessments |
 | `julik-frontend-races-reviewer` | Review JavaScript/TypeScript code for race conditions |
 
-### Research (4)
+### Research (5)
 
 | Agent | Description |
 |-------|-------------|
@@ -44,6 +44,7 @@ Agents are organized into categories for easier discovery.
 | `framework-docs-researcher` | Research framework documentation and best practices |
 | `git-history-analyzer` | Analyze git history and code evolution |
 | `repo-research-analyst` | Research repository structure and conventions |
+| `learnings-researcher` | Search documented learnings in docs/solutions/ for institutional knowledge |
 
 ### Design (3)
 
@@ -79,13 +80,30 @@ Core workflow commands use `workflows:` prefix to avoid collisions with built-in
 |---------|-------------|
 | `/workflows:plan` | Create implementation plans |
 | `/workflows:review` | Run comprehensive code reviews |
-| `/workflows:work` | Execute work items systematically |
+| `/workflows:work` | Execute work items systematically with incremental commits |
 | `/workflows:compound` | Document solved problems to compound team knowledge |
+| `/workflows:brainstorm` | Explore what to build before diving into implementation |
+
+### Feature Workflow Commands
+
+| Command | Description |
+|---------|-------------|
+| `/lfg` | Full autonomous engineering workflow (plan → deepen → work → review → test → video) |
+| `/deepen-plan` | Enhance plans with parallel research agents for depth and best practices |
+| `/feature-video` | Record video walkthrough of a feature and add to PR description |
+
+### Testing Commands
+
+| Command | Description |
+|---------|-------------|
+| `/test-browser` | Run browser tests on PR-affected pages using agent-browser CLI |
+| `/xcode-test` | Build and test iOS apps on simulator |
 
 ### Utility Commands
 
 | Command | Description |
 |---------|-------------|
+| `/agent-native-audit` | Run comprehensive agent-native architecture review with scored principles |
 | `/changelog` | Create engaging changelogs for recent merges |
 | `/create-agent-skill` | Create or edit Claude Code skills |
 | `/generate_command` | Generate new slash commands |
@@ -97,8 +115,6 @@ Core workflow commands use `workflows:` prefix to avoid collisions with built-in
 | `/resolve_pr_parallel` | Resolve PR comments in parallel |
 | `/resolve_todo_parallel` | Resolve todos in parallel |
 | `/triage` | Triage and prioritize issues |
-| `/playwright-test` | Run browser tests on PR-affected pages |
-| `/xcode-test` | Build and test iOS apps on simulator |
 
 ## Skills
 
@@ -107,6 +123,7 @@ Core workflow commands use `workflows:` prefix to avoid collisions with built-in
 | Skill | Description |
 |-------|-------------|
 | `agent-native-architecture` | Build AI agents using prompt-native architecture |
+| `brainstorming` | Framework for exploring what to build before how to build it |
 
 ### Development Tools
 
@@ -128,6 +145,18 @@ Core workflow commands use `workflows:` prefix to avoid collisions with built-in
 | `file-todos` | File-based todo tracking system |
 | `git-worktree` | Manage Git worktrees for parallel development |
 
+### Browser Automation
+
+| Skill | Description |
+|-------|-------------|
+| `agent-browser` | Headless browser automation using Vercel's agent-browser CLI |
+
+### Cloud & File Transfer
+
+| Skill | Description |
+|-------|-------------|
+| `rclone` | Cloud file transfer and sync using rclone CLI |
+
 ### Image Generation
 
 | Skill | Description |
@@ -148,18 +177,7 @@ Core workflow commands use `workflows:` prefix to avoid collisions with built-in
 
 | Server | Description |
 |--------|-------------|
-| `playwright` | Browser automation via `@playwright/mcp` |
 | `context7` | Framework documentation lookup via Context7 |
-
-### Playwright
-
-**Tools provided:**
-- `browser_navigate` - Navigate to URLs
-- `browser_take_screenshot` - Take screenshots
-- `browser_click` - Click elements
-- `browser_fill_form` - Fill form fields
-- `browser_snapshot` - Get accessibility snapshot
-- `browser_evaluate` - Execute JavaScript
 
 ### Context7
 
@@ -171,38 +189,27 @@ Supports 100+ frameworks including Express, Fastify, Hono, React, Next.js, Vue, 
 
 MCP servers start automatically when the plugin is enabled.
 
+## Browser Automation
+
+This plugin uses the `agent-browser` CLI for browser automation instead of Playwright MCP. The agent-browser skill provides:
+
+- **Headless browser control** via simple CLI commands
+- **Ref-based element selection** (@e1, @e2, etc.) from accessibility snapshots
+- **Screenshot capture** for documentation and debugging
+- **Video recording** via screenshot sequences converted to GIF/MP4
+
+Install agent-browser:
+```bash
+npm install -g agent-browser && agent-browser install
+```
+
+See the `agent-browser` skill for detailed usage.
+
 ## Installation
 
 ```bash
-claude /plugin install compound-engineering
+claude /plugin install compound-engineering-nodejs
 ```
-
-## Known Issues
-
-### MCP Servers Not Auto-Loading
-
-**Issue:** The bundled MCP servers (Playwright and Context7) may not load automatically when the plugin is installed.
-
-**Workaround:** Manually add them to your project's `.claude/settings.json`:
-
-```json
-{
-  "mcpServers": {
-    "playwright": {
-      "type": "stdio",
-      "command": "npx",
-      "args": ["-y", "@playwright/mcp@latest"],
-      "env": {}
-    },
-    "context7": {
-      "type": "http",
-      "url": "https://mcp.context7.com/mcp"
-    }
-  }
-}
-```
-
-Or add them globally in `~/.claude/settings.json` for all projects.
 
 ## Version History
 
