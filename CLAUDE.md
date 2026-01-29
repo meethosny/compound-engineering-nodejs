@@ -2,7 +2,7 @@
 
 > **🚀 Node.js Developer Edition** — This fork is optimized for Node.js and TypeScript developers. All Ruby/Rails patterns have been replaced with Express, Fastify, Hono, and TypeScript equivalents following TJ Holowaychuk (minimalism), Matteo Collina (performance), and Sindre Sorhus (package authoring) philosophies.
 
-This repository is a Claude Code plugin marketplace that distributes the `compound-engineering` plugin to developers building with AI-powered tools.
+This repository is a Claude Code plugin marketplace that distributes the `js-compound-engineering` plugin to developers building with AI-powered tools.
 
 ## Repository Structure
 
@@ -16,13 +16,12 @@ every-marketplace/
 │   ├── js/                       # JavaScript
 │   └── pages/                    # Reference pages
 └── plugins/
-    └── compound-engineering-nodejs/   # The actual plugin
+    └── js-compound-engineering/       # The actual plugin
         ├── .claude-plugin/
         │   └── plugin.json        # Plugin metadata
-        ├── agents/                # 27 specialized AI agents
-        ├── commands/              # 19 slash commands
-        ├── skills/                # 12 skills
-        ├── mcp-servers/           # 2 MCP servers (playwright, context7)
+        ├── agents/                # 28 specialized AI agents (all prefixed with js-)
+        ├── commands/              # 24 slash commands (all prefixed with js-)
+        ├── skills/                # 15 skills (all prefixed with js-)
         ├── README.md              # Plugin documentation
         └── CHANGELOG.md           # Version history
 ```
@@ -54,7 +53,7 @@ When working on this repository, follow the compounding engineering process:
 3. Update `.claude-plugin/marketplace.json` to include the new plugin
 4. Test locally before committing
 
-### Updating the Compounding Engineering Plugin (Node.js Fork)
+### Updating the js-compound-engineering Plugin
 
 When agents, commands, or skills are added/removed, follow this checklist:
 
@@ -62,22 +61,22 @@ When agents, commands, or skills are added/removed, follow this checklist:
 
 ```bash
 # Count agents
-ls plugins/compound-engineering-nodejs/agents/**/*.md | wc -l
+ls plugins/js-compound-engineering/agents/**/*.md | wc -l
 
 # Count commands
-ls plugins/compound-engineering-nodejs/commands/*.md | wc -l
+ls plugins/js-compound-engineering/commands/*.md | wc -l
 
 # Count skills
-ls -d plugins/compound-engineering-nodejs/skills/*/ 2>/dev/null | wc -l
+ls -d plugins/js-compound-engineering/skills/*/ 2>/dev/null | wc -l
 ```
 
 #### 2. Update ALL description strings with correct counts
 
 The description appears in multiple places and must match everywhere:
 
-- [ ] `plugins/compound-engineering-nodejs/.claude-plugin/plugin.json` → `description` field
+- [ ] `plugins/js-compound-engineering/.claude-plugin/plugin.json` → `description` field
 - [ ] `.claude-plugin/marketplace.json` → plugin `description` field
-- [ ] `plugins/compound-engineering-nodejs/README.md` → intro paragraph
+- [ ] `plugins/js-compound-engineering/README.md` → intro paragraph
 
 Format: `"Includes X specialized agents, Y commands, and Z skill(s)."`
 
@@ -85,13 +84,13 @@ Format: `"Includes X specialized agents, Y commands, and Z skill(s)."`
 
 When adding new functionality, bump the version in:
 
-- [ ] `plugins/compound-engineering-nodejs/.claude-plugin/plugin.json` → `version`
+- [ ] `plugins/js-compound-engineering/.claude-plugin/plugin.json` → `version`
 - [ ] `.claude-plugin/marketplace.json` → plugin `version`
 
 #### 4. Update documentation
 
-- [ ] `plugins/compound-engineering-nodejs/README.md` → list all components
-- [ ] `plugins/compound-engineering-nodejs/CHANGELOG.md` → document changes
+- [ ] `plugins/js-compound-engineering/README.md` → list all components
+- [ ] `plugins/js-compound-engineering/CHANGELOG.md` → document changes
 - [ ] `CLAUDE.md` → update structure diagram if needed
 
 #### 5. Rebuild documentation site
@@ -112,15 +111,15 @@ This will:
 
 ```bash
 cat .claude-plugin/marketplace.json | jq .
-cat plugins/compound-engineering/.claude-plugin/plugin.json | jq .
+cat plugins/js-compound-engineering/.claude-plugin/plugin.json | jq .
 ```
 
 #### 6. Verify before committing
 
 ```bash
 # Ensure counts in descriptions match actual files
-grep -o "Includes [0-9]* specialized agents" plugins/compound-engineering/.claude-plugin/plugin.json
-ls plugins/compound-engineering/agents/*.md | wc -l
+grep -o "Includes [0-9]* specialized agents" plugins/js-compound-engineering/.claude-plugin/plugin.json
+ls plugins/js-compound-engineering/agents/*/*.md | wc -l
 ```
 
 ### Marketplace.json Structure
@@ -269,13 +268,13 @@ python -m http.server 8000
 2. Install the plugin:
 
    ```bash
-   claude /plugin install compound-engineering
+   claude /plugin install js-compound-engineering
    ```
 
 3. Test agents and commands:
    ```bash
-   claude /review
-   claude agent kieran-rails-reviewer "test message"
+   claude /js-workflows:review
+   claude agent js-kieran-nodejs-reviewer "test message"
    ```
 
 ### Validate JSON
@@ -284,44 +283,44 @@ Before committing, ensure JSON files are valid:
 
 ```bash
 cat .claude-plugin/marketplace.json | jq .
-cat plugins/compound-engineering/.claude-plugin/plugin.json | jq .
+cat plugins/js-compound-engineering/.claude-plugin/plugin.json | jq .
 ```
 
 ## Common Tasks
 
 ### Adding a New Agent
 
-1. Create `plugins/compound-engineering/agents/new-agent.md`
+1. Create `plugins/js-compound-engineering/agents/[category]/js-new-agent.md` (must prefix with `js-`)
 2. Update plugin.json agent count and agent list
 3. Update README.md agent list
-4. Test with `claude agent new-agent "test"`
+4. Test with `claude agent js-new-agent "test"`
 
 ### Adding a New Command
 
-1. Create `plugins/compound-engineering/commands/new-command.md`
+1. Create `plugins/js-compound-engineering/commands/js-new-command.md` (must prefix with `js-`)
 2. Update plugin.json command count and command list
 3. Update README.md command list
-4. Test with `claude /new-command`
+4. Test with `claude /js-new-command`
 
 ### Adding a New Skill
 
-1. Create skill directory: `plugins/compound-engineering/skills/skill-name/`
+1. Create skill directory: `plugins/js-compound-engineering/skills/js-skill-name/` (must prefix with `js-`)
 2. Add skill structure:
    ```
-   skills/skill-name/
-   ├── SKILL.md           # Skill definition with frontmatter (name, description)
+   skills/js-skill-name/
+   ├── SKILL.md           # Skill definition with frontmatter (name: js-skill-name)
    └── scripts/           # Supporting scripts (optional)
    ```
 3. Update plugin.json description with new skill count
 4. Update marketplace.json description with new skill count
 5. Update README.md with skill documentation
 6. Update CHANGELOG.md with the addition
-7. Test with `claude skill skill-name`
+7. Test with `claude skill js-skill-name`
 
 **Skill file format (SKILL.md):**
 ```markdown
 ---
-name: skill-name
+name: js-skill-name
 description: Brief description of what the skill does
 ---
 

@@ -2,7 +2,7 @@
 
 > **🚀 Node.js Developer Edition** — This is a fork optimized for Node.js and TypeScript developers. All Ruby/Rails patterns have been replaced with modern Node.js equivalents using Express, Fastify, Hono, and TypeScript best practices.
 
-The official **Node.js Edition** of the Every marketplace, maintained by [Hosni Mohamed](https://github.com/meethosny). Currently featuring the Compound Engineering Node.js plugin.
+The official **Node.js Edition** of the Every marketplace, maintained by [Hosni Mohamed](https://github.com/meethosny). Currently featuring the js-compound-engineering plugin.
 
 ## Quick Start
 
@@ -10,20 +10,20 @@ The official **Node.js Edition** of the Every marketplace, maintained by [Hosni 
 Run Claude and add the marketplace:
 
 ```bash
-/plugin marketplace add https://github.com/meethosny/compound-engineering-nodejs
+/plugin marketplace add https://github.com/meethosny/js-compound-engineering
 ```
 
 Then install the plugin:
 
 ```bash
-/plugin install compound-engineering-nodejs
+/plugin install js-compound-engineering
 ```
 
 ### One-Command Installation
 Use the [Claude Plugins CLI](https://claude-plugins.dev) to skip the marketplace setup:
 
 ```bash
-npx claude-plugins install https://github.com/meethosny/compound-engineering-nodejs
+npx claude-plugins install https://github.com/meethosny/js-compound-engineering
 ```
 
 This automatically adds the marketplace and installs the plugin in a single step.
@@ -46,9 +46,11 @@ You're done: use this source from Droid. You don't need to add it in Claude Code
 
 ---
 
-# Compounding Engineering Plugin
+# js-compound-engineering Plugin
 
-AI-powered development tools that get smarter with every use. **Includes 27 specialized agents, 19 commands, 12 skills, and 2 MCP servers.**
+AI-powered development tools that get smarter with every use. **Includes 28 specialized agents, 24 commands, 15 skills, and 1 MCP server.**
+
+> **Note:** All components are prefixed with `js-` to avoid conflicts with the original `compound-engineering` plugin.
 
 Transform how you plan, build, and review code using AI-powered tools that systematically improve your development workflow.
 
@@ -85,7 +87,7 @@ The plugin follows a three-step workflow that makes development compound:
 
 ### 1. Plan: Turn Ideas Into Structured Issues
 
-Use `/compound-engineering-nodejs:plan` to transform feature descriptions into comprehensive GitHub issues.
+Use `/js-workflows:plan` to transform feature descriptions into comprehensive GitHub issues.
 
 **What it does:**
 - Researches your codebase to find similar patterns and conventions
@@ -97,7 +99,7 @@ Use `/compound-engineering-nodejs:plan` to transform feature descriptions into c
 
 ### 2. Work: Execute Plans Systematically
 
-Use `/compound-engineering-nodejs:work` to execute work plans with isolated worktrees and systematic task tracking.
+Use `/js-workflows:work` to execute work plans with isolated worktrees and systematic task tracking.
 
 **What it does:**
 - Creates isolated git worktrees for clean development
@@ -109,7 +111,7 @@ Use `/compound-engineering-nodejs:work` to execute work plans with isolated work
 
 ### 3. Review: Ensure Quality Before Merging
 
-Use `/compound-engineering-nodejs:review` to perform exhaustive multi-agent code reviews.
+Use `/js-workflows:review` to perform exhaustive multi-agent code reviews.
 
 **What it does:**
 - Checks out your PR in an isolated worktree for deep analysis
@@ -125,7 +127,7 @@ Use `/compound-engineering-nodejs:review` to perform exhaustive multi-agent code
 
 ```bash
 # Create a detailed GitHub issue from a feature description
-claude /compound-engineering-nodejs:plan "Add user profile avatars with S3 upload and automatic resizing"
+claude /js-workflows:plan "Add user profile avatars with S3 upload and automatic resizing"
 ```
 
 The command will:
@@ -143,7 +145,7 @@ You can choose detail levels:
 
 ```bash
 # Execute a plan document systematically
-claude /compound-engineering-nodejs:work path/to/plan.md
+claude /js-workflows:work path/to/plan.md
 ```
 
 The command will:
@@ -157,13 +159,13 @@ The command will:
 
 ```bash
 # Review the latest PR
-claude /compound-engineering-nodejs:review
+claude /js-workflows:review
 
 # Review a specific PR
-claude /compound-engineering-nodejs:review 123
+claude /js-workflows:review 123
 
 # Review from a GitHub URL
-claude /compound-engineering-nodejs:review https://github.com/user/repo/pull/123
+claude /js-workflows:review https://github.com/user/repo/pull/123
 ```
 
 The command will:
@@ -179,81 +181,94 @@ The command will:
 
 ## All Commands
 
-The plugin includes 19 commands for different stages of development:
+The plugin includes 24 commands for different stages of development:
 
-### `/compound-engineering-nodejs:plan [feature description]`
+### `/js-workflows:plan [feature description]`
 Creates detailed GitHub issues from feature descriptions. Includes research, acceptance criteria, and implementation guidance.
 
-### `/compound-engineering-nodejs:work [plan file]`
+### `/js-workflows:work [plan file]`
 Executes work plans systematically with worktrees, todos, and continuous validation.
 
-### `/compound-engineering-nodejs:review [PR number or URL]`
+### `/js-workflows:review [PR number or URL]`
 Performs exhaustive multi-agent code reviews with security, performance, and architecture analysis.
 
-### `/compound-engineering-nodejs:triage`
+### `/js-workflows:compound`
+Documents solved problems to compound team knowledge.
+
+### `/js-workflows:brainstorm`
+Explores what to build before diving into implementation.
+
+### `/js-triage`
 Presents findings one by one for review and converts approved items into trackable todos.
 
-### `/compound-engineering-nodejs:resolve_todo_parallel`
+### `/js-resolve_todo_parallel`
 Resolves multiple todos in parallel with systematic execution and quality checks.
 
-### `/compound-engineering-nodejs:generate_command`
+### `/js-generate_command`
 Generates new Claude Code commands from descriptions.
+
+### `/js-lfg`
+Full autonomous engineering workflow (plan → deepen → work → review → test → video).
 
 ## All Agents
 
-The plugin includes 27 specialized agents that provide expertise in different areas:
+The plugin includes 28 specialized agents that provide expertise in different areas. All agents are prefixed with `js-`:
 
 ### Code Review Specialists
-- **modern-nodejs-reviewer:** Modern Node.js review with minimalist, pragmatic approach (TJ Holowaychuk + Matteo Collina + Yusuke Wada style)
-- **kieran-nodejs-reviewer:** Node.js code review with strict conventions
-- **kieran-typescript-reviewer:** TypeScript code review with type safety and best practices
-- **kieran-python-reviewer:** Python code review with focus on clarity and conventions
-- **code-simplicity-reviewer:** Identifies opportunities to simplify complex code
-- **agent-native-reviewer:** Verifies agent-native architecture patterns (DSPy, structured prompting)
-- **data-integrity-guardian:** Database design review and data consistency checks
-- **data-migration-expert:** Validates ID mappings and data migration plans
-- **deployment-verification-agent:** Pre-deployment checklists and verification tasks
-- **julik-frontend-races-reviewer:** Spots race conditions in frontend code
+- **js-modern-nodejs-reviewer:** Modern Node.js review with minimalist, pragmatic approach (TJ Holowaychuk + Matteo Collina + Yusuke Wada style)
+- **js-kieran-nodejs-reviewer:** Node.js code review with strict conventions
+- **js-kieran-typescript-reviewer:** TypeScript code review with type safety and best practices
+- **js-kieran-python-reviewer:** Python code review with focus on clarity and conventions
+- **js-code-simplicity-reviewer:** Identifies opportunities to simplify complex code
+- **js-agent-native-reviewer:** Verifies agent-native architecture patterns (DSPy, structured prompting)
+- **js-data-integrity-guardian:** Database design review and data consistency checks
+- **js-data-migration-expert:** Validates ID mappings and data migration plans
+- **js-deployment-verification-agent:** Pre-deployment checklists and verification tasks
+- **js-julik-frontend-races-reviewer:** Spots race conditions in frontend code
 
 ### Quality Guardians
-- **security-sentinel:** Comprehensive security audits and vulnerability detection
-- **performance-oracle:** Performance analysis and optimization recommendations
-- **data-integrity-guardian:** Database design review and data consistency checks
+- **js-security-sentinel:** Comprehensive security audits and vulnerability detection
+- **js-performance-oracle:** Performance analysis and optimization recommendations
 
 ### Architecture & Patterns
-- **architecture-strategist:** System design review and architectural guidance
-- **pattern-recognition-specialist:** Identifies patterns and suggests improvements
+- **js-architecture-strategist:** System design review and architectural guidance
+- **js-pattern-recognition-specialist:** Identifies patterns and suggests improvements
 
 ### Research & Analysis
-- **repo-research-analyst:** Analyzes repository patterns and conventions
-- **best-practices-researcher:** Researches best practices for technologies
-- **framework-docs-researcher:** Fetches relevant framework documentation
-- **git-history-analyzer:** Analyzes git history for context and patterns
+- **js-repo-research-analyst:** Analyzes repository patterns and conventions
+- **js-best-practices-researcher:** Researches best practices for technologies
+- **js-framework-docs-researcher:** Fetches relevant framework documentation
+- **js-git-history-analyzer:** Analyzes git history for context and patterns
+- **js-learnings-researcher:** Searches documented learnings for institutional knowledge
 
 ### Workflow & Communication
-- **sorhus-readme-writer:** Creates READMEs following Sindre Sorhus style for npm packages
-- **every-style-editor:** Edits content to match Every's style guide
-- **feedback-codifier:** Converts feedback into actionable improvements
-- **pr-comment-resolver:** Systematically resolves PR review comments
-- **lint:** Runs ESLint, Prettier, and npm audit for JavaScript/TypeScript quality
-- **bug-reproduction-validator:** Systematically reproduces and validates bug reports
-- **spec-flow-analyzer:** Analyzes user flows and identifies gaps in specifications
+- **js-sorhus-readme-writer:** Creates READMEs following Sindre Sorhus style for npm packages
+- **js-every-style-editor:** Edits content to match Every's style guide
+- **js-pr-comment-resolver:** Systematically resolves PR review comments
+- **js-lint:** Runs ESLint, Prettier, and npm audit for JavaScript/TypeScript quality
+- **js-bug-reproduction-validator:** Systematically reproduces and validates bug reports
+- **js-spec-flow-analyzer:** Analyzes user flows and identifies gaps in specifications
+
+### Design
+- **js-design-implementation-reviewer:** Verifies UI implementations match Figma designs
+- **js-design-iterator:** Iteratively refines UI through systematic design iterations
+- **js-figma-design-sync:** Synchronizes web implementations with Figma designs
 
 ## Why This Makes Development Compound
 
 Traditional development tools help you work faster. Compounding engineering tools make future work easier.
 
-**Every `/compound-engineering-nodejs:plan` you create:**
+**Every `/js-workflows:plan` you create:**
 - Documents patterns that inform the next plan
 - Establishes conventions that reduce planning time
 - Builds institutional knowledge
 
-**Every `/compound-engineering-nodejs:work` execution:**
+**Every `/js-workflows:work` execution:**
 - Creates reusable components
 - Refines your testing approach
 - Improves your development process
 
-**Every `/compound-engineering-nodejs:review` you run:**
+**Every `/js-workflows:review` you run:**
 - Catches issues earlier
 - Documents learnings for the team
 - Raises the quality bar systematically
@@ -264,22 +279,22 @@ Over time, you're not just building features—you're building a development sys
 
 The plugin embodies these compounding engineering principles:
 
-**Prefer duplication over complexity:** Simple, clear code that's easy to understand beats complex abstractions. The kieran-nodejs-reviewer enforces this strictly.
+**Prefer duplication over complexity:** Simple, clear code that's easy to understand beats complex abstractions. The js-kieran-nodejs-reviewer enforces this strictly.
 
 **Document as you go:** Every command generates documentation—issues, todos, review findings—that makes future work easier.
 
 **Quality compounds:** High-quality code is easier to modify. The multi-agent review system ensures every change meets your quality bar.
 
-**Systematic beats heroic:** Consistent processes beat individual heroics. The `/compound-engineering-nodejs:work` command executes plans systematically, with continuous validation.
+**Systematic beats heroic:** Consistent processes beat individual heroics. The `/js-workflows:work` command executes plans systematically, with continuous validation.
 
 **Knowledge should be codified:** Learnings should be captured and reused. The research agents analyze your codebase to apply your own patterns back to you.
 
 ## Getting Started
 
 1. Install the plugin using one of the methods above
-2. Run `/compound-engineering-nodejs:plan` on your next feature idea
-3. Use `/compound-engineering-nodejs:work` to execute the plan
-4. Run `/compound-engineering-nodejs:review` before merging
+2. Run `/js-workflows:plan` on your next feature idea
+3. Use `/js-workflows:work` to execute the plan
+4. Run `/js-workflows:review` before merging
 5. Repeat, and watch your development process compound
 
 Each cycle makes the next cycle easier. That's compounding engineering.
