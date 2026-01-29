@@ -98,7 +98,7 @@ When adding new functionality, bump the version in:
 Run the release-docs command to update all documentation pages:
 
 ```bash
-claude /release-docs
+claude /js-release-docs
 ```
 
 This will:
@@ -204,9 +204,9 @@ docs/
 │   └── main.js          # Interactivity (theme toggle, mobile nav)
 └── pages/
     ├── getting-started.html  # Installation and quick start
-    ├── agents.html           # All 24 agents reference
-    ├── commands.html         # All 13 commands reference
-    ├── skills.html           # All 11 skills reference
+    ├── agents.html           # All 28 agents reference
+    ├── commands.html         # All 24 commands reference
+    ├── skills.html           # All 15 skills reference
     ├── mcp-servers.html      # MCP servers reference
     └── changelog.html        # Version history
 ```
@@ -216,7 +216,7 @@ docs/
 **IMPORTANT:** After ANY change to agents, commands, skills, or MCP servers, run:
 
 ```bash
-claude /release-docs
+claude /js-release-docs
 ```
 
 This command:
@@ -233,8 +233,8 @@ If you need to update docs manually:
 
 1. **Landing page stats** - Update the numbers in `docs/index.html`:
    ```html
-   <span class="stat-number">24</span>  <!-- agents -->
-   <span class="stat-number">13</span>  <!-- commands -->
+   <span class="stat-number">28</span>  <!-- agents -->
+   <span class="stat-number">24</span>  <!-- commands -->
    ```
 
 2. **Reference pages** - Each page in `docs/pages/` documents all components in that category
@@ -379,3 +379,14 @@ The initial marketplace.json included many custom fields (downloads, stars, rati
 - Plugin entries: `name`, `description`, `version`, `author`, `homepage`, `tags`, `source`
 
 **Learning:** Stick to the official spec. Custom fields may confuse users or break compatibility with future versions.
+
+### 2026-01-30: Renamed plugin to js-compound-engineering with js- prefix
+
+Renamed the entire plugin from `compound-engineering-nodejs` to `js-compound-engineering` and added `js-` prefix to all 28 agents, 24 commands, and 15 skills to avoid conflicts with the original `compound-engineering` plugin.
+
+**Learning:** When forking a plugin, use a distinct prefix (like `js-`) on ALL components to prevent namespace collisions. This includes:
+- Plugin name itself
+- All agent files and their `name:` frontmatter
+- All command files and their `name:` frontmatter
+- All skill directories and their `name:` frontmatter
+- All internal cross-references (Task calls, skill invocations, command refs)
