@@ -10,7 +10,7 @@ The official **Node.js Edition** of the Every marketplace, maintained by [Hosni 
 Run Claude and add the marketplace:
 
 ```bash
-/plugin marketplace add https://github.com/meethosny/js-compound-engineering
+/plugin marketplace add https://github.com/meethosny/compound-engineering-nodejs
 ```
 
 Then install the plugin:
@@ -23,7 +23,7 @@ Then install the plugin:
 Use the [Claude Plugins CLI](https://claude-plugins.dev) to skip the marketplace setup:
 
 ```bash
-npx claude-plugins install https://github.com/meethosny/js-compound-engineering
+npx claude-plugins install https://github.com/meethosny/compound-engineering-nodejs
 ```
 
 This automatically adds the marketplace and installs the plugin in a single step.
