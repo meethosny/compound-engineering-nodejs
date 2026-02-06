@@ -19,9 +19,9 @@ every-marketplace/
     └── js-compound-engineering/       # The actual plugin
         ├── .claude-plugin/
         │   └── plugin.json        # Plugin metadata
-        ├── agents/                # 28 specialized AI agents (all prefixed with js-)
-        ├── commands/              # 24 slash commands (all prefixed with js-)
-        ├── skills/                # 15 skills (all prefixed with js-)
+        ├── agents/                # 29 specialized AI agents (all prefixed with js-)
+        ├── commands/              # 25 slash commands (all prefixed with js-)
+        ├── skills/                # 16 skills (all prefixed with js-)
         ├── README.md              # Plugin documentation
         └── CHANGELOG.md           # Version history
 ```
@@ -204,9 +204,9 @@ docs/
 │   └── main.js          # Interactivity (theme toggle, mobile nav)
 └── pages/
     ├── getting-started.html  # Installation and quick start
-    ├── agents.html           # All 28 agents reference
-    ├── commands.html         # All 24 commands reference
-    ├── skills.html           # All 15 skills reference
+    ├── agents.html           # All 29 agents reference
+    ├── commands.html         # All 25 commands reference
+    ├── skills.html           # All 16 skills reference
     ├── mcp-servers.html      # MCP servers reference
     └── changelog.html        # Version history
 ```
@@ -382,7 +382,7 @@ The initial marketplace.json included many custom fields (downloads, stars, rati
 
 ### 2026-01-30: Renamed plugin to js-compound-engineering with js- prefix
 
-Renamed the entire plugin from `compound-engineering-nodejs` to `js-compound-engineering` and added `js-` prefix to all 28 agents, 24 commands, and 15 skills to avoid conflicts with the original `compound-engineering` plugin.
+Renamed the entire plugin from `compound-engineering-nodejs` to `js-compound-engineering` and added `js-` prefix to all 29 agents, 25 commands, and 16 skills to avoid conflicts with the original `compound-engineering` plugin.
 
 **Learning:** When forking a plugin, use a distinct prefix (like `js-`) on ALL components to prevent namespace collisions. This includes:
 - Plugin name itself

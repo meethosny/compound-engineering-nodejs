@@ -5,6 +5,39 @@ All notable changes to the js-compound-engineering plugin will be documented in 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [3.3.0] - 2026-02-06
+
+### Sync with Original Plugin v2.30.0
+
+### Added
+
+- **`js-schema-drift-detector` agent** - Detects unrelated migration and schema drift in PRs
+  - Supports Prisma, TypeORM, Knex, Sequelize, Drizzle migrations
+  - Detects lock file drift (package-lock.json, yarn.lock, pnpm-lock.yaml)
+  - Provides clear fix instructions per ORM
+- **`js-orchestrating-swarms` skill** - Comprehensive guide to multi-agent swarm orchestration
+  - Covers primitives: Agent, Team, Teammate, Leader, Task, Inbox, Message, Backend
+  - Documents subagents vs teammates spawning methods
+  - Includes 6 orchestration patterns and 3 complete workflows
+- **`/js-slfg` command** - Swarm-enabled variant of `/js-lfg` for parallel execution
+
+### Changed
+
+- **`/js-workflows:work` command** - Added optional Swarm Mode section for parallel execution
+- **`/js-workflows:plan` command** - Added brainstorm detection, research decision logic, learnings-researcher integration, consolidated research step, and updated post-generation options
+- **`/js-workflows:review` command** - Added Protected Artifacts section and Conditional Agents for migration PRs (Prisma, TypeORM, Knex, Sequelize, Drizzle)
+- **`js-best-practices-researcher` agent** - Added Phase 1 skill discovery, Phase 1.5 API deprecation checking, and 3-phase research methodology
+- **`CLAUDE.md`** - Added Skill Compliance Checklist section
+
+### Component Summary
+
+| Component | v3.2.0 | v3.3.0 | Change |
+|-----------|--------|--------|--------|
+| Agents | 28 | 29 | +1 |
+| Commands | 24 | 25 | +1 |
+| Skills | 15 | 16 | +1 |
+| MCP Servers | 1 | 1 | - |
+
 ## [3.2.0] - 2026-01-30
 
 ### Major Rename: Plugin Renamed to js-compound-engineering

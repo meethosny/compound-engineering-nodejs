@@ -1,6 +1,6 @@
 # Compounding Engineering Plugin (Node.js Fork)
 
-> **🚀 Node.js Developer Edition** — This fork is optimized for Node.js and TypeScript developers. Includes modern patterns from TJ Holowaychuk (Express), Matteo Collina (Fastify), Yusuke Wada (Hono), and Sindre Sorhus (1000+ npm packages).
+> **Node.js Developer Edition** — This fork is optimized for Node.js and TypeScript developers. Includes modern patterns from TJ Holowaychuk (Express), Matteo Collina (Fastify), Yusuke Wada (Hono), and Sindre Sorhus (1000+ npm packages).
 
 AI-powered development tools that get smarter with every use. Make each unit of engineering work easier than the last.
 
@@ -8,16 +8,16 @@ AI-powered development tools that get smarter with every use. Make each unit of 
 
 | Component | Count |
 |-----------|-------|
-| Agents | 28 |
-| Commands | 24 |
-| Skills | 15 |
+| Agents | 29 |
+| Commands | 25 |
+| Skills | 16 |
 | MCP Servers | 1 |
 
 ## Agents
 
 Agents are organized into categories for easier discovery.
 
-### Review (14)
+### Review (15)
 
 | Agent | Description |
 |-------|-------------|
@@ -33,6 +33,7 @@ Agents are organized into categories for easier discovery.
 | `js-kieran-typescript-reviewer` | TypeScript code review with strict conventions |
 | `js-pattern-recognition-specialist` | Analyze code for patterns and anti-patterns |
 | `js-performance-oracle` | Performance analysis and optimization |
+| `js-schema-drift-detector` | Detect unrelated migration and schema drift in PRs |
 | `js-security-sentinel` | Security audits and vulnerability assessments |
 | `js-julik-frontend-races-reviewer` | Review JavaScript/TypeScript code for race conditions |
 
@@ -40,7 +41,7 @@ Agents are organized into categories for easier discovery.
 
 | Agent | Description |
 |-------|-------------|
-| `js-best-practices-researcher` | Gather external best practices and examples |
+| `js-best-practices-researcher` | Gather external best practices with skill discovery and deprecation checking |
 | `js-framework-docs-researcher` | Research framework documentation and best practices |
 | `js-git-history-analyzer` | Analyze git history and code evolution |
 | `js-repo-research-analyst` | Research repository structure and conventions |
@@ -78,9 +79,9 @@ Core workflow commands use `workflows:` prefix to avoid collisions with built-in
 
 | Command | Description |
 |---------|-------------|
-| `/js-workflows:plan` | Create implementation plans |
-| `/js-workflows:review` | Run comprehensive code reviews |
-| `/js-workflows:work` | Execute work items systematically with incremental commits |
+| `/js-workflows:plan` | Create implementation plans with brainstorm detection and research decision logic |
+| `/js-workflows:review` | Run comprehensive code reviews with protected artifacts and conditional migration agents |
+| `/js-workflows:work` | Execute work items systematically with incremental commits and optional swarm mode |
 | `/js-workflows:compound` | Document solved problems to compound team knowledge |
 | `/js-workflows:brainstorm` | Explore what to build before diving into implementation |
 
@@ -88,7 +89,8 @@ Core workflow commands use `workflows:` prefix to avoid collisions with built-in
 
 | Command | Description |
 |---------|-------------|
-| `/js-lfg` | Full autonomous engineering workflow (plan → deepen → work → review → test → video) |
+| `/js-lfg` | Full autonomous engineering workflow (plan, deepen, work, review, test, video) |
+| `/js-slfg` | Swarm-enabled variant of `/js-lfg` for parallel execution |
 | `/js-deepen-plan` | Enhance plans with parallel research agents for depth and best practices |
 | `/js-feature-video` | Record video walkthrough of a feature and add to PR description |
 
@@ -145,6 +147,12 @@ Core workflow commands use `workflows:` prefix to avoid collisions with built-in
 | `js-file-todos` | File-based todo tracking system |
 | `js-git-worktree` | Manage Git worktrees for parallel development |
 
+### Multi-Agent Orchestration
+
+| Skill | Description |
+|-------|-------------|
+| `js-orchestrating-swarms` | Comprehensive guide to multi-agent swarm orchestration with TeammateTool |
+
 ### Browser Automation
 
 | Skill | Description |
@@ -163,16 +171,6 @@ Core workflow commands use `workflows:` prefix to avoid collisions with built-in
 |-------|-------------|
 | `js-gemini-imagegen` | Generate and edit images using Google's Gemini API |
 
-**gemini-imagegen features:**
-- Text-to-image generation
-- Image editing and manipulation
-- Multi-turn refinement
-- Multiple reference image composition (up to 14 images)
-
-**Requirements:**
-- `GEMINI_API_KEY` environment variable
-- Python packages: `google-genai`, `pillow`
-
 ## MCP Servers
 
 | Server | Description |
@@ -189,6 +187,10 @@ Supports 100+ frameworks including Express, Fastify, Hono, React, Next.js, Vue, 
 
 MCP servers start automatically when the plugin is enabled.
 
+## Known Issues
+
+- **MCP servers require manual setup workaround**: If MCP servers don't auto-start, manually add the context7 server to your Claude Code settings.
+
 ## Browser Automation
 
 This plugin uses the `agent-browser` CLI for browser automation instead of Playwright MCP. The agent-browser skill provides:
@@ -203,7 +205,7 @@ Install agent-browser:
 npm install -g agent-browser && agent-browser install
 ```
 
-See the `agent-browser` skill for detailed usage.
+See the `js-agent-browser` skill for detailed usage.
 
 ## Installation
 

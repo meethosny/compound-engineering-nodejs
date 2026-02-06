@@ -48,24 +48,34 @@ Ensure that the code is ready for analysis (either in worktree or on current bra
 
 </task_list>
 
+#### Protected Artifacts
+
+<protected_artifacts>
+The following paths are compound-engineering pipeline artifacts and must never be flagged for deletion, removal, or gitignore by any review agent:
+
+- `docs/plans/*.md` — Plan files created by `/js-workflows:plan`. These are living documents that track implementation progress (checkboxes are checked off by `/js-workflows:work`).
+- `docs/solutions/*.md` — Solution documents created during the pipeline.
+
+If a review agent flags any file in these directories for cleanup or removal, discard that finding during synthesis. Do not create a todo for it.
+</protected_artifacts>
+
 #### Parallel Agents to review the PR:
 
 <parallel_tasks>
 
 Run ALL or most of these agents at the same time:
 
-1. Task js-modern-nodejs-reviewer(PR content)
-2. Task js-kieran-nodejs-reviewer(PR title)
-3. Task js-git-history-analyzer(PR content)
-4. Task js-dependency-detective(PR content)
+1. Task js-kieran-nodejs-reviewer(PR content)
+2. Task js-modern-nodejs-reviewer(PR content)
+3. Task js-kieran-typescript-reviewer(PR content)
+4. Task js-git-history-analyzer(PR content)
 5. Task js-pattern-recognition-specialist(PR content)
 6. Task js-architecture-strategist(PR content)
-7. Task js-code-philosopher(PR content)
-8. Task js-security-sentinel(PR content)
-9. Task js-performance-oracle(PR content)
-10. Task js-devops-harmony-analyst(PR content)
-11. Task js-data-integrity-guardian(PR content)
-12. Task js-agent-native-reviewer(PR content) - Verify new features are agent-accessible
+7. Task js-security-sentinel(PR content)
+8. Task js-performance-oracle(PR content)
+9. Task js-data-integrity-guardian(PR content)
+10. Task js-agent-native-reviewer(PR content) - Verify new features are agent-accessible
+11. Task js-julik-frontend-races-reviewer(PR content) - If frontend JS/TS changes
 
 </parallel_tasks>
 
@@ -74,6 +84,32 @@ Run ALL or most of these agents at the same time:
 <conditional_agents>
 
 These agents are run ONLY when the PR matches specific criteria. Check the PR files list to determine if they apply:
+
+**If PR contains database migrations or schema changes:**
+
+Trigger when PR includes files matching:
+- `prisma/migrations/**/*.sql`
+- `migrations/**/*.{ts,js}`
+- `src/migrations/**/*.{ts,js}`
+- `src/db/migrations/**/*`
+- `drizzle/migrations/**/*`
+- `prisma/schema.prisma` changes
+
+12. Task js-schema-drift-detector(PR content) - Detects unrelated migration/schema drift
+13. Task js-data-migration-expert(PR content) - Validates ID mappings match production, checks for swapped values, verifies rollback safety
+14. Task js-deployment-verification-agent(PR content) - Creates Go/No-Go deployment checklist with SQL verification queries
+
+**When to run migration agents:**
+- PR includes migration files (any ORM: Prisma, TypeORM, Knex, Sequelize, Drizzle)
+- PR modifies columns that store IDs, enums, or mappings
+- PR includes data backfill scripts
+- PR changes how data is read/written (e.g., changing from FK to string column)
+- PR title/body mentions: migration, backfill, data transformation, ID mapping
+
+**What these agents check:**
+- `js-schema-drift-detector`: Verifies schema changes match PR migrations only (prevents drift from other branches)
+- `js-data-migration-expert`: Verifies hard-coded mappings match production reality (prevents swapped IDs), checks for orphaned associations, validates dual-write patterns
+- `js-deployment-verification-agent`: Produces executable pre/post-deploy checklists with SQL queries, rollback procedures, and monitoring plans
 
 </conditional_agents>
 
@@ -190,6 +226,7 @@ Remove duplicates, prioritize by severity and impact.
 <synthesis_tasks>
 
 - [ ] Collect findings from all parallel agents
+- [ ] Discard any findings that recommend deleting or gitignoring files in `docs/plans/` or `docs/solutions/` (see Protected Artifacts above)
 - [ ] Categorize by type: security, performance, architecture, quality, etc.
 - [ ] Assign severity levels: 🔴 CRITICAL (P1), 🟡 IMPORTANT (P2), 🔵 NICE-TO-HAVE (P3)
 - [ ] Remove duplicate or overlapping findings

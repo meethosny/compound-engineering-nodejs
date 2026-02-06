@@ -5,14 +5,14 @@
     "url": "https://github.com/meethosny/"
   },
   "metadata": {
-    "description": "Official Every plugin marketplace for Claude Code extensions",
+    "description": "Node.js edition of the Every plugin marketplace for Claude Code extensions",
     "version": "1.0.0"
   },
   "plugins": [
     {
       "name": "js-compound-engineering",
-      "description": "AI-powered development tools that get smarter with every use. Make each unit of engineering work easier than the last. Includes 28 specialized agents, 24 commands, and 15 skills.",
-      "version": "3.2.0",
+      "description": "AI-powered development tools that get smarter with every use. Make each unit of engineering work easier than the last. Includes 29 specialized agents, 25 commands, and 16 skills.",
+      "version": "3.3.0",
       "author": {
         "name": "Hosni Mohamed",
         "url": "https://github.com/meethosny",
