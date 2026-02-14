@@ -4,7 +4,7 @@
 <head>
   <meta charset="utf-8" />
   <title>Agent Reference - Compounding Engineering</title>
-  <meta content="Complete reference for all 27 specialized AI agents in the Compounding Engineering plugin."
+  <meta content="Complete reference for all 29 specialized AI agents in the Compounding Engineering plugin."
     name="description" />
   <meta content="width=device-width, initial-scale=1" name="viewport" />
 
@@ -34,10 +34,10 @@
         <div class="nav-section">
           <h3>Reference</h3>
           <ul>
-            <li><a href="agents.html" class="active">Agents (27)</a></li>
-            <li><a href="commands.html">Commands (19)</a></li>
-            <li><a href="skills.html">Skills (12)</a></li>
-            <li><a href="mcp-servers.html">MCP Servers (2)</a></li>
+            <li><a href="agents.html" class="active">Agents (29)</a></li>
+            <li><a href="commands.html">Commands (25)</a></li>
+            <li><a href="skills.html">Skills (19)</a></li>
+            <li><a href="mcp-servers.html">MCP Servers (1)</a></li>
           </ul>
         </div>
         <div class="nav-section">
@@ -49,8 +49,8 @@
         <div class="nav-section">
           <h3>On This Page</h3>
           <ul>
-            <li><a href="#review-agents">Review (14)</a></li>
-            <li><a href="#research-agents">Research (4)</a></li>
+            <li><a href="#review-agents">Review (15)</a></li>
+            <li><a href="#research-agents">Research (5)</a></li>
             <li><a href="#workflow-agents">Workflow (5)</a></li>
             <li><a href="#design-agents">Design (3)</a></li>
             <li><a href="#docs-agents">Docs (1)</a></li>
@@ -76,7 +76,7 @@
       <article class="docs-article">
         <h1><i class="fa-solid fa-users-gear color-accent"></i> Agent Reference</h1>
         <p class="lead">
-          Think of agents as your expert teammates who never sleep. You've got 23 specialists here—each one obsessed
+          Think of agents as your expert teammates who never sleep. You've got 29 specialists here—each one obsessed
           with a single domain. Call them individually when you need focused expertise, or orchestrate them together for
           multi-angle analysis. They're opinionated, they're fast, and they remember your codebase better than you do.
         </p>
@@ -91,21 +91,21 @@ claude agent [agent-name]
 claude agent [agent-name] "Your message here"
 
 # Examples
-claude agent modern-nodejs-reviewer
-claude agent security-sentinel "Audit the payment flow"</code></pre>
+claude agent js-modern-nodejs-reviewer
+claude agent js-security-sentinel "Audit the payment flow"</code></pre>
           </div>
         </div>
 
         <!-- Review Agents -->
         <section id="review-agents">
-          <h2><i class="fa-solid fa-code-pull-request"></i> Review Agents (14)</h2>
+          <h2><i class="fa-solid fa-code-pull-request"></i> Review Agents (15)</h2>
           <p>Your code review dream team. These agents catch what humans miss at 2am—security holes, performance cliffs,
             architectural drift, and those "it works but I hate it" moments. They're picky. They disagree with each
             other. That's the point.</p>
 
-          <div class="agent-detail" id="modern-nodejs-reviewer">
+          <div class="agent-detail" id="js-modern-nodejs-reviewer">
             <div class="agent-detail-header">
-              <h3>modern-nodejs-reviewer</h3>
+              <h3>js-modern-nodejs-reviewer</h3>
               <span class="agent-badge">Node.js</span>
             </div>
             <p class="agent-detail-description">
@@ -128,13 +128,13 @@ claude agent security-sentinel "Audit the payment flow"</code></pre>
                 abstractions.</li>
             </ul>
             <div class="card-code-block">
-              <pre><code>claude agent modern-nodejs-reviewer "Review the UserController"</code></pre>
+              <pre><code>claude agent js-modern-nodejs-reviewer "Review the UserController"</code></pre>
             </div>
           </div>
 
-          <div class="agent-detail" id="kieran-nodejs-reviewer">
+          <div class="agent-detail" id="js-kieran-nodejs-reviewer">
             <div class="agent-detail-header">
-              <h3>kieran-nodejs-reviewer</h3>
+              <h3>js-kieran-nodejs-reviewer</h3>
               <span class="agent-badge">Node.js</span>
             </div>
             <p class="agent-detail-description">
@@ -149,13 +149,13 @@ claude agent security-sentinel "Audit the payment flow"</code></pre>
               <li>Challenges overengineering and premature optimization</li>
             </ul>
             <div class="card-code-block">
-              <pre><code>claude agent kieran-nodejs-reviewer</code></pre>
+              <pre><code>claude agent js-kieran-nodejs-reviewer</code></pre>
             </div>
           </div>
 
-          <div class="agent-detail" id="kieran-python-reviewer">
+          <div class="agent-detail" id="js-kieran-python-reviewer">
             <div class="agent-detail-header">
-              <h3>kieran-python-reviewer</h3>
+              <h3>js-kieran-python-reviewer</h3>
               <span class="agent-badge">Python</span>
             </div>
             <p class="agent-detail-description">
@@ -173,13 +173,13 @@ claude agent security-sentinel "Audit the payment flow"</code></pre>
               <li>Module extraction signals</li>
             </ul>
             <div class="card-code-block">
-              <pre><code>claude agent kieran-python-reviewer</code></pre>
+              <pre><code>claude agent js-kieran-python-reviewer</code></pre>
             </div>
           </div>
 
-          <div class="agent-detail" id="kieran-typescript-reviewer">
+          <div class="agent-detail" id="js-kieran-typescript-reviewer">
             <div class="agent-detail-header">
-              <h3>kieran-typescript-reviewer</h3>
+              <h3>js-kieran-typescript-reviewer</h3>
               <span class="agent-badge">TypeScript</span>
             </div>
             <p class="agent-detail-description">
@@ -197,13 +197,13 @@ claude agent security-sentinel "Audit the payment flow"</code></pre>
               <li>Testability assessment</li>
             </ul>
             <div class="card-code-block">
-              <pre><code>claude agent kieran-typescript-reviewer</code></pre>
+              <pre><code>claude agent js-kieran-typescript-reviewer</code></pre>
             </div>
           </div>
 
-          <div class="agent-detail" id="security-sentinel">
+          <div class="agent-detail" id="js-security-sentinel">
             <div class="agent-detail-header">
-              <h3>security-sentinel</h3>
+              <h3>js-security-sentinel</h3>
               <span class="agent-badge critical">Security</span>
             </div>
             <p class="agent-detail-description">
@@ -223,13 +223,13 @@ claude agent security-sentinel "Audit the payment flow"</code></pre>
               <li>Hardcoded secrets search</li>
             </ul>
             <div class="card-code-block">
-              <pre><code>claude agent security-sentinel "Audit the payment flow"</code></pre>
+              <pre><code>claude agent js-security-sentinel "Audit the payment flow"</code></pre>
             </div>
           </div>
 
-          <div class="agent-detail" id="performance-oracle">
+          <div class="agent-detail" id="js-performance-oracle">
             <div class="agent-detail-header">
-              <h3>performance-oracle</h3>
+              <h3>js-performance-oracle</h3>
               <span class="agent-badge">Performance</span>
             </div>
             <p class="agent-detail-description">
@@ -249,13 +249,13 @@ claude agent security-sentinel "Audit the payment flow"</code></pre>
               <li>Frontend bundle impact</li>
             </ul>
             <div class="card-code-block">
-              <pre><code>claude agent performance-oracle</code></pre>
+              <pre><code>claude agent js-performance-oracle</code></pre>
             </div>
           </div>
 
-          <div class="agent-detail" id="architecture-strategist">
+          <div class="agent-detail" id="js-architecture-strategist">
             <div class="agent-detail-header">
-              <h3>architecture-strategist</h3>
+              <h3>js-architecture-strategist</h3>
               <span class="agent-badge">Architecture</span>
             </div>
             <p class="agent-detail-description">
@@ -274,13 +274,13 @@ claude agent security-sentinel "Audit the payment flow"</code></pre>
               <li>API contract evaluation</li>
             </ul>
             <div class="card-code-block">
-              <pre><code>claude agent architecture-strategist</code></pre>
+              <pre><code>claude agent js-architecture-strategist</code></pre>
             </div>
           </div>
 
-          <div class="agent-detail" id="data-integrity-guardian">
+          <div class="agent-detail" id="js-data-integrity-guardian">
             <div class="agent-detail-header">
-              <h3>data-integrity-guardian</h3>
+              <h3>js-data-integrity-guardian</h3>
               <span class="agent-badge critical">Data</span>
             </div>
             <p class="agent-detail-description">
@@ -299,13 +299,13 @@ claude agent security-sentinel "Audit the payment flow"</code></pre>
               <li>Data corruption scenario checking</li>
             </ul>
             <div class="card-code-block">
-              <pre><code>claude agent data-integrity-guardian</code></pre>
+              <pre><code>claude agent js-data-integrity-guardian</code></pre>
             </div>
           </div>
 
-          <div class="agent-detail" id="pattern-recognition-specialist">
+          <div class="agent-detail" id="js-pattern-recognition-specialist">
             <div class="agent-detail-header">
-              <h3>pattern-recognition-specialist</h3>
+              <h3>js-pattern-recognition-specialist</h3>
               <span class="agent-badge">Patterns</span>
             </div>
             <p class="agent-detail-description">
@@ -324,13 +324,13 @@ claude agent security-sentinel "Audit the payment flow"</code></pre>
               <li>Code duplication</li>
             </ul>
             <div class="card-code-block">
-              <pre><code>claude agent pattern-recognition-specialist</code></pre>
+              <pre><code>claude agent js-pattern-recognition-specialist</code></pre>
             </div>
           </div>
 
-          <div class="agent-detail" id="code-simplicity-reviewer">
+          <div class="agent-detail" id="js-code-simplicity-reviewer">
             <div class="agent-detail-header">
-              <h3>code-simplicity-reviewer</h3>
+              <h3>js-code-simplicity-reviewer</h3>
               <span class="agent-badge">Quality</span>
             </div>
             <p class="agent-detail-description">
@@ -349,21 +349,141 @@ claude agent security-sentinel "Audit the payment flow"</code></pre>
               <li>Eliminate premature generalization</li>
             </ul>
             <div class="card-code-block">
-              <pre><code>claude agent code-simplicity-reviewer</code></pre>
+              <pre><code>claude agent js-code-simplicity-reviewer</code></pre>
+            </div>
+          </div>
+
+          <div class="agent-detail" id="js-agent-native-reviewer">
+            <div class="agent-detail-header">
+              <h3>js-agent-native-reviewer</h3>
+              <span class="agent-badge">Architecture</span>
+            </div>
+            <p class="agent-detail-description">
+              Verify features are agent-native -- that any action a user can take, an agent can also take, and anything
+              a user can see, an agent can see. This enforces the principle that agents should have parity with users in
+              capability and context. Catches UI-only workflows, hidden state, and missing API/tool equivalents.
+            </p>
+            <h4>Review Criteria</h4>
+            <ul>
+              <li><strong>Action Parity</strong> - Every UI action has an equivalent API/tool the agent can call</li>
+              <li><strong>Context Parity</strong> - Data visible to users is accessible to agents via API/tools</li>
+              <li><strong>Tool Design</strong> - Tools are primitives that provide capability, not behavior</li>
+              <li><strong>API Surface</strong> - New features exposed via API endpoints with consistent patterns</li>
+              <li>Flags UI-only features, hidden context, and workflow lock-in</li>
+            </ul>
+            <div class="card-code-block">
+              <pre><code>claude agent js-agent-native-reviewer "Review the new email filtering feature"</code></pre>
+            </div>
+          </div>
+
+          <div class="agent-detail" id="js-data-migration-expert">
+            <div class="agent-detail-header">
+              <h3>js-data-migration-expert</h3>
+              <span class="agent-badge critical">Data</span>
+            </div>
+            <p class="agent-detail-description">
+              Validate ID mappings match production, check for swapped values, verify rollback safety. This agent
+              prevents data corruption by validating that migrations match production reality, not fixture or assumed
+              values. Essential for any migration that involves ID mappings, column renames, or data transformations.
+            </p>
+            <h4>Review Goals</h4>
+            <ul>
+              <li><strong>Verify mappings match production</strong> - Never trust fixtures or assumptions</li>
+              <li><strong>Check for swapped values</strong> - The most common and dangerous migration bug</li>
+              <li><strong>Ensure verification plans</strong> - SQL queries to prove correctness post-deploy</li>
+              <li><strong>Validate rollback safety</strong> - Feature flags, dual-writes, staged deploys</li>
+              <li>Catches orphaned eager loads, incomplete dual-writes, and missing error handling</li>
+            </ul>
+            <div class="card-code-block">
+              <pre><code>claude agent js-data-migration-expert "Review the user status migration"</code></pre>
+            </div>
+          </div>
+
+          <div class="agent-detail" id="js-deployment-verification-agent">
+            <div class="agent-detail-header">
+              <h3>js-deployment-verification-agent</h3>
+              <span class="agent-badge critical">Deployment</span>
+            </div>
+            <p class="agent-detail-description">
+              Create Go/No-Go deployment checklists with SQL verification queries for risky data changes. Produces
+              concrete pre/post-deploy checklists with rollback procedures and monitoring plans. Essential for any
+              deployment that touches production data, migrations, or behavior that could silently discard or duplicate
+              records.
+            </p>
+            <h4>Checklist Areas</h4>
+            <ul>
+              <li><strong>Data Invariants</strong> - Define what must remain true before/after deploy</li>
+              <li><strong>Pre-Deploy Audits</strong> - Read-only SQL queries to establish baselines</li>
+              <li><strong>Migration Steps</strong> - Command, runtime estimate, batching, rollback for each step</li>
+              <li><strong>Post-Deploy Verification</strong> - Queries to run within 5 minutes of deploy</li>
+              <li><strong>Rollback Plan</strong> - Concrete steps to restore data if needed</li>
+              <li><strong>Monitoring</strong> - Metrics, alerts, and dashboard checks for first 24 hours</li>
+            </ul>
+            <div class="card-code-block">
+              <pre><code>claude agent js-deployment-verification-agent "Create checklist for the payments migration"</code></pre>
+            </div>
+          </div>
+
+          <div class="agent-detail" id="js-schema-drift-detector">
+            <div class="agent-detail-header">
+              <h3>js-schema-drift-detector</h3>
+              <span class="agent-badge">Database</span>
+            </div>
+            <p class="agent-detail-description">
+              Detect unrelated migration and schema drift in PRs. When developers run migrations from other branches,
+              schema files accumulate unrelated changes that pollute PRs. This agent cross-references schema changes
+              against PR migrations to catch accidental inclusions. Supports Prisma, TypeORM, Knex, Sequelize, and
+              Drizzle ORMs, plus lock file drift detection.
+            </p>
+            <h4>Detection Areas</h4>
+            <ul>
+              <li><strong>Schema vs Migration Mismatch</strong> - Columns/tables in schema not created by PR migrations</li>
+              <li><strong>ORM Support</strong> - Prisma, TypeORM, Knex, Sequelize, Drizzle</li>
+              <li><strong>Lock File Drift</strong> - Unrelated dependency changes in package-lock.json/yarn.lock</li>
+              <li><strong>Entity Drift</strong> - TypeORM entity changes without corresponding migrations</li>
+              <li>Provides fix instructions per ORM to reset schema and re-run only PR migrations</li>
+            </ul>
+            <div class="card-code-block">
+              <pre><code>claude agent js-schema-drift-detector "Check this PR for schema drift"</code></pre>
+            </div>
+          </div>
+
+          <div class="agent-detail" id="js-julik-frontend-races-reviewer">
+            <div class="agent-detail-header">
+              <h3>js-julik-frontend-races-reviewer</h3>
+              <span class="agent-badge">Frontend</span>
+            </div>
+            <p class="agent-detail-description">
+              Review JavaScript/TypeScript frontend code for race conditions in UI components. Applies Julik's keen eye
+              for timing issues -- racing animations, stale timers, unhandled promise rejections, and conflicting async
+              operations. Covers React, Vue, Svelte, and Web Components with a focus on proper cleanup, state machines,
+              and cancelation patterns.
+            </p>
+            <h4>Review Areas</h4>
+            <ul>
+              <li><strong>SPA Framework Compatibility</strong> - Proper lifecycle cleanup in React/Vue/Svelte/Web Components</li>
+              <li><strong>Async/Await Races</strong> - AbortController patterns, Promise.allSettled, unhandled rejections</li>
+              <li><strong>Timer Safety</strong> - Cancelation tokens for setTimeout/setInterval/requestAnimationFrame</li>
+              <li><strong>Concurrent Operations</strong> - State machines to prevent conflicting interactions</li>
+              <li><strong>CSS Animations</strong> - Preventing animation restarts on DOM replacement</li>
+              <li>Event listener management and delegation patterns</li>
+            </ul>
+            <div class="card-code-block">
+              <pre><code>claude agent js-julik-frontend-races-reviewer "Review the toast notification component"</code></pre>
             </div>
           </div>
         </section>
 
         <!-- Research Agents -->
         <section id="research-agents">
-          <h2><i class="fa-solid fa-microscope"></i> Research Agents (4)</h2>
+          <h2><i class="fa-solid fa-microscope"></i> Research Agents (5)</h2>
           <p>Stop guessing. These agents dig through documentation, GitHub repos, git history, and real-world examples
             to give you answers backed by evidence. They read faster than you, remember more than you, and synthesize
             patterns you'd miss. Perfect for "how should I actually do this?" questions.</p>
 
-          <div class="agent-detail" id="framework-docs-researcher">
+          <div class="agent-detail" id="js-framework-docs-researcher">
             <div class="agent-detail-header">
-              <h3>framework-docs-researcher</h3>
+              <h3>js-framework-docs-researcher</h3>
               <span class="agent-badge">Research</span>
             </div>
             <p class="agent-detail-description">
@@ -380,13 +500,13 @@ claude agent security-sentinel "Audit the payment flow"</code></pre>
               <li>Synthesize findings with practical examples</li>
             </ul>
             <div class="card-code-block">
-              <pre><code>claude agent framework-docs-researcher "Research Express middleware patterns"</code></pre>
+              <pre><code>claude agent js-framework-docs-researcher "Research Express middleware patterns"</code></pre>
             </div>
           </div>
 
-          <div class="agent-detail" id="best-practices-researcher">
+          <div class="agent-detail" id="js-best-practices-researcher">
             <div class="agent-detail-header">
-              <h3>best-practices-researcher</h3>
+              <h3>js-best-practices-researcher</h3>
               <span class="agent-badge">Research</span>
             </div>
             <p class="agent-detail-description">
@@ -404,13 +524,13 @@ claude agent security-sentinel "Audit the payment flow"</code></pre>
               <li>Research issue templates and community engagement</li>
             </ul>
             <div class="card-code-block">
-              <pre><code>claude agent best-practices-researcher "Find pagination patterns"</code></pre>
+              <pre><code>claude agent js-best-practices-researcher "Find pagination patterns"</code></pre>
             </div>
           </div>
 
-          <div class="agent-detail" id="git-history-analyzer">
+          <div class="agent-detail" id="js-git-history-analyzer">
             <div class="agent-detail-header">
-              <h3>git-history-analyzer</h3>
+              <h3>js-git-history-analyzer</h3>
               <span class="agent-badge">Git</span>
             </div>
             <p class="agent-detail-description">
@@ -428,13 +548,13 @@ claude agent security-sentinel "Audit the payment flow"</code></pre>
               <li>Extract historical patterns of issues and fixes</li>
             </ul>
             <div class="card-code-block">
-              <pre><code>claude agent git-history-analyzer "Analyze changes to User model"</code></pre>
+              <pre><code>claude agent js-git-history-analyzer "Analyze changes to User model"</code></pre>
             </div>
           </div>
 
-          <div class="agent-detail" id="repo-research-analyst">
+          <div class="agent-detail" id="js-repo-research-analyst">
             <div class="agent-detail-header">
-              <h3>repo-research-analyst</h3>
+              <h3>js-repo-research-analyst</h3>
               <span class="agent-badge">Research</span>
             </div>
             <p class="agent-detail-description">
@@ -451,7 +571,31 @@ claude agent security-sentinel "Audit the payment flow"</code></pre>
               <li>Project-specific conventions</li>
             </ul>
             <div class="card-code-block">
-              <pre><code>claude agent repo-research-analyst</code></pre>
+              <pre><code>claude agent js-repo-research-analyst</code></pre>
+            </div>
+          </div>
+
+          <div class="agent-detail" id="js-learnings-researcher">
+            <div class="agent-detail-header">
+              <h3>js-learnings-researcher</h3>
+              <span class="agent-badge">Research</span>
+            </div>
+            <p class="agent-detail-description">
+              Search institutional learnings in docs/solutions/ for relevant past solutions before implementing. This
+              agent efficiently filters documented solutions by frontmatter metadata (tags, category, module, symptoms)
+              to find applicable patterns, gotchas, and lessons learned. Prevents repeated mistakes by surfacing
+              relevant institutional knowledge before work begins.
+            </p>
+            <h4>Search Strategy</h4>
+            <ul>
+              <li><strong>Grep-First Filtering</strong> - Pre-filters files by frontmatter before reading content</li>
+              <li><strong>Category Narrowing</strong> - Searches targeted directories (performance, database, security, etc.)</li>
+              <li><strong>Relevance Scoring</strong> - Ranks matches by module, tags, symptoms, and component overlap</li>
+              <li><strong>Critical Patterns</strong> - Always checks critical-patterns.md for must-know issues</li>
+              <li>Integrates with /js-workflows:plan and /js-deepen-plan for informed planning</li>
+            </ul>
+            <div class="card-code-block">
+              <pre><code>claude agent js-learnings-researcher "Check for learnings about email processing"</code></pre>
             </div>
           </div>
         </section>
@@ -463,9 +607,9 @@ claude agent security-sentinel "Audit the payment flow"</code></pre>
             linters, analyzing specs. They're fast, they don't complain, and they free you up to solve interesting
             problems instead of mechanical ones.</p>
 
-          <div class="agent-detail" id="bug-reproduction-validator">
+          <div class="agent-detail" id="js-bug-reproduction-validator">
             <div class="agent-detail-header">
-              <h3>bug-reproduction-validator</h3>
+              <h3>js-bug-reproduction-validator</h3>
               <span class="agent-badge">Bugs</span>
             </div>
             <p class="agent-detail-description">
@@ -483,13 +627,13 @@ claude agent security-sentinel "Audit the payment flow"</code></pre>
               <li><strong>User Error</strong> - User misunderstanding</li>
             </ul>
             <div class="card-code-block">
-              <pre><code>claude agent bug-reproduction-validator</code></pre>
+              <pre><code>claude agent js-bug-reproduction-validator</code></pre>
             </div>
           </div>
 
-          <div class="agent-detail" id="pr-comment-resolver">
+          <div class="agent-detail" id="js-pr-comment-resolver">
             <div class="agent-detail-header">
-              <h3>pr-comment-resolver</h3>
+              <h3>js-pr-comment-resolver</h3>
               <span class="agent-badge">PR</span>
             </div>
             <p class="agent-detail-description">
@@ -506,13 +650,13 @@ claude agent security-sentinel "Audit the payment flow"</code></pre>
               <li>Provide clear resolution reports</li>
             </ul>
             <div class="card-code-block">
-              <pre><code>claude agent pr-comment-resolver</code></pre>
+              <pre><code>claude agent js-pr-comment-resolver</code></pre>
             </div>
           </div>
 
-          <div class="agent-detail" id="lint">
+          <div class="agent-detail" id="js-lint">
             <div class="agent-detail-header">
-              <h3>lint</h3>
+              <h3>js-lint</h3>
               <span class="agent-badge">Quality</span>
             </div>
             <p class="agent-detail-description">
@@ -527,13 +671,13 @@ claude agent security-sentinel "Audit the payment flow"</code></pre>
               <li><code>npm audit</code> - Security vulnerability scanning</li>
             </ul>
             <div class="card-code-block">
-              <pre><code>claude agent lint</code></pre>
+              <pre><code>claude agent js-lint</code></pre>
             </div>
           </div>
 
-          <div class="agent-detail" id="spec-flow-analyzer">
+          <div class="agent-detail" id="js-spec-flow-analyzer">
             <div class="agent-detail-header">
-              <h3>spec-flow-analyzer</h3>
+              <h3>js-spec-flow-analyzer</h3>
               <span class="agent-badge">Testing</span>
             </div>
             <p class="agent-detail-description">
@@ -550,13 +694,13 @@ claude agent security-sentinel "Audit the payment flow"</code></pre>
               <li>Generate critical questions requiring clarification</li>
             </ul>
             <div class="card-code-block">
-              <pre><code>claude agent spec-flow-analyzer</code></pre>
+              <pre><code>claude agent js-spec-flow-analyzer</code></pre>
             </div>
           </div>
 
-          <div class="agent-detail" id="every-style-editor">
+          <div class="agent-detail" id="js-every-style-editor">
             <div class="agent-detail-header">
-              <h3>every-style-editor</h3>
+              <h3>js-every-style-editor</h3>
               <span class="agent-badge">Content</span>
             </div>
             <p class="agent-detail-description">
@@ -573,7 +717,7 @@ claude agent security-sentinel "Audit the payment flow"</code></pre>
               <li>Apply formatting rules (Oxford commas, em dashes)</li>
             </ul>
             <div class="card-code-block">
-              <pre><code>claude agent every-style-editor</code></pre>
+              <pre><code>claude agent js-every-style-editor</code></pre>
             </div>
           </div>
         </section>
@@ -585,9 +729,9 @@ claude agent security-sentinel "Audit the payment flow"</code></pre>
             repeat. They fix spacing, alignment, colors, typography—the visual details that compound into polish.
             Perfect for closing the gap between "it works" and "it looks right."</p>
 
-          <div class="agent-detail" id="design-iterator">
+          <div class="agent-detail" id="js-design-iterator">
             <div class="agent-detail-header">
-              <h3>design-iterator</h3>
+              <h3>js-design-iterator</h3>
               <span class="agent-badge">Design</span>
             </div>
             <p class="agent-detail-description">
@@ -604,13 +748,13 @@ claude agent security-sentinel "Audit the payment flow"</code></pre>
               <li>Repeat for specified iterations (default 10)</li>
             </ul>
             <div class="card-code-block">
-              <pre><code>claude agent design-iterator</code></pre>
+              <pre><code>claude agent js-design-iterator</code></pre>
             </div>
           </div>
 
-          <div class="agent-detail" id="figma-design-sync">
+          <div class="agent-detail" id="js-figma-design-sync">
             <div class="agent-detail-header">
-              <h3>figma-design-sync</h3>
+              <h3>js-figma-design-sync</h3>
               <span class="agent-badge">Figma</span>
             </div>
             <p class="agent-detail-description">
@@ -627,13 +771,13 @@ claude agent security-sentinel "Audit the payment flow"</code></pre>
               <li>Verify implementation matches design</li>
             </ul>
             <div class="card-code-block">
-              <pre><code>claude agent figma-design-sync</code></pre>
+              <pre><code>claude agent js-figma-design-sync</code></pre>
             </div>
           </div>
 
-          <div class="agent-detail" id="design-implementation-reviewer">
+          <div class="agent-detail" id="js-design-implementation-reviewer">
             <div class="agent-detail-header">
-              <h3>design-implementation-reviewer</h3>
+              <h3>js-design-implementation-reviewer</h3>
               <span class="agent-badge">Review</span>
             </div>
             <p class="agent-detail-description">
@@ -650,7 +794,7 @@ claude agent security-sentinel "Audit the payment flow"</code></pre>
               <li>Different viewport sizes</li>
             </ul>
             <div class="card-code-block">
-              <pre><code>claude agent design-implementation-reviewer</code></pre>
+              <pre><code>claude agent js-design-implementation-reviewer</code></pre>
             </div>
           </div>
         </section>
@@ -659,9 +803,9 @@ claude agent security-sentinel "Audit the payment flow"</code></pre>
         <section id="docs-agents">
           <h2><i class="fa-solid fa-file-lines"></i> Documentation Agent (1)</h2>
 
-          <div class="agent-detail" id="sorhus-readme-writer">
+          <div class="agent-detail" id="js-sorhus-readme-writer">
             <div class="agent-detail-header">
-              <h3>sorhus-readme-writer</h3>
+              <h3>js-sorhus-readme-writer</h3>
               <span class="agent-badge">Docs</span>
             </div>
             <p class="agent-detail-description">
@@ -689,7 +833,7 @@ claude agent security-sentinel "Audit the payment flow"</code></pre>
               <li>No HTML comments</li>
             </ul>
             <div class="card-code-block">
-              <pre><code>claude agent sorhus-readme-writer</code></pre>
+              <pre><code>claude agent js-sorhus-readme-writer</code></pre>
             </div>
           </div>
         </section>

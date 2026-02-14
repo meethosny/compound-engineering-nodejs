@@ -4,7 +4,7 @@
 <head>
   <meta charset="utf-8" />
   <title>Command Reference - Compounding Engineering</title>
-  <meta content="Complete reference for all 16 slash commands in the Compounding Engineering plugin." name="description" />
+  <meta content="Complete reference for all 25 slash commands in the Compounding Engineering plugin." name="description" />
   <meta content="width=device-width, initial-scale=1" name="viewport" />
 
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
@@ -33,10 +33,10 @@
         <div class="nav-section">
           <h3>Reference</h3>
           <ul>
-            <li><a href="agents.html">Agents (27)</a></li>
-            <li><a href="commands.html" class="active">Commands (19)</a></li>
-            <li><a href="skills.html">Skills (12)</a></li>
-            <li><a href="mcp-servers.html">MCP Servers (two)</a></li>
+            <li><a href="agents.html">Agents (29)</a></li>
+            <li><a href="commands.html" class="active">Commands (25)</a></li>
+            <li><a href="skills.html">Skills (19)</a></li>
+            <li><a href="mcp-servers.html">MCP Servers (1)</a></li>
           </ul>
         </div>
         <div class="nav-section">
@@ -48,8 +48,8 @@
         <div class="nav-section">
           <h3>On This Page</h3>
           <ul>
-            <li><a href="#workflow-commands">Workflow (four)</a></li>
-            <li><a href="#utility-commands">Utility (12)</a></li>
+            <li><a href="#workflow-commands">Workflow Commands (5)</a></li>
+            <li><a href="#utility-commands">Utility Commands (20)</a></li>
           </ul>
         </div>
       </nav>
@@ -72,20 +72,84 @@
       <article class="docs-article">
         <h1><i class="fa-solid fa-terminal color-accent"></i> Command Reference</h1>
         <p class="lead">
-          Here's the thing about slash commands: they're workflows you'd spend 20 minutes doing manually, compressed into one line. Type <code>/plan</code> and watch three agents launch in parallel to research your codebase while you grab coffee. That's the point—automation that actually saves time, not busywork dressed up as productivity.
+          Here's the thing about slash commands: they're workflows you'd spend 20 minutes doing manually, compressed into one line. Type <code>/js-workflows:plan</code> and watch three agents launch in parallel to research your codebase while you grab coffee. That's the point -- automation that actually saves time, not busywork dressed up as productivity.
         </p>
+
+        <div class="usage-box">
+          <h3>How to Use Commands</h3>
+          <div class="card-code-block">
+            <pre><code>/js-workflows:plan "Add user authentication"
+/js-workflows:review 123
+/js-lfg "Build the payment page"</code></pre>
+          </div>
+        </div>
 
         <!-- Workflow Commands -->
         <section id="workflow-commands">
-          <h2><i class="fa-solid fa-arrows-spin"></i> Workflow Commands (four)</h2>
-          <p>These are the big four: Plan your feature, Review your code, Work through the implementation, and Codify what you learned. Every professional developer does this cycle—these commands just make you faster at it.</p>
+          <h2><i class="fa-solid fa-arrows-spin"></i> Workflow Commands (5)</h2>
+          <p>The core workflow cycle: Brainstorm your idea, Plan your feature, Work through the implementation, Review your code, and Compound what you learned. Every professional developer does this cycle -- these commands just make you faster at it.</p>
+
+          <div class="command-detail" id="workflows-brainstorm">
+            <div class="command-detail-header">
+              <code class="command-detail-name">/js-workflows:brainstorm</code>
+            </div>
+            <p class="command-detail-description">
+              Explore requirements and approaches through collaborative dialogue before planning. When you have a vague idea and need to flesh it out, this command helps you think through the problem space before committing to a plan.
+            </p>
+            <h4>Arguments</h4>
+            <p><code>[idea, requirement, or problem to explore]</code></p>
+            <h4>Workflow</h4>
+            <ol>
+              <li><strong>Explore Problem Space</strong> - Collaborative dialogue to understand scope and constraints</li>
+              <li><strong>Identify Approaches</strong> - Surface multiple implementation strategies</li>
+              <li><strong>Evaluate Tradeoffs</strong> - Weigh pros and cons of each approach</li>
+              <li><strong>Converge</strong> - Narrow down to the most promising direction</li>
+            </ol>
+            <div class="card-code-block">
+              <pre><code>/js-workflows:brainstorm "How should we handle real-time notifications?"
+/js-workflows:brainstorm "Migrate from REST to GraphQL"</code></pre>
+            </div>
+          </div>
+
+          <div class="command-detail" id="workflows-compound">
+            <div class="command-detail-header">
+              <code class="command-detail-name">/js-workflows:compound</code>
+            </div>
+            <p class="command-detail-description">
+              Just fixed a gnarly bug? This captures the solution before you forget it. Seven agents analyze what you did, why it worked, and how to prevent it next time. Each documented solution compounds your team's knowledge.
+            </p>
+            <h4>Arguments</h4>
+            <p><code>[optional: brief context about the fix]</code></p>
+            <h4>Workflow</h4>
+            <ol>
+              <li><strong>Preconditions</strong> - Verify problem is solved and verified working</li>
+              <li><strong>Launch seven parallel subagents</strong>:
+                <ul>
+                  <li>Context Analyzer - Extract YAML frontmatter skeleton</li>
+                  <li>Solution Extractor - Identify root cause and solution</li>
+                  <li>Related Docs Finder - Find cross-references</li>
+                  <li>Prevention Strategist - Develop prevention strategies</li>
+                  <li>Category Classifier - Determine docs category</li>
+                  <li>Documentation Writer - Create the file</li>
+                  <li>Optional Specialized Agent - Based on problem type</li>
+                </ul>
+              </li>
+              <li><strong>Create Documentation</strong> - File in <code>docs/solutions/[category]/</code></li>
+            </ol>
+            <h4>Auto-Triggers</h4>
+            <p>Phrases: "that worked", "it's fixed", "working now", "problem solved"</p>
+            <div class="card-code-block">
+              <pre><code>/js-workflows:compound
+/js-workflows:compound N+1 query optimization</code></pre>
+            </div>
+          </div>
 
           <div class="command-detail" id="workflows-plan">
             <div class="command-detail-header">
-              <code class="command-detail-name">/plan</code>
+              <code class="command-detail-name">/js-workflows:plan</code>
             </div>
             <p class="command-detail-description">
-              You've got a feature request and a blank page. This command turns "we need OAuth" into a structured plan that actually tells you what to build—researched, reviewed, and ready to execute.
+              You've got a feature request and a blank page. This command turns "we need OAuth" into a structured plan that actually tells you what to build -- researched, reviewed, and ready to execute.
             </p>
             <h4>Arguments</h4>
             <p><code>[feature description, bug report, or improvement idea]</code></p>
@@ -93,12 +157,12 @@
             <ol>
               <li><strong>Repository Research (Parallel)</strong> - Launch three agents simultaneously:
                 <ul>
-                  <li><code>repo-research-analyst</code> - Project patterns</li>
-                  <li><code>best-practices-researcher</code> - Industry standards</li>
-                  <li><code>framework-docs-researcher</code> - Framework documentation</li>
+                  <li><code>js-repo-research-analyst</code> - Project patterns</li>
+                  <li><code>js-best-practices-researcher</code> - Industry standards</li>
+                  <li><code>js-framework-docs-researcher</code> - Framework documentation</li>
                 </ul>
               </li>
-              <li><strong>SpecFlow Analysis</strong> - Run <code>spec-flow-analyzer</code> for user flows</li>
+              <li><strong>SpecFlow Analysis</strong> - Run <code>js-spec-flow-analyzer</code> for user flows</li>
               <li><strong>Choose Detail Level</strong>:
                 <ul>
                   <li><strong>MINIMAL</strong> - Simple bugs/small improvements</li>
@@ -107,7 +171,7 @@
                 </ul>
               </li>
               <li><strong>Write Plan</strong> - Save as <code>plans/&lt;issue_title&gt;.md</code></li>
-              <li><strong>Review</strong> - Call <code>/plan_review</code> for multi-agent feedback</li>
+              <li><strong>Review</strong> - Call <code>/js-plan_review</code> for multi-agent feedback</li>
             </ol>
             <div class="callout callout-info">
               <div class="callout-icon"><i class="fa-solid fa-circle-info"></i></div>
@@ -116,17 +180,17 @@
               </div>
             </div>
             <div class="card-code-block">
-              <pre><code>/plan Add OAuth integration for third-party auth
-/plan Fix N+1 query in user dashboard</code></pre>
+              <pre><code>/js-workflows:plan Add OAuth integration for third-party auth
+/js-workflows:plan Fix N+1 query in user dashboard</code></pre>
             </div>
           </div>
 
           <div class="command-detail" id="workflows-review">
             <div class="command-detail-header">
-              <code class="command-detail-name">/review</code>
+              <code class="command-detail-name">/js-workflows:review</code>
             </div>
             <p class="command-detail-description">
-              Twelve specialized reviewers examine your PR in parallel—security, performance, architecture, patterns. It's like code review by committee, except the committee finishes in two minutes instead of two days.
+              Twelve specialized reviewers examine your PR in parallel -- security, performance, architecture, patterns. It's like code review by committee, except the committee finishes in two minutes instead of two days.
             </p>
             <h4>Arguments</h4>
             <p><code>[PR number, GitHub URL, branch name, or "latest"]</code></p>
@@ -135,15 +199,15 @@
               <li><strong>Setup</strong> - Detect review target, optionally use git-worktree for isolation</li>
               <li><strong>Launch 12 Parallel Review Agents</strong>:
                 <ul>
-                  <li><code>modern-nodejs-reviewer</code>, <code>kieran-nodejs-reviewer</code></li>
-                  <li><code>security-sentinel</code>, <code>performance-oracle</code></li>
-                  <li><code>architecture-strategist</code>, <code>data-integrity-guardian</code></li>
-                  <li><code>pattern-recognition-specialist</code>, <code>git-history-analyzer</code></li>
+                  <li><code>js-modern-nodejs-reviewer</code>, <code>js-kieran-nodejs-reviewer</code></li>
+                  <li><code>js-security-sentinel</code>, <code>js-performance-oracle</code></li>
+                  <li><code>js-architecture-strategist</code>, <code>js-data-integrity-guardian</code></li>
+                  <li><code>js-pattern-recognition-specialist</code>, <code>js-git-history-analyzer</code></li>
                   <li>And more...</li>
                 </ul>
               </li>
               <li><strong>Ultra-Thinking Analysis</strong> - Stakeholder perspectives, scenario exploration</li>
-              <li><strong>Simplification Review</strong> - Run <code>code-simplicity-reviewer</code></li>
+              <li><strong>Simplification Review</strong> - Run <code>js-code-simplicity-reviewer</code></li>
               <li><strong>Synthesize Findings</strong> - Categorize by severity (P1/P2/P3)</li>
               <li><strong>Create Todo Files</strong> - Using file-todos skill for all findings</li>
             </ol>
@@ -154,19 +218,19 @@
               </div>
             </div>
             <div class="card-code-block">
-              <pre><code>/review 42
-/review https://github.com/owner/repo/pull/42
-/review feature-branch-name
-/review latest</code></pre>
+              <pre><code>/js-workflows:review 42
+/js-workflows:review https://github.com/owner/repo/pull/42
+/js-workflows:review feature-branch-name
+/js-workflows:review latest</code></pre>
             </div>
           </div>
 
           <div class="command-detail" id="workflows-work">
             <div class="command-detail-header">
-              <code class="command-detail-name">/work</code>
+              <code class="command-detail-name">/js-workflows:work</code>
             </div>
             <p class="command-detail-description">
-              Point this at a plan file and watch it execute—reading requirements, setting up environment, running tests, creating commits, opening PRs. It's the "just build the thing" button you wish you always had.
+              Point this at a plan file and watch it execute -- reading requirements, setting up environment, running tests, creating commits, opening PRs. It's the "just build the thing" button you wish you always had.
             </p>
             <h4>Arguments</h4>
             <p><code>[plan file, specification, or todo file path]</code></p>
@@ -203,53 +267,35 @@
               </li>
             </ol>
             <div class="card-code-block">
-              <pre><code>/work plans/user-authentication.md
-/work todos/042-ready-p1-performance-issue.md</code></pre>
-            </div>
-          </div>
-
-          <div class="command-detail" id="workflows-compound">
-            <div class="command-detail-header">
-              <code class="command-detail-name">/compound</code>
-            </div>
-            <p class="command-detail-description">
-              Just fixed a gnarly bug? This captures the solution before you forget it. Seven agents analyze what you did, why it worked, and how to prevent it next time. Each documented solution compounds your team's knowledge.
-            </p>
-            <h4>Arguments</h4>
-            <p><code>[optional: brief context about the fix]</code></p>
-            <h4>Workflow</h4>
-            <ol>
-              <li><strong>Preconditions</strong> - Verify problem is solved and verified working</li>
-              <li><strong>Launch seven parallel subagents</strong>:
-                <ul>
-                  <li>Context Analyzer - Extract YAML frontmatter skeleton</li>
-                  <li>Solution Extractor - Identify root cause and solution</li>
-                  <li>Related Docs Finder - Find cross-references</li>
-                  <li>Prevention Strategist - Develop prevention strategies</li>
-                  <li>Category Classifier - Determine docs category</li>
-                  <li>Documentation Writer - Create the file</li>
-                  <li>Optional Specialized Agent - Based on problem type</li>
-                </ul>
-              </li>
-              <li><strong>Create Documentation</strong> - File in <code>docs/solutions/[category]/</code></li>
-            </ol>
-            <h4>Auto-Triggers</h4>
-            <p>Phrases: "that worked", "it's fixed", "working now", "problem solved"</p>
-            <div class="card-code-block">
-              <pre><code>/compound
-/compound N+1 query optimization</code></pre>
+              <pre><code>/js-workflows:work plans/user-authentication.md
+/js-workflows:work todos/042-ready-p1-performance-issue.md</code></pre>
             </div>
           </div>
         </section>
 
         <!-- Utility Commands -->
         <section id="utility-commands">
-          <h2><i class="fa-solid fa-wrench"></i> Utility Commands (12)</h2>
-          <p>The supporting cast—commands that do one specific thing really well. Generate changelogs, resolve todos in parallel, triage findings, create new commands. The utilities you reach for daily.</p>
+          <h2><i class="fa-solid fa-wrench"></i> Utility Commands (20)</h2>
+          <p>The supporting cast -- commands that do one specific thing really well. Generate changelogs, resolve todos in parallel, triage findings, create new commands. The utilities you reach for daily.</p>
+
+          <div class="command-detail" id="agent-native-audit">
+            <div class="command-detail-header">
+              <code class="command-detail-name">/js-agent-native-audit</code>
+            </div>
+            <p class="command-detail-description">
+              Run a comprehensive agent-native architecture review with scored principles. Evaluates your codebase against agent-native design patterns and gives you a quantified scorecard of how well your architecture supports AI-assisted development.
+            </p>
+            <h4>Arguments</h4>
+            <p><code>[optional: specific area or module to audit]</code></p>
+            <div class="card-code-block">
+              <pre><code>/js-agent-native-audit
+/js-agent-native-audit src/api/</code></pre>
+            </div>
+          </div>
 
           <div class="command-detail" id="changelog">
             <div class="command-detail-header">
-              <code class="command-detail-name">/changelog</code>
+              <code class="command-detail-name">/js-changelog</code>
             </div>
             <p class="command-detail-description">
               Turn your git history into a changelog people actually want to read. Breaking changes at the top, fun facts at the bottom, everything organized by what matters to your users.
@@ -266,48 +312,93 @@
               <li>Fun Fact</li>
             </ul>
             <div class="card-code-block">
-              <pre><code>/changelog daily
-/changelog weekly
-/changelog 7</code></pre>
+              <pre><code>/js-changelog daily
+/js-changelog weekly
+/js-changelog 7</code></pre>
             </div>
           </div>
 
           <div class="command-detail" id="create-agent-skill">
             <div class="command-detail-header">
-              <code class="command-detail-name">/create-agent-skill</code>
+              <code class="command-detail-name">/js-create-agent-skill</code>
             </div>
             <p class="command-detail-description">
-              Need a new skill? This walks you through creating one that actually works—proper frontmatter, clear documentation, all the conventions baked in. Think of it as scaffolding for skills.
+              Need a new skill? This walks you through creating one that actually works -- proper frontmatter, clear documentation, all the conventions baked in. Think of it as scaffolding for skills.
             </p>
             <h4>Arguments</h4>
             <p><code>[skill description or requirements]</code></p>
             <div class="card-code-block">
-              <pre><code>/create-agent-skill PDF processing for document analysis
-/create-agent-skill Web scraping with error handling</code></pre>
+              <pre><code>/js-create-agent-skill PDF processing for document analysis
+/js-create-agent-skill Web scraping with error handling</code></pre>
+            </div>
+          </div>
+
+          <div class="command-detail" id="deepen-plan">
+            <div class="command-detail-header">
+              <code class="command-detail-name">/js-deepen-plan</code>
+            </div>
+            <p class="command-detail-description">
+              Enhance an existing plan with parallel research agents for depth and best practices. When a plan is good but needs more substance -- deeper technical research, edge case analysis, and implementation specifics.
+            </p>
+            <h4>Arguments</h4>
+            <p><code>[plan file path]</code></p>
+            <div class="card-code-block">
+              <pre><code>/js-deepen-plan plans/user-authentication.md
+/js-deepen-plan plans/api-redesign.md</code></pre>
+            </div>
+          </div>
+
+          <div class="command-detail" id="deploy-docs">
+            <div class="command-detail-header">
+              <code class="command-detail-name">/js-deploy-docs</code>
+            </div>
+            <p class="command-detail-description">
+              Validate and prepare documentation for GitHub Pages deployment. Checks that all links work, HTML is valid, and everything is ready to go live.
+            </p>
+            <h4>Arguments</h4>
+            <p><code>[optional: docs directory path]</code></p>
+            <div class="card-code-block">
+              <pre><code>/js-deploy-docs
+/js-deploy-docs docs/</code></pre>
+            </div>
+          </div>
+
+          <div class="command-detail" id="feature-video">
+            <div class="command-detail-header">
+              <code class="command-detail-name">/js-feature-video</code>
+            </div>
+            <p class="command-detail-description">
+              Record a video walkthrough of a feature and add it to the PR description. Great for showing reviewers exactly what changed in the UI without them needing to pull the branch.
+            </p>
+            <h4>Arguments</h4>
+            <p><code>[feature or PR to record]</code></p>
+            <div class="card-code-block">
+              <pre><code>/js-feature-video "New settings panel"
+/js-feature-video 42</code></pre>
             </div>
           </div>
 
           <div class="command-detail" id="generate-command">
             <div class="command-detail-header">
-              <code class="command-detail-name">/generate_command</code>
+              <code class="command-detail-name">/js-generate_command</code>
             </div>
             <p class="command-detail-description">
-              Same idea, but for commands instead of skills. Tell it what workflow you're tired of doing manually, and it generates a proper slash command with all the right patterns.
+              Tell it what workflow you're tired of doing manually, and it generates a proper slash command with all the right patterns. Same idea as create-agent-skill, but for commands instead of skills.
             </p>
             <h4>Arguments</h4>
             <p><code>[command purpose and requirements]</code></p>
             <div class="card-code-block">
-              <pre><code>/generate_command Security audit for codebase
-/generate_command Automated performance testing</code></pre>
+              <pre><code>/js-generate_command Security audit for codebase
+/js-generate_command Automated performance testing</code></pre>
             </div>
           </div>
 
           <div class="command-detail" id="heal-skill">
             <div class="command-detail-header">
-              <code class="command-detail-name">/heal-skill</code>
+              <code class="command-detail-name">/js-heal-skill</code>
             </div>
             <p class="command-detail-description">
-              Skills drift—APIs change, URLs break, parameters get renamed. When a skill stops working, this figures out what's wrong and fixes the documentation. You approve the changes before anything commits.
+              Skills drift -- APIs change, URLs break, parameters get renamed. When a skill stops working, this figures out what's wrong and fixes the documentation. You approve the changes before anything commits.
             </p>
             <h4>Arguments</h4>
             <p><code>[optional: specific issue to fix]</code></p>
@@ -319,37 +410,73 @@
               <li>Cancel</li>
             </ol>
             <div class="card-code-block">
-              <pre><code>/heal-skill API endpoint URL changed
-/heal-skill parameter validation error</code></pre>
+              <pre><code>/js-heal-skill API endpoint URL changed
+/js-heal-skill parameter validation error</code></pre>
+            </div>
+          </div>
+
+          <div class="command-detail" id="lfg">
+            <div class="command-detail-header">
+              <code class="command-detail-name">/js-lfg</code>
+            </div>
+            <p class="command-detail-description">
+              The full autonomous engineering workflow in a single command: plan, deepen, work, review. Hand it a feature description and walk away. It plans, researches, implements, tests, and opens a PR -- all without intervention.
+            </p>
+            <h4>Arguments</h4>
+            <p><code>[feature description or task]</code></p>
+            <h4>Workflow</h4>
+            <ol>
+              <li><strong>Plan</strong> - Create a structured implementation plan</li>
+              <li><strong>Deepen</strong> - Research best practices and edge cases</li>
+              <li><strong>Work</strong> - Execute the plan with tests and commits</li>
+              <li><strong>Review</strong> - Multi-agent code review before PR</li>
+            </ol>
+            <div class="card-code-block">
+              <pre><code>/js-lfg "Build the payment page"
+/js-lfg "Add rate limiting to the API"</code></pre>
             </div>
           </div>
 
           <div class="command-detail" id="plan-review">
             <div class="command-detail-header">
-              <code class="command-detail-name">/plan_review</code>
+              <code class="command-detail-name">/js-plan_review</code>
             </div>
             <p class="command-detail-description">
-              Before you execute a plan, have three reviewers tear it apart—Node.js conventions, best practices, simplicity. Better to find the problems in the plan than in production.
+              Before you execute a plan, have three reviewers tear it apart -- Node.js conventions, best practices, simplicity. Better to find the problems in the plan than in production.
             </p>
             <h4>Arguments</h4>
             <p><code>[plan file path or plan content]</code></p>
             <h4>Review Agents</h4>
             <ul>
-              <li><code>kieran-nodejs-reviewer</code> - Node.js conventions</li>
-              <li><code>modern-nodejs-reviewer</code> - Node.js best practices</li>
-              <li><code>code-simplicity-reviewer</code> - Simplicity and clarity</li>
+              <li><code>js-kieran-nodejs-reviewer</code> - Node.js conventions</li>
+              <li><code>js-modern-nodejs-reviewer</code> - Node.js best practices</li>
+              <li><code>js-code-simplicity-reviewer</code> - Simplicity and clarity</li>
             </ul>
             <div class="card-code-block">
-              <pre><code>/plan_review plans/user-authentication.md</code></pre>
+              <pre><code>/js-plan_review plans/user-authentication.md</code></pre>
+            </div>
+          </div>
+
+          <div class="command-detail" id="release-docs">
+            <div class="command-detail-header">
+              <code class="command-detail-name">/js-release-docs</code>
+            </div>
+            <p class="command-detail-description">
+              Build and update the documentation site with current plugin components. Counts all agents, commands, skills, and MCP servers, regenerates reference pages, updates stats, and validates everything matches.
+            </p>
+            <h4>Arguments</h4>
+            <p><code>[none]</code></p>
+            <div class="card-code-block">
+              <pre><code>/js-release-docs</code></pre>
             </div>
           </div>
 
           <div class="command-detail" id="report-bug">
             <div class="command-detail-header">
-              <code class="command-detail-name">/report-bug</code>
+              <code class="command-detail-name">/js-report-bug</code>
             </div>
             <p class="command-detail-description">
-              Something broken? This collects all the context—what broke, what you expected, error messages, environment—and files a proper bug report. No more "it doesn't work" issues.
+              Something broken? This collects all the context -- what broke, what you expected, error messages, environment -- and files a proper bug report. No more "it doesn't work" issues.
             </p>
             <h4>Arguments</h4>
             <p><code>[optional: brief description of the bug]</code></p>
@@ -363,17 +490,17 @@
               <li>Environment info (auto-gathered)</li>
             </ul>
             <div class="card-code-block">
-              <pre><code>/report-bug Agent not working
-/report-bug Command failing with timeout</code></pre>
+              <pre><code>/js-report-bug Agent not working
+/js-report-bug Command failing with timeout</code></pre>
             </div>
           </div>
 
           <div class="command-detail" id="reproduce-bug">
             <div class="command-detail-header">
-              <code class="command-detail-name">/reproduce-bug</code>
+              <code class="command-detail-name">/js-reproduce-bug</code>
             </div>
             <p class="command-detail-description">
-              Give it a GitHub issue number and it tries to actually reproduce the bug—reading the issue, analyzing code paths, iterating until it finds the root cause. Then it posts findings back to the issue.
+              Give it a GitHub issue number and it tries to actually reproduce the bug -- reading the issue, analyzing code paths, iterating until it finds the root cause. Then it posts findings back to the issue.
             </p>
             <h4>Arguments</h4>
             <p><code>[GitHub issue number]</code></p>
@@ -386,16 +513,122 @@
               <li>Post findings to GitHub issue</li>
             </ol>
             <div class="card-code-block">
-              <pre><code>/reproduce-bug 142</code></pre>
+              <pre><code>/js-reproduce-bug 142</code></pre>
+            </div>
+          </div>
+
+          <div class="command-detail" id="resolve-parallel">
+            <div class="command-detail-header">
+              <code class="command-detail-name">/js-resolve_parallel</code>
+            </div>
+            <p class="command-detail-description">
+              All those TODO comments scattered through your codebase? This finds them, builds a dependency graph, and spawns parallel agents to resolve them all at once. Clears the backlog in minutes.
+            </p>
+            <h4>Arguments</h4>
+            <p><code>[optional: specific TODO pattern or file]</code></p>
+            <h4>Process</h4>
+            <ol>
+              <li>Analyze TODO comments from codebase</li>
+              <li>Create dependency graph (mermaid diagram)</li>
+              <li>Spawn parallel <code>js-pr-comment-resolver</code> agents</li>
+              <li>Commit and push after completion</li>
+            </ol>
+            <div class="card-code-block">
+              <pre><code>/js-resolve_parallel
+/js-resolve_parallel authentication
+/js-resolve_parallel src/auth/</code></pre>
+            </div>
+          </div>
+
+          <div class="command-detail" id="resolve-pr-parallel">
+            <div class="command-detail-header">
+              <code class="command-detail-name">/js-resolve_pr_parallel</code>
+            </div>
+            <p class="command-detail-description">
+              Same deal, but for PR review comments. Fetch unresolved threads, spawn parallel resolver agents, commit the fixes, and mark threads as resolved. Your reviewers will wonder how you're so fast.
+            </p>
+            <h4>Arguments</h4>
+            <p><code>[optional: PR number or current PR]</code></p>
+            <h4>Process</h4>
+            <ol>
+              <li>Get all unresolved PR comments</li>
+              <li>Create TodoWrite list</li>
+              <li>Launch parallel <code>js-pr-comment-resolver</code> agents</li>
+              <li>Commit, resolve threads, and push</li>
+            </ol>
+            <div class="card-code-block">
+              <pre><code>/js-resolve_pr_parallel
+/js-resolve_pr_parallel 123</code></pre>
+            </div>
+          </div>
+
+          <div class="command-detail" id="resolve-todo-parallel">
+            <div class="command-detail-header">
+              <code class="command-detail-name">/js-resolve_todo_parallel</code>
+            </div>
+            <p class="command-detail-description">
+              Those todo files in your <code>/todos</code> directory? Point this at them and watch parallel agents knock them out -- analyzing dependencies, executing in the right order, marking resolved as they finish.
+            </p>
+            <h4>Arguments</h4>
+            <p><code>[optional: specific todo ID or pattern]</code></p>
+            <h4>Process</h4>
+            <ol>
+              <li>Get unresolved TODOs from <code>/todos/*.md</code></li>
+              <li>Analyze dependencies</li>
+              <li>Spawn parallel agents</li>
+              <li>Commit, mark as resolved, push</li>
+            </ol>
+            <div class="card-code-block">
+              <pre><code>/js-resolve_todo_parallel
+/js-resolve_todo_parallel 042
+/js-resolve_todo_parallel p1</code></pre>
+            </div>
+          </div>
+
+          <div class="command-detail" id="slfg">
+            <div class="command-detail-header">
+              <code class="command-detail-name">/js-slfg</code>
+            </div>
+            <p class="command-detail-description">
+              The full autonomous engineering workflow using swarm mode for parallel execution. Like <code>/js-lfg</code> but orchestrates multiple agents simultaneously for even faster delivery on larger features.
+            </p>
+            <h4>Arguments</h4>
+            <p><code>[feature description or task]</code></p>
+            <h4>Workflow</h4>
+            <ol>
+              <li><strong>Plan</strong> - Create a structured implementation plan</li>
+              <li><strong>Deepen</strong> - Parallel research with swarm agents</li>
+              <li><strong>Work</strong> - Execute tasks in parallel across swarm</li>
+              <li><strong>Review</strong> - Multi-agent code review before PR</li>
+            </ol>
+            <div class="card-code-block">
+              <pre><code>/js-slfg "Build the admin dashboard"
+/js-slfg "Refactor database layer to use connection pooling"</code></pre>
+            </div>
+          </div>
+
+          <div class="command-detail" id="test-browser">
+            <div class="command-detail-header">
+              <code class="command-detail-name">/js-test-browser</code>
+            </div>
+            <p class="command-detail-description">
+              Run browser tests on pages affected by your current PR or branch. Detects which pages changed, launches the appropriate browser tests, and reports results -- so you know your UI changes work before merging.
+            </p>
+            <h4>Arguments</h4>
+            <p><code>[optional: specific page or test pattern]</code></p>
+            <div class="card-code-block">
+              <pre><code>/js-test-browser
+/js-test-browser settings-page
+/js-test-browser src/pages/checkout</code></pre>
             </div>
           </div>
 
           <div class="command-detail" id="triage">
             <div class="command-detail-header">
-              <code class="command-detail-name">/triage</code>
+              <code class="command-detail-name">/js-triage</code>
             </div>
             <p class="command-detail-description">
-              Got a pile of code review findings or security audit results? This turns them into actionable todos—one at a time, you decide: create the todo, skip it, or modify and re-present.
+              Got a pile of code review findings or security audit results? This turns them into actionable todos -- one at a time, you decide: create the todo, skip it, or modify and re-present.
             </p>
             <h4>Arguments</h4>
             <p><code>[findings list or source type]</code></p>
@@ -412,88 +645,23 @@
               </div>
             </div>
             <div class="card-code-block">
-              <pre><code>/triage code-review-findings.txt
-/triage security-audit-results</code></pre>
+              <pre><code>/js-triage code-review-findings.txt
+/js-triage security-audit-results</code></pre>
             </div>
           </div>
 
-          <div class="command-detail" id="resolve-parallel">
+          <div class="command-detail" id="xcode-test">
             <div class="command-detail-header">
-              <code class="command-detail-name">/resolve_parallel</code>
+              <code class="command-detail-name">/js-xcode-test</code>
             </div>
             <p class="command-detail-description">
-              All those TODO comments scattered through your codebase? This finds them, builds a dependency graph, and spawns parallel agents to resolve them all at once. Clears the backlog in minutes.
+              Build and test iOS apps on simulator using XcodeBuildMCP. Handles the full Xcode build-test cycle so you can validate iOS changes without leaving your terminal.
             </p>
             <h4>Arguments</h4>
-            <p><code>[optional: specific TODO pattern or file]</code></p>
-            <h4>Process</h4>
-            <ol>
-              <li>Analyze TODO comments from codebase</li>
-              <li>Create dependency graph (mermaid diagram)</li>
-              <li>Spawn parallel <code>pr-comment-resolver</code> agents</li>
-              <li>Commit and push after completion</li>
-            </ol>
+            <p><code>[optional: scheme, device, or test target]</code></p>
             <div class="card-code-block">
-              <pre><code>/resolve_parallel
-/resolve_parallel authentication
-/resolve_parallel src/auth/</code></pre>
-            </div>
-          </div>
-
-          <div class="command-detail" id="resolve-pr-parallel">
-            <div class="command-detail-header">
-              <code class="command-detail-name">/resolve_pr_parallel</code>
-            </div>
-            <p class="command-detail-description">
-              Same deal, but for PR review comments. Fetch unresolved threads, spawn parallel resolver agents, commit the fixes, and mark threads as resolved. Your reviewers will wonder how you're so fast.
-            </p>
-            <h4>Arguments</h4>
-            <p><code>[optional: PR number or current PR]</code></p>
-            <h4>Process</h4>
-            <ol>
-              <li>Get all unresolved PR comments</li>
-              <li>Create TodoWrite list</li>
-              <li>Launch parallel <code>pr-comment-resolver</code> agents</li>
-              <li>Commit, resolve threads, and push</li>
-            </ol>
-            <div class="card-code-block">
-              <pre><code>/resolve_pr_parallel
-/resolve_pr_parallel 123</code></pre>
-            </div>
-          </div>
-
-          <div class="command-detail" id="resolve-todo-parallel">
-            <div class="command-detail-header">
-              <code class="command-detail-name">/resolve_todo_parallel</code>
-            </div>
-            <p class="command-detail-description">
-              Those todo files in your <code>/todos</code> directory? Point this at them and watch parallel agents knock them out—analyzing dependencies, executing in the right order, marking resolved as they finish.
-            </p>
-            <h4>Arguments</h4>
-            <p><code>[optional: specific todo ID or pattern]</code></p>
-            <h4>Process</h4>
-            <ol>
-              <li>Get unresolved TODOs from <code>/todos/*.md</code></li>
-              <li>Analyze dependencies</li>
-              <li>Spawn parallel agents</li>
-              <li>Commit, mark as resolved, push</li>
-            </ol>
-            <div class="card-code-block">
-              <pre><code>/resolve_todo_parallel
-/resolve_todo_parallel 042
-/resolve_todo_parallel p1</code></pre>
-            </div>
-          </div>
-
-          <div class="command-detail" id="prime">
-            <div class="command-detail-header">
-              <code class="command-detail-name">/prime</code>
-            </div>
-            <p class="command-detail-description">
-              Your project initialization command. What exactly it does depends on your project setup—think of it as the "get everything ready" button before you start coding.
-            </p>
-            <div class="card-code-block">
-              <pre><code>/prime</code></pre>
+              <pre><code>/js-xcode-test
+/js-xcode-test --scheme MyApp --device "iPhone 15"</code></pre>
             </div>
           </div>
         </section>

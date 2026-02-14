@@ -1,7 +1,7 @@
 {
   "name": "js-compound-engineering",
-  "version": "3.3.0",
-  "description": "AI-powered development tools. 29 agents, 25 commands, 16 skills, 1 MCP server for code review, research, design, and workflow automation.",
+  "version": "3.4.0",
+  "description": "AI-powered development tools. 29 agents, 25 commands, 19 skills, 1 MCP server for code review, research, design, and workflow automation.",
   "author": {
     "name": "Hosni Mohamed",
     "email": "hosni@meethosny.com",

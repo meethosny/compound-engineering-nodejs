@@ -4,7 +4,7 @@
 <head>
   <meta charset="utf-8" />
   <title>Skill Reference - Compounding Engineering</title>
-  <meta content="Complete reference for all 12 intelligent skills in the Compounding Engineering plugin." name="description" />
+  <meta content="Complete reference for all 19 intelligent skills in the Compounding Engineering plugin." name="description" />
   <meta content="width=device-width, initial-scale=1" name="viewport" />
 
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
@@ -33,10 +33,10 @@
         <div class="nav-section">
           <h3>Reference</h3>
           <ul>
-            <li><a href="agents.html">Agents (27)</a></li>
-            <li><a href="commands.html">Commands (19)</a></li>
-            <li><a href="skills.html" class="active">Skills (12)</a></li>
-            <li><a href="mcp-servers.html">MCP Servers (2)</a></li>
+            <li><a href="agents.html">Agents (29)</a></li>
+            <li><a href="commands.html">Commands (25)</a></li>
+            <li><a href="skills.html" class="active">Skills (19)</a></li>
+            <li><a href="mcp-servers.html">MCP Servers (1)</a></li>
           </ul>
         </div>
         <div class="nav-section">
@@ -48,8 +48,12 @@
         <div class="nav-section">
           <h3>On This Page</h3>
           <ul>
-            <li><a href="#development-tools">Development (8)</a></li>
-            <li><a href="#content-workflow">Content & Workflow (3)</a></li>
+            <li><a href="#architecture-design">Architecture & Design (2)</a></li>
+            <li><a href="#development-tools">Development Tools (7)</a></li>
+            <li><a href="#content-workflow">Content & Workflow (6)</a></li>
+            <li><a href="#multi-agent-orchestration">Multi-Agent Orchestration (1)</a></li>
+            <li><a href="#browser-automation">Browser Automation (1)</a></li>
+            <li><a href="#cloud-file-transfer">Cloud & File Transfer (1)</a></li>
             <li><a href="#image-generation">Image Generation (1)</a></li>
           </ul>
         </div>
@@ -80,12 +84,12 @@
           <h3>How to Use Skills</h3>
           <div class="card-code-block">
             <pre><code># In your prompt, reference the skill
-skill: [skill-name]
+skill: js-[skill-name]
 
 # Examples
-skill: gemini-imagegen
-skill: modern-nodejs-style
-skill: create-agent-skills</code></pre>
+skill: js-modern-nodejs-style
+skill: js-gemini-imagegen
+skill: js-create-agent-skills</code></pre>
           </div>
         </div>
 
@@ -94,32 +98,153 @@ skill: create-agent-skills</code></pre>
           <div class="callout-content">
             <h4>Skills vs Agents</h4>
             <p>
-              <strong>Agents</strong> are personas—they <em>do</em> things. <strong>Skills</strong> are knowledge—they teach Claude <em>how</em> to do things. Use <code>claude agent [name]</code> when you want someone to review your code. Use <code>skill: [name]</code> when you want to write code in a particular style yourself.
+              <strong>Agents</strong> are personas—they <em>do</em> things. <strong>Skills</strong> are knowledge—they teach Claude <em>how</em> to do things. Use <code>claude agent js-[name]</code> when you want someone to review your code. Use <code>skill: js-[name]</code> when you want to write code in a particular style yourself.
             </p>
           </div>
         </div>
+
+        <!-- Architecture & Design -->
+        <section id="architecture-design">
+          <h2><i class="fa-solid fa-compass-drafting"></i> Architecture & Design (2)</h2>
+          <p>High-level thinking skills. Use these before writing code—when you need to decide what to build, how to structure it, or whether to use a prompt-native approach instead of traditional code.</p>
+
+          <div class="skill-detail" id="js-agent-native-architecture">
+            <div class="skill-detail-header">
+              <h3>js-agent-native-architecture</h3>
+              <span class="skill-badge">Architecture</span>
+            </div>
+            <p class="skill-detail-description">
+              Build AI agents using prompt-native architecture where features are defined in prompts, not code. Instead of writing workflow functions for an agent to call, you define outcomes in natural language and give the agent primitive tools to figure out the how. This skill covers the full philosophy: features as prompts, tools as primitives, and optional self-modification.
+            </p>
+            <h4>Capabilities</h4>
+            <ul>
+              <li>Prompt-native architecture design and planning</li>
+              <li>MCP primitive tool design (read, write, store, call)</li>
+              <li>System prompt authoring for agent behavior</li>
+              <li>Self-modification with approval gates and rollback</li>
+              <li>Refactoring existing code to prompt-native patterns</li>
+            </ul>
+            <h4>Key Principle</h4>
+            <p>Whatever the user can do, the agent can do. Features are prompts that define outcomes. Tools provide capability, not behavior.</p>
+            <div class="card-code-block">
+              <pre><code>skill: js-agent-native-architecture</code></pre>
+            </div>
+          </div>
+
+          <div class="skill-detail" id="js-brainstorming">
+            <div class="skill-detail-header">
+              <h3>js-brainstorming</h3>
+              <span class="skill-badge">Planning</span>
+            </div>
+            <p class="skill-detail-description">
+              Guide for exploring user intent, approaches, and design decisions before planning. Use this before implementing features or making changes when requirements are unclear. It walks through four phases: assess clarity, understand the idea, explore approaches, and capture the design—all with a YAGNI mindset.
+            </p>
+            <h4>Four Phases</h4>
+            <ol>
+              <li><strong>Assess Clarity</strong> - Determine if brainstorming is even needed</li>
+              <li><strong>Understand the Idea</strong> - Ask questions one at a time to clarify intent</li>
+              <li><strong>Explore Approaches</strong> - Propose 2-3 concrete approaches with trade-offs</li>
+              <li><strong>Capture the Design</strong> - Summarize key decisions in a structured doc</li>
+            </ol>
+            <h4>Integration</h4>
+            <ul>
+              <li>Outputs to <code>docs/brainstorms/</code> directory</li>
+              <li>Hands off to <code>/js-workflows:plan</code> for implementation details</li>
+            </ul>
+            <div class="card-code-block">
+              <pre><code>skill: js-brainstorming</code></pre>
+            </div>
+          </div>
+        </section>
 
         <!-- Development Tools -->
         <section id="development-tools">
           <h2><i class="fa-solid fa-code"></i> Development Tools (7)</h2>
           <p>These skills teach Claude specific coding styles and architectural patterns. Use them when you want code that follows a particular philosophy—not just any working code, but code that looks like it was written by a specific person or framework.</p>
 
-          <div class="skill-detail" id="create-agent-skills">
+          <div class="skill-detail" id="js-sindre-sorhus-package-writer">
             <div class="skill-detail-header">
-              <h3>create-agent-skills</h3>
+              <h3>js-sindre-sorhus-package-writer</h3>
+              <span class="skill-badge">npm</span>
+            </div>
+            <p class="skill-detail-description">
+              Write npm packages following Sindre Sorhus's proven patterns from 1000+ packages with billions of downloads. Every package follows the same structure: ESM-first, zero runtime dependencies, TypeScript definitions always included, and clear README with examples. When you're building an npm package and want it to feel production-ready from day one, this is how you do it.
+            </p>
+            <h4>Philosophy</h4>
+            <ul>
+              <li>Do one thing well (single-purpose packages)</li>
+              <li>Zero or minimal dependencies</li>
+              <li>ES Modules first, always include .d.ts</li>
+              <li>Smart defaults, simple configuration</li>
+            </ul>
+            <h4>Key Patterns</h4>
+            <ul>
+              <li>Named exports over default exports</li>
+              <li>Input validation with fast-fail TypeError</li>
+              <li>Node.js built-in test runner (no frameworks)</li>
+              <li>CLI pattern with minimal argument parsing</li>
+              <li>Semantic versioning, strict semver</li>
+            </ul>
+            <h4>Reference Files</h4>
+            <ul>
+              <li><code>references/module-organization.md</code></li>
+              <li><code>references/testing-patterns.md</code></li>
+              <li><code>references/resources.md</code></li>
+            </ul>
+            <div class="card-code-block">
+              <pre><code>skill: js-sindre-sorhus-package-writer</code></pre>
+            </div>
+          </div>
+
+          <div class="skill-detail" id="js-compound-docs">
+            <div class="skill-detail-header">
+              <h3>js-compound-docs</h3>
+              <span class="skill-badge">Docs</span>
+            </div>
+            <p class="skill-detail-description">
+              You just fixed a weird build error after an hour of debugging. Tomorrow you'll forget how you fixed it. This skill automatically detects when you solve something (phrases like "that worked" or "it's fixed") and documents it with YAML frontmatter so you can find it again. Each documented solution compounds your team's knowledge.
+            </p>
+            <h4>Auto-Triggers</h4>
+            <p>Phrases: "that worked", "it's fixed", "working now", "problem solved"</p>
+            <h4>7-Step Process</h4>
+            <ol>
+              <li>Detect confirmation phrase</li>
+              <li>Gather context (module, symptom, investigation, root cause)</li>
+              <li>Check existing docs for similar issues</li>
+              <li>Generate filename</li>
+              <li>Validate YAML frontmatter</li>
+              <li>Create documentation in category directory</li>
+              <li>Cross-reference related issues</li>
+            </ol>
+            <h4>Categories</h4>
+            <ul>
+              <li><code>build-errors/</code></li>
+              <li><code>test-failures/</code></li>
+              <li><code>runtime-errors/</code></li>
+              <li><code>performance-issues/</code></li>
+              <li><code>database-issues/</code></li>
+              <li><code>security-issues/</code></li>
+            </ul>
+            <div class="card-code-block">
+              <pre><code>skill: js-compound-docs</code></pre>
+            </div>
+          </div>
+
+          <div class="skill-detail" id="js-create-agent-skills">
+            <div class="skill-detail-header">
+              <h3>js-create-agent-skills</h3>
               <span class="skill-badge">Meta</span>
             </div>
             <p class="skill-detail-description">
-              You're writing a skill right now, but you're not sure if you're structuring the SKILL.md file correctly. Should the examples go before the theory? How do you organize workflows vs. references? This skill is the answer—it's the master template for building skills themselves.
+              Expert guidance for creating, writing, building, and refining Claude Code Skills. Not sure if you're structuring the SKILL.md file correctly? Should the examples go before the theory? How do you organize workflows vs. references? This skill is the master template for building skills themselves.
             </p>
             <h4>Capabilities</h4>
             <ul>
               <li>Skill architecture and best practices</li>
               <li>Router pattern for complex multi-step skills</li>
               <li>Progressive disclosure design principles</li>
-              <li>SKILL.md structure guidance</li>
+              <li>SKILL.md structure guidance with pure XML</li>
               <li>Asset management (workflows, references, templates, scripts)</li>
-              <li>XML structure patterns</li>
             </ul>
             <h4>Workflows Included</h4>
             <ul>
@@ -132,102 +257,17 @@ skill: create-agent-skills</code></pre>
               <li><code>verify-skill</code> - Test skill functionality</li>
             </ul>
             <div class="card-code-block">
-              <pre><code>skill: create-agent-skills</code></pre>
+              <pre><code>skill: js-create-agent-skills</code></pre>
             </div>
           </div>
 
-          <div class="skill-detail" id="skill-creator">
+          <div class="skill-detail" id="js-dspy-python">
             <div class="skill-detail-header">
-              <h3>skill-creator</h3>
-              <span class="skill-badge">Meta</span>
-            </div>
-            <p class="skill-detail-description">
-              The simpler, step-by-step version of <code>create-agent-skills</code>. When you just want a checklist to follow from blank file to packaged skill, use this. It's less about theory, more about "do step 1, then step 2."
-            </p>
-            <h4>6-Step Process</h4>
-            <ol>
-              <li>Understand skill usage patterns with examples</li>
-              <li>Plan reusable skill contents</li>
-              <li>Initialize skill using template</li>
-              <li>Edit skill with clear instructions</li>
-              <li>Package skill into distributable zip</li>
-              <li>Iterate based on testing feedback</li>
-            </ol>
-            <div class="card-code-block">
-              <pre><code>skill: skill-creator</code></pre>
-            </div>
-          </div>
-
-          <div class="skill-detail" id="modern-nodejs-style">
-            <div class="skill-detail-header">
-              <h3>modern-nodejs-style</h3>
-              <span class="skill-badge">Node.js</span>
-            </div>
-            <p class="skill-detail-description">
-              You want Express routes that are simple and predictable. Middleware that does one thing well. This skill teaches Claude to write code the way TJ Holowaychuk writes it—minimalist, pragmatic, no architectural astronautics.
-            </p>
-            <h4>Key Patterns</h4>
-            <ul>
-              <li><strong>REST Purity</strong> - 7 REST actions only</li>
-              <li><strong>Fat Models</strong> - Business logic, authorization, broadcasting in models</li>
-              <li><strong>Thin Controllers</strong> - 1-5 line actions</li>
-              <li><strong>Current Attributes</strong> - Request context</li>
-              <li><strong>Async patterns</strong> - Event-driven architecture</li>
-            </ul>
-            <h4>JavaScript Syntax Preferences</h4>
-            <ul>
-              <li>Symbol arrays <code>%i[...]</code></li>
-              <li>Modern hash syntax</li>
-              <li>Ternaries for simple conditionals</li>
-              <li>Bang methods for mutations</li>
-            </ul>
-            <div class="card-code-block">
-              <pre><code>skill: modern-nodejs-style</code></pre>
-            </div>
-          </div>
-
-          <div class="skill-detail" id="sindre-sorhus-package-writer">
-            <div class="skill-detail-header">
-              <h3>sindre-sorhus-package-writer</h3>
-              <span class="skill-badge">npm</span>
-            </div>
-            <p class="skill-detail-description">
-              Sindre Sorhus has written 1000+ npm packages with billions of downloads. Every gem follows the same patterns: minimal dependencies, class macro DSLs, Framework-agnostic design. When you're building an npm package and want it to feel production-ready from day one, this is how you do it.
-            </p>
-            <h4>Philosophy</h4>
-            <ul>
-              <li>Simplicity over cleverness</li>
-              <li>Zero or minimal dependencies</li>
-              <li>Explicit code over metaprogramming</li>
-              <li>Framework-agnostic design</li>
-            </ul>
-            <h4>Key Patterns</h4>
-            <ul>
-              <li>Class macro DSL for configuration</li>
-              <li><code>ActiveSupport.on_load</code> for Framework integration</li>
-              <li><code>class << self</code> with <code>attr_accessor</code></li>
-              <li>Railtie pattern for hooks</li>
-              <li>Minitest (no RSpec)</li>
-            </ul>
-            <h4>Reference Files</h4>
-            <ul>
-              <li><code>references/module-organization.md</code></li>
-              <li><code>references/framework-integration.md</code></li>
-              <li><code>references/database-adapters.md</code></li>
-              <li><code>references/testing-patterns.md</code></li>
-            </ul>
-            <div class="card-code-block">
-              <pre><code>skill: sindre-sorhus-package-writer</code></pre>
-            </div>
-          </div>
-
-          <div class="skill-detail" id="dspy-python">
-            <div class="skill-detail-header">
-              <h3>dspy-python</h3>
+              <h3>js-dspy-python</h3>
               <span class="skill-badge">AI</span>
             </div>
             <p class="skill-detail-description">
-              You're adding AI features to your Node.js app, but you don't want brittle prompt strings scattered everywhere. Stanford's DSPy gives you type-safe signatures, composable predictors, and tool-using agents. This skill shows you how to use it—from basic inference to ReAct agents that iterate until they get the answer right.
+              Build type-safe, composable LLM applications with Stanford's DSPy Python framework. Instead of brittle prompt strings scattered everywhere, DSPy gives you type-safe signatures, composable predictors, and tool-using agents. This skill covers everything from basic inference to ReAct agents that iterate until they get the answer right.
             </p>
             <h4>Predictor Types</h4>
             <ul>
@@ -260,17 +300,17 @@ skill: create-agent-skills</code></pre>
               </tr>
             </table>
             <div class="card-code-block">
-              <pre><code>skill: dspy-python</code></pre>
+              <pre><code>skill: js-dspy-python</code></pre>
             </div>
           </div>
 
-          <div class="skill-detail" id="frontend-design">
+          <div class="skill-detail" id="js-frontend-design">
             <div class="skill-detail-header">
-              <h3>frontend-design</h3>
+              <h3>js-frontend-design</h3>
               <span class="skill-badge">Design</span>
             </div>
             <p class="skill-detail-description">
-              You've seen what AI usually generates: Inter font, purple gradients, rounded corners on everything. This skill teaches Claude to design interfaces that don't look like every other AI-generated site. It's about purposeful typography, unexpected color palettes, and interfaces with personality.
+              Create distinctive, production-grade frontend interfaces with high design quality. You've seen what AI usually generates: Inter font, purple gradients, rounded corners on everything. This skill teaches Claude to design interfaces that don't look like every other AI-generated site. It's about purposeful typography, unexpected color palettes, and interfaces with personality.
             </p>
             <h4>Design Thinking</h4>
             <ul>
@@ -294,57 +334,101 @@ skill: create-agent-skills</code></pre>
               </div>
             </div>
             <div class="card-code-block">
-              <pre><code>skill: frontend-design</code></pre>
+              <pre><code>skill: js-frontend-design</code></pre>
             </div>
           </div>
 
-          <div class="skill-detail" id="compound-docs">
+          <div class="skill-detail" id="js-modern-nodejs-style">
             <div class="skill-detail-header">
-              <h3>compound-docs</h3>
-              <span class="skill-badge">Docs</span>
+              <h3>js-modern-nodejs-style</h3>
+              <span class="skill-badge">Node.js</span>
             </div>
             <p class="skill-detail-description">
-              You just fixed a weird build error after an hour of debugging. Tomorrow you'll forget how you fixed it. This skill automatically detects when you solve something (phrases like "that worked" or "it's fixed") and documents it with YAML frontmatter so you can find it again. Each documented solution compounds your team's knowledge.
+              Write Node.js code following modern, pragmatic patterns inspired by TJ Holowaychuk (minimalism), Matteo Collina (performance), and Sindre Sorhus (package authoring). Express routes that are simple and predictable. Middleware that does one thing well. Async-first, MVP-focused, minimal dependencies.
             </p>
-            <h4>Auto-Triggers</h4>
-            <p>Phrases: "that worked", "it's fixed", "working now", "problem solved"</p>
-            <h4>7-Step Process</h4>
-            <ol>
-              <li>Detect confirmation phrase</li>
-              <li>Gather context (module, symptom, investigation, root cause)</li>
-              <li>Check existing docs for similar issues</li>
-              <li>Generate filename</li>
-              <li>Validate YAML frontmatter</li>
-              <li>Create documentation in category directory</li>
-              <li>Cross-reference related issues</li>
-            </ol>
-            <h4>Categories</h4>
+            <h4>Key Patterns</h4>
             <ul>
-              <li><code>build-errors/</code></li>
-              <li><code>test-failures/</code></li>
-              <li><code>runtime-errors/</code></li>
-              <li><code>performance-issues/</code></li>
-              <li><code>database-issues/</code></li>
-              <li><code>security-issues/</code></li>
+              <li><strong>Single-responsibility middleware</strong> - One middleware, one task</li>
+              <li><strong>Short route handlers</strong> - 5-15 lines, extract business logic to modules</li>
+              <li><strong>Factory functions</strong> - Named exports, explicit dependencies</li>
+              <li><strong>Centralized error handling</strong> - Custom error classes, single handler</li>
+              <li><strong>Async/await everywhere</strong> - No callbacks, Promise.all for parallel ops</li>
+            </ul>
+            <h4>Philosophy</h4>
+            <ul>
+              <li>Minimalism: small modules, minimal dependencies</li>
+              <li>Composability: build from interchangeable parts</li>
+              <li>Async-first: never block the event loop</li>
+              <li>Ship fast: MVP first, enhance based on feedback</li>
+              <li>Explicit over magic: clear code over clever code</li>
             </ul>
             <div class="card-code-block">
-              <pre><code>skill: compound-docs</code></pre>
+              <pre><code>skill: js-modern-nodejs-style</code></pre>
+            </div>
+          </div>
+
+          <div class="skill-detail" id="js-skill-creator">
+            <div class="skill-detail-header">
+              <h3>js-skill-creator</h3>
+              <span class="skill-badge">Meta</span>
+            </div>
+            <p class="skill-detail-description">
+              The simpler, step-by-step version of <code>js-create-agent-skills</code>. When you just want a checklist to follow from blank file to packaged skill, use this. It's less about theory, more about "do step 1, then step 2."
+            </p>
+            <h4>6-Step Process</h4>
+            <ol>
+              <li>Understand skill usage patterns with examples</li>
+              <li>Plan reusable skill contents</li>
+              <li>Initialize skill using template</li>
+              <li>Edit skill with clear instructions</li>
+              <li>Package skill into distributable zip</li>
+              <li>Iterate based on testing feedback</li>
+            </ol>
+            <div class="card-code-block">
+              <pre><code>skill: js-skill-creator</code></pre>
             </div>
           </div>
         </section>
 
         <!-- Content & Workflow -->
         <section id="content-workflow">
-          <h2><i class="fa-solid fa-pen-fancy"></i> Content & Workflow (3)</h2>
-          <p>Writing, editing, and organizing work. These skills handle everything from style guide compliance to git worktree management—the meta-work that makes the real work easier.</p>
+          <h2><i class="fa-solid fa-pen-fancy"></i> Content & Workflow (6)</h2>
+          <p>Writing, editing, reviewing, and organizing work. These skills handle everything from style guide compliance to git worktree management and PR comment resolution—the meta-work that makes the real work easier.</p>
 
-          <div class="skill-detail" id="every-style-editor">
+          <div class="skill-detail" id="js-document-review">
             <div class="skill-detail-header">
-              <h3>every-style-editor</h3>
+              <h3>js-document-review</h3>
+              <span class="skill-badge">Review</span>
+            </div>
+            <p class="skill-detail-description">
+              Structured self-review for brainstorm and plan documents. Assesses five dimensions—clarity, completeness, specificity, YAGNI compliance, and consistency—then auto-fixes minor issues (typos, formatting) and asks approval for substantive changes. Use as a quality gate before starting implementation.
+            </p>
+            <h4>Review Dimensions</h4>
+            <ul>
+              <li><strong>Clarity</strong> - Understandable without additional context</li>
+              <li><strong>Completeness</strong> - All necessary sections and edge cases</li>
+              <li><strong>Specificity</strong> - Measurable criteria, concrete details</li>
+              <li><strong>YAGNI</strong> - No unnecessary features or abstractions</li>
+              <li><strong>Consistency</strong> - Formatting, frontmatter, references</li>
+            </ul>
+            <h4>Grading System</h4>
+            <ul>
+              <li><code>PASS</code> - Meets standard, no changes needed</li>
+              <li><code>MINOR</code> - Small issues, auto-fixable</li>
+              <li><code>NEEDS WORK</code> - Substantive gaps, requires user input</li>
+            </ul>
+            <div class="card-code-block">
+              <pre><code>skill: js-document-review</code></pre>
+            </div>
+          </div>
+
+          <div class="skill-detail" id="js-every-style-editor">
+            <div class="skill-detail-header">
+              <h3>js-every-style-editor</h3>
               <span class="skill-badge">Content</span>
             </div>
             <p class="skill-detail-description">
-              You wrote a draft, but you're not sure if it matches Every's style guide. Should "internet" be capitalized? Is this comma splice allowed? This skill does a four-phase line-by-line review: context, detailed edits, mechanical checks, and actionable recommendations. It's like having a copy editor who never gets tired.
+              Review copy for Every's style guide compliance. Does a four-phase line-by-line review: context assessment, detailed line edits, mechanical checks, and actionable recommendations. It's like having a copy editor who never gets tired—checking grammar, punctuation, capitalization, and formatting consistency.
             </p>
             <h4>Four-Phase Review</h4>
             <ol>
@@ -362,17 +446,17 @@ skill: create-agent-skills</code></pre>
               <li>Formatting consistency</li>
             </ul>
             <div class="card-code-block">
-              <pre><code>skill: every-style-editor</code></pre>
+              <pre><code>skill: js-every-style-editor</code></pre>
             </div>
           </div>
 
-          <div class="skill-detail" id="file-todos">
+          <div class="skill-detail" id="js-file-todos">
             <div class="skill-detail-header">
-              <h3>file-todos</h3>
+              <h3>js-file-todos</h3>
               <span class="skill-badge">Workflow</span>
             </div>
             <p class="skill-detail-description">
-              Your todo list is a bunch of markdown files in a <code>todos/</code> directory. Each filename encodes status, priority, and description. No database, no UI, just files with YAML frontmatter. When you need to track work without setting up Jira, this is the system.
+              File-based todo tracking system in a <code>todos/</code> directory with status, priority, and dependencies. Each filename encodes the metadata. No database, no UI, just markdown files with YAML frontmatter. When you need to track work without setting up Jira, this is the system.
             </p>
             <h4>File Format</h4>
             <div class="card-code-block">
@@ -396,28 +480,18 @@ skill: create-agent-skills</code></pre>
               <li><code>p2</code> - Important</li>
               <li><code>p3</code> - Nice-to-have</li>
             </ul>
-            <h4>YAML Frontmatter</h4>
             <div class="card-code-block">
-              <pre><code>---
-status: pending
-priority: p1
-issue_id: "001"
-tags: [security, authentication]
-dependencies: []
----</code></pre>
-            </div>
-            <div class="card-code-block">
-              <pre><code>skill: file-todos</code></pre>
+              <pre><code>skill: js-file-todos</code></pre>
             </div>
           </div>
 
-          <div class="skill-detail" id="git-worktree">
+          <div class="skill-detail" id="js-git-worktree">
             <div class="skill-detail-header">
-              <h3>git-worktree</h3>
+              <h3>js-git-worktree</h3>
               <span class="skill-badge">Git</span>
             </div>
             <p class="skill-detail-description">
-              You're working on a feature branch, but you need to review a PR without losing your current work. Git worktrees let you have multiple branches checked out simultaneously in separate directories. This skill manages them—create, switch, cleanup—so you can context-switch without stashing or committing half-finished code.
+              Manage Git worktrees for isolated parallel development with a KISS interface. You're working on a feature branch, but you need to review a PR without losing your current work. Git worktrees let you have multiple branches checked out simultaneously in separate directories. This skill manages them—create, switch, cleanup—so you can context-switch without stashing.
             </p>
             <h4>Commands</h4>
             <div class="card-code-block">
@@ -435,8 +509,8 @@ bash scripts/worktree-manager.sh cleanup</code></pre>
             </div>
             <h4>Integration</h4>
             <ul>
-              <li>Works with <code>/review</code> for isolated PR analysis</li>
-              <li>Works with <code>/work</code> for parallel feature development</li>
+              <li>Works with <code>/js-workflows:review</code> for isolated PR analysis</li>
+              <li>Works with <code>/js-workflows:work</code> for parallel feature development</li>
             </ul>
             <h4>Requirements</h4>
             <ul>
@@ -444,7 +518,220 @@ bash scripts/worktree-manager.sh cleanup</code></pre>
               <li>Worktrees stored in <code>.worktrees/</code> directory</li>
             </ul>
             <div class="card-code-block">
-              <pre><code>skill: git-worktree</code></pre>
+              <pre><code>skill: js-git-worktree</code></pre>
+            </div>
+          </div>
+
+          <div class="skill-detail" id="js-resolve-pr-parallel">
+            <div class="skill-detail-header">
+              <h3>js-resolve-pr-parallel</h3>
+              <span class="skill-badge">PR</span>
+            </div>
+            <p class="skill-detail-description">
+              Resolve all PR review comments in parallel using multiple js-pr-comment-resolver agents. After receiving code review feedback, this skill analyzes unresolved comments, groups them by type (code changes, questions, suggestions), then spawns a parallel agent for each comment thread for maximum speed.
+            </p>
+            <h4>Workflow</h4>
+            <ol>
+              <li><strong>Analyze</strong> - Get all unresolved comments via <code>gh pr view</code></li>
+              <li><strong>Plan</strong> - Group by type: code changes, questions, suggestions</li>
+              <li><strong>Implement</strong> - Spawn js-pr-comment-resolver agents in parallel</li>
+              <li><strong>Commit & Resolve</strong> - Stage, commit, push, and verify all addressed</li>
+            </ol>
+            <h4>When to Use</h4>
+            <ul>
+              <li>After receiving code review feedback on a PR</li>
+              <li>When there are multiple unresolved comment threads</li>
+              <li>To efficiently address all review comments at once</li>
+            </ul>
+            <div class="card-code-block">
+              <pre><code>skill: js-resolve-pr-parallel</code></pre>
+            </div>
+          </div>
+
+          <div class="skill-detail" id="js-setup">
+            <div class="skill-detail-header">
+              <h3>js-setup</h3>
+              <span class="skill-badge">Config</span>
+            </div>
+            <p class="skill-detail-description">
+              Configure which review agents run during <code>/js-workflows:review</code> and <code>/js-workflows:work</code>. Auto-detects the project stack (TypeScript, Node.js, Python, frontend frameworks) and proposes appropriate review agents, then writes a <code>js-compound-engineering.local.md</code> settings file.
+            </p>
+            <h4>Auto-Detection</h4>
+            <table class="docs-table">
+              <thead>
+                <tr>
+                  <th>Stack Detected</th>
+                  <th>Default Agents</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>TypeScript</td>
+                  <td>js-kieran-typescript-reviewer, js-code-simplicity-reviewer, js-security-sentinel, js-performance-oracle</td>
+                </tr>
+                <tr>
+                  <td>Node.js</td>
+                  <td>js-kieran-nodejs-reviewer, js-modern-nodejs-reviewer, js-code-simplicity-reviewer, js-security-sentinel, js-performance-oracle</td>
+                </tr>
+                <tr>
+                  <td>Python</td>
+                  <td>js-kieran-python-reviewer, js-code-simplicity-reviewer, js-security-sentinel, js-performance-oracle</td>
+                </tr>
+              </tbody>
+            </table>
+            <h4>Configuration Options</h4>
+            <ul>
+              <li><strong>Accept defaults</strong> - Use the detected configuration</li>
+              <li><strong>Customize</strong> - Choose which agents to include</li>
+              <li><strong>Minimal</strong> - Only code-simplicity + security (fastest reviews)</li>
+            </ul>
+            <div class="card-code-block">
+              <pre><code>skill: js-setup</code></pre>
+            </div>
+          </div>
+        </section>
+
+        <!-- Multi-Agent Orchestration -->
+        <section id="multi-agent-orchestration">
+          <h2><i class="fa-solid fa-sitemap"></i> Multi-Agent Orchestration (1)</h2>
+          <p>Coordinate multiple AI agents working together. When a single agent isn't enough, orchestrate a swarm of specialists that communicate, share tasks, and self-organize.</p>
+
+          <div class="skill-detail featured" id="js-orchestrating-swarms">
+            <div class="skill-detail-header">
+              <h3>js-orchestrating-swarms</h3>
+              <span class="skill-badge highlight">Swarms</span>
+            </div>
+            <p class="skill-detail-description">
+              Orchestrate multi-agent swarms using Claude Code's TeammateTool and Task system. This comprehensive skill covers everything from spawning parallel specialist reviewers to building sequential pipelines with dependencies to self-organizing task pools. A leader creates a team, spawns teammates, coordinates via inbox messages, and manages graceful shutdown.
+            </p>
+            <h4>Orchestration Patterns</h4>
+            <ul>
+              <li><strong>Parallel Specialists</strong> - Multiple reviewers analyze code simultaneously</li>
+              <li><strong>Pipeline</strong> - Sequential stages with auto-unblocking dependencies</li>
+              <li><strong>Swarm</strong> - Self-organizing workers that race to claim tasks</li>
+              <li><strong>Research + Implementation</strong> - Synchronous research, then guided implementation</li>
+              <li><strong>Plan Approval</strong> - Require leader approval before execution</li>
+              <li><strong>Coordinated Refactoring</strong> - Multi-file changes with dependency tracking</li>
+            </ul>
+            <h4>Core Primitives</h4>
+            <ul>
+              <li><strong>Team</strong> - Named group of agents with leader and teammates</li>
+              <li><strong>Task</strong> - Work items with status, owner, and dependencies</li>
+              <li><strong>Inbox</strong> - JSON-based inter-agent messaging</li>
+              <li><strong>Backends</strong> - in-process, tmux, or iTerm2 spawn modes</li>
+            </ul>
+            <h4>TeammateTool Operations</h4>
+            <ul>
+              <li><code>spawnTeam</code>, <code>discoverTeams</code>, <code>requestJoin</code></li>
+              <li><code>write</code> (message one), <code>broadcast</code> (message all)</li>
+              <li><code>requestShutdown</code>, <code>approveShutdown</code>, <code>cleanup</code></li>
+              <li><code>approvePlan</code>, <code>rejectPlan</code></li>
+            </ul>
+            <div class="card-code-block">
+              <pre><code>skill: js-orchestrating-swarms</code></pre>
+            </div>
+          </div>
+        </section>
+
+        <!-- Browser Automation -->
+        <section id="browser-automation">
+          <h2><i class="fa-solid fa-globe"></i> Browser Automation (1)</h2>
+          <p>Automate web browsers for testing, scraping, and form interaction—all through CLI commands.</p>
+
+          <div class="skill-detail" id="js-agent-browser">
+            <div class="skill-detail-header">
+              <h3>js-agent-browser</h3>
+              <span class="skill-badge">Browser</span>
+            </div>
+            <p class="skill-detail-description">
+              Browser automation using Vercel's agent-browser CLI for web interaction, forms, screenshots, and scraping. Uses ref-based element selection (@e1, @e2) from accessibility snapshots. Navigate to a page, take a snapshot to get interactive elements with refs, then interact using those refs—all through Bash commands.
+            </p>
+            <h4>Core Workflow</h4>
+            <ol>
+              <li><strong>Navigate</strong> - <code>agent-browser open &lt;url&gt;</code></li>
+              <li><strong>Snapshot</strong> - <code>agent-browser snapshot -i</code> to get refs</li>
+              <li><strong>Interact</strong> - <code>agent-browser click @e1</code> / <code>fill @e2 "text"</code></li>
+              <li><strong>Re-snapshot</strong> - After navigation or DOM changes</li>
+            </ol>
+            <h4>Capabilities</h4>
+            <div class="skill-features">
+              <div class="feature-item"><i class="fa-solid fa-check"></i> Navigate, click, fill, select, scroll</div>
+              <div class="feature-item"><i class="fa-solid fa-check"></i> Screenshots and PDF export</div>
+              <div class="feature-item"><i class="fa-solid fa-check"></i> Semantic locators (role, text, label)</div>
+              <div class="feature-item"><i class="fa-solid fa-check"></i> Parallel sessions for multiple browsers</div>
+              <div class="feature-item"><i class="fa-solid fa-check"></i> JSON output for structured parsing</div>
+            </div>
+            <h4>Requirements</h4>
+            <ul>
+              <li><code>npm install -g agent-browser</code></li>
+              <li><code>agent-browser install</code> (downloads Chromium)</li>
+            </ul>
+            <div class="card-code-block">
+              <pre><code>skill: js-agent-browser</code></pre>
+            </div>
+          </div>
+        </section>
+
+        <!-- Cloud & File Transfer -->
+        <section id="cloud-file-transfer">
+          <h2><i class="fa-solid fa-cloud-arrow-up"></i> Cloud & File Transfer (1)</h2>
+          <p>Move files to and from cloud storage providers without writing custom upload code.</p>
+
+          <div class="skill-detail" id="js-rclone">
+            <div class="skill-detail-header">
+              <h3>js-rclone</h3>
+              <span class="skill-badge">Cloud</span>
+            </div>
+            <p class="skill-detail-description">
+              Upload, sync, and manage files across cloud storage providers using rclone. Supports S3, Cloudflare R2, Backblaze B2, Google Drive, Dropbox, DigitalOcean Spaces, and any S3-compatible storage. Handles setup checks, provider configuration, single file uploads, directory syncing, and large file chunked transfers.
+            </p>
+            <h4>Supported Providers</h4>
+            <table class="docs-table">
+              <thead>
+                <tr>
+                  <th>Provider</th>
+                  <th>Type</th>
+                  <th>Auth</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>AWS S3</td>
+                  <td><code>s3</code></td>
+                  <td>Access key + secret</td>
+                </tr>
+                <tr>
+                  <td>Cloudflare R2</td>
+                  <td><code>s3</code></td>
+                  <td>Access key + endpoint</td>
+                </tr>
+                <tr>
+                  <td>Backblaze B2</td>
+                  <td><code>b2</code></td>
+                  <td>Account + app key</td>
+                </tr>
+                <tr>
+                  <td>Google Drive</td>
+                  <td><code>drive</code></td>
+                  <td>OAuth flow</td>
+                </tr>
+                <tr>
+                  <td>Dropbox</td>
+                  <td><code>dropbox</code></td>
+                  <td>OAuth flow</td>
+                </tr>
+              </tbody>
+            </table>
+            <h4>Key Operations</h4>
+            <ul>
+              <li><code>rclone copy</code> - Upload files/directories</li>
+              <li><code>rclone sync</code> - Mirror with deletions</li>
+              <li><code>rclone ls</code> / <code>lsd</code> - List contents</li>
+              <li><code>rclone check</code> - Verify uploads</li>
+              <li>Large file chunked uploads with <code>--s3-chunk-size</code></li>
+            </ul>
+            <div class="card-code-block">
+              <pre><code>skill: js-rclone</code></pre>
             </div>
           </div>
         </section>
@@ -454,13 +741,13 @@ bash scripts/worktree-manager.sh cleanup</code></pre>
           <h2><i class="fa-solid fa-image"></i> Image Generation (1)</h2>
           <p>Generate images with AI. Not stock photos you found on Unsplash—images you describe and the model creates.</p>
 
-          <div class="skill-detail featured" id="gemini-imagegen">
+          <div class="skill-detail featured" id="js-gemini-imagegen">
             <div class="skill-detail-header">
-              <h3>gemini-imagegen</h3>
+              <h3>js-gemini-imagegen</h3>
               <span class="skill-badge highlight">AI Images</span>
             </div>
             <p class="skill-detail-description">
-              Need a logo with specific text? A product mockup on a marble surface? An illustration in a kawaii style? This skill wraps Google's Gemini image generation API. You describe what you want, it generates it. You can edit existing images, refine over multiple turns, or compose from reference images. All through simple Python scripts.
+              Generate and edit images using Google's Gemini API. Need a logo with specific text? A product mockup on a marble surface? An illustration in a kawaii style? You describe what you want, it generates it. Supports text-to-image, image editing, multi-turn refinement, style transfers, and composition from multiple reference images.
             </p>
 
             <h4>Features</h4>
@@ -472,7 +759,7 @@ bash scripts/worktree-manager.sh cleanup</code></pre>
               <div class="feature-item"><i class="fa-solid fa-check"></i> Google Search grounding (Pro)</div>
             </div>
 
-            <h4>Available Models</h4>
+            <h4>Default Model</h4>
             <table class="docs-table">
               <thead>
                 <tr>
@@ -483,17 +770,18 @@ bash scripts/worktree-manager.sh cleanup</code></pre>
               </thead>
               <tbody>
                 <tr>
-                  <td><code>gemini-2.5-flash-image</code></td>
-                  <td>1024px</td>
-                  <td>Speed, high-volume tasks</td>
-                </tr>
-                <tr>
                   <td><code>gemini-3-pro-image-preview</code></td>
-                  <td>Up to 4K</td>
-                  <td>Professional assets, complex instructions</td>
+                  <td>1K-4K</td>
+                  <td>All image generation (default)</td>
                 </tr>
               </tbody>
             </table>
+
+            <h4>Available Settings</h4>
+            <ul>
+              <li><strong>Resolutions:</strong> 1K (default), 2K, 4K</li>
+              <li><strong>Aspect Ratios:</strong> 1:1, 2:3, 3:2, 3:4, 4:3, 4:5, 5:4, 9:16, 16:9, 21:9</li>
+            </ul>
 
             <h4>Quick Start</h4>
             <div class="card-code-block">
@@ -505,23 +793,6 @@ python scripts/edit_image.py input.png "Add a rainbow in the background" output.
 
 # Multi-turn chat
 python scripts/multi_turn_chat.py</code></pre>
-            </div>
-
-            <h4>Image Configuration</h4>
-            <div class="card-code-block">
-              <pre><code>from google.genai import types
-
-response = client.models.generate_content(
-    model="gemini-3-pro-image-preview",
-    contents=[prompt],
-    config=types.GenerateContentConfig(
-        response_modalities=['TEXT', 'IMAGE'],
-        image_config=types.ImageConfig(
-            aspect_ratio="16:9",  # 1:1, 2:3, 3:2, 4:3, 16:9, 21:9
-            image_size="2K"       # 1K, 2K, 4K (Pro only)
-        ),
-    )
-)</code></pre>
             </div>
 
             <h4>Prompting Best Practices</h4>
@@ -556,7 +827,7 @@ response = client.models.generate_content(
             </div>
 
             <div class="card-code-block">
-              <pre><code>skill: gemini-imagegen</code></pre>
+              <pre><code>skill: js-gemini-imagegen</code></pre>
             </div>
           </div>
         </section>

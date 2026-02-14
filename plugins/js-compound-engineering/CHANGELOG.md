@@ -5,6 +5,40 @@ All notable changes to the js-compound-engineering plugin will be documented in 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [3.4.0] - 2026-02-14
+
+### Sync with Original Plugin v2.33.1
+
+### Added
+
+- **`js-setup` skill** - Interactive configurator for review agents. Auto-detects project stack (TypeScript, Node.js, Python) and writes `js-compound-engineering.local.md` settings file
+- **`js-document-review` skill** - Structured self-review for brainstorm and plan documents. Assesses clarity, completeness, specificity, and YAGNI compliance
+- **`js-resolve-pr-parallel` skill** - Skill version of PR comment resolution for structured parallel resolution
+
+### Changed
+
+- **`/js-workflows:review` command** - Major rewrite: dynamic agent loading from `js-compound-engineering.local.md` settings file, falls back to `js-setup` skill when no config exists. `js-learnings-researcher` now always runs alongside `js-agent-native-reviewer`. Synthesis step surfaces past solutions as "Known Pattern" with links
+- **`/js-workflows:plan` command** - Added `status: active` to all plan YAML frontmatter templates. Added "Review and refine" post-generation option using `js-document-review` skill
+- **`/js-workflows:work` command** - Phase 3 now reads configured review agents from settings file. Phase 4 updates plan frontmatter from `status: active` to `status: completed`. PR description template includes Post-Deploy Monitoring & Validation section
+- **Context token optimization** - Added `disable-model-invocation: true` to 18 side-effect commands and 6 skills to reduce context token usage (~79% reduction). Prevents silent component exclusion when context budget is exceeded
+
+### Commands with disable-model-invocation
+
+`js-lfg`, `js-slfg`, `js-deploy-docs`, `js-triage`, `js-resolve_parallel`, `js-resolve_pr_parallel`, `js-resolve_todo_parallel`, `js-changelog`, `js-generate_command`, `js-heal-skill`, `js-create-agent-skill`, `js-report-bug`, `js-reproduce-bug`, `js-feature-video`, `js-test-browser`, `js-xcode-test`, `js-deepen-plan`, `js-agent-native-audit`, `js-release-docs`
+
+### Skills with disable-model-invocation
+
+`js-orchestrating-swarms`, `js-git-worktree`, `js-skill-creator`, `js-compound-docs`, `js-file-todos`, `js-resolve-pr-parallel`
+
+### Component Summary
+
+| Component | v3.3.0 | v3.4.0 | Change |
+|-----------|--------|--------|--------|
+| Agents | 29 | 29 | - |
+| Commands | 25 | 25 | - |
+| Skills | 16 | 19 | +3 |
+| MCP Servers | 1 | 1 | - |
+
 ## [3.3.0] - 2026-02-06
 
 ### Sync with Original Plugin v2.30.0

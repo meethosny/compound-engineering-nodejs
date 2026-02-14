@@ -1,6 +1,7 @@
 ---
 name: js-deploy-docs
 description: Validate and prepare documentation for GitHub Pages deployment
+disable-model-invocation: true
 ---
 
 # Deploy Documentation Command

@@ -59,11 +59,48 @@ The following paths are compound-engineering pipeline artifacts and must never b
 If a review agent flags any file in these directories for cleanup or removal, discard that finding during synthesis. Do not create a todo for it.
 </protected_artifacts>
 
+#### Load Review Agent Configuration
+
+<agent_configuration>
+
+**Step 1: Check for settings file**
+
+Look for `js-compound-engineering.local.md` in the repository root. Read it and extract the `review_agents:` list.
+
+```bash
+cat js-compound-engineering.local.md 2>/dev/null
+```
+
+**Step 2: If no settings file exists, invoke the setup skill**
+
+```
+skill: js-setup
+```
+
+The setup skill will auto-detect the project stack, let the user choose agents, and write the settings file.
+
+**Step 3: If settings file exists, parse the agent list**
+
+Extract agent names from the `review_agents:` section. Each line starting with `- ` under `review_agents:` is an agent to run.
+
+</agent_configuration>
+
 #### Parallel Agents to review the PR:
 
 <parallel_tasks>
 
-Run ALL or most of these agents at the same time:
+Run all configured review agents in parallel. For each agent in the `review_agents` list from the settings file:
+
+```
+Task {agent-name}(PR content + review context)
+```
+
+**Additionally, always run these regardless of settings:**
+
+- Task js-agent-native-reviewer(PR content) - Verify new features are agent-accessible
+- Task js-learnings-researcher(PR content) - Surface past solutions from docs/solutions/
+
+**Default agents (if no settings file and user skips setup):**
 
 1. Task js-kieran-nodejs-reviewer(PR content)
 2. Task js-modern-nodejs-reviewer(PR content)
@@ -74,8 +111,7 @@ Run ALL or most of these agents at the same time:
 7. Task js-security-sentinel(PR content)
 8. Task js-performance-oracle(PR content)
 9. Task js-data-integrity-guardian(PR content)
-10. Task js-agent-native-reviewer(PR content) - Verify new features are agent-accessible
-11. Task js-julik-frontend-races-reviewer(PR content) - If frontend JS/TS changes
+10. Task js-julik-frontend-races-reviewer(PR content) - If frontend JS/TS changes
 
 </parallel_tasks>
 
@@ -227,6 +263,7 @@ Remove duplicates, prioritize by severity and impact.
 
 - [ ] Collect findings from all parallel agents
 - [ ] Discard any findings that recommend deleting or gitignoring files in `docs/plans/` or `docs/solutions/` (see Protected Artifacts above)
+- [ ] Surface learnings-researcher results: if past solutions from `docs/solutions/` are relevant to any finding, flag them as **Known Pattern** with a link to the solution document
 - [ ] Categorize by type: security, performance, architecture, quality, etc.
 - [ ] Assign severity levels: 🔴 CRITICAL (P1), 🟡 IMPORTANT (P2), 🔵 NICE-TO-HAVE (P3)
 - [ ] Remove duplicate or overlapping findings

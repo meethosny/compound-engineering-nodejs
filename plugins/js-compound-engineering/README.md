@@ -10,7 +10,7 @@ AI-powered development tools that get smarter with every use. Make each unit of 
 |-----------|-------|
 | Agents | 29 |
 | Commands | 25 |
-| Skills | 16 |
+| Skills | 19 |
 | MCP Servers | 1 |
 
 ## Agents
@@ -143,9 +143,12 @@ Core workflow commands use `workflows:` prefix to avoid collisions with built-in
 
 | Skill | Description |
 |-------|-------------|
+| `js-document-review` | Structured self-review for brainstorm and plan documents |
 | `js-every-style-editor` | Review copy for Every's style guide compliance |
 | `js-file-todos` | File-based todo tracking system |
 | `js-git-worktree` | Manage Git worktrees for parallel development |
+| `js-resolve-pr-parallel` | Resolve all PR review comments in parallel |
+| `js-setup` | Configure which review agents run during workflows |
 
 ### Multi-Agent Orchestration
 

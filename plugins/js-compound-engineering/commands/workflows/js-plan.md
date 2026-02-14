@@ -178,6 +178,7 @@ Select how comprehensive you want the issue to be, simpler is mostly better.
 ---
 title: [Issue Title]
 type: [feat|fix|refactor]
+status: active
 date: YYYY-MM-DD
 ---
 
@@ -234,6 +235,7 @@ export { Example };
 ---
 title: [Issue Title]
 type: [feat|fix|refactor]
+status: active
 date: YYYY-MM-DD
 ---
 
@@ -298,6 +300,7 @@ date: YYYY-MM-DD
 ---
 title: [Issue Title]
 type: [feat|fix|refactor]
+status: active
 date: YYYY-MM-DD
 ---
 
@@ -496,15 +499,17 @@ After writing the plan file, use the **AskUserQuestion tool** to present these o
 
 **Options:**
 1. **Open plan in editor** - Open the plan file for review
-2. **Run `/js-deepen-plan`** - Enhance each section with parallel research agents (best practices, performance, UI)
-3. **Run `/js-plan_review`** - Get feedback from reviewers (Modern Node.js, Kieran, Simplicity)
-4. **Start `/js-workflows:work`** - Begin implementing this plan locally
-5. **Start `/js-workflows:work` on remote** - Begin implementing in Claude Code on the web (use `&` to run in background)
-6. **Create Issue** - Create issue in project tracker (GitHub/Linear)
-7. **Simplify** - Reduce detail level
+2. **Review and refine** - Run structured review for clarity, completeness, specificity, and YAGNI compliance
+3. **Run `/js-deepen-plan`** - Enhance each section with parallel research agents (best practices, performance, UI)
+4. **Run `/js-plan_review`** - Get feedback from reviewers (Modern Node.js, Kieran, Simplicity)
+5. **Start `/js-workflows:work`** - Begin implementing this plan locally
+6. **Start `/js-workflows:work` on remote** - Begin implementing in Claude Code on the web (use `&` to run in background)
+7. **Create Issue** - Create issue in project tracker (GitHub/Linear)
+8. **Simplify** - Reduce detail level
 
 Based on selection:
 - **Open plan in editor** → Run `open docs/plans/<plan_filename>.md` to open the file in the user's default editor
+- **Review and refine** → Load the `js-document-review` skill: `skill: js-document-review` with the plan file path
 - **`/js-deepen-plan`** → Call the /js-deepen-plan command with the plan file path to enhance with research
 - **`/js-plan_review`** → Call the /js-plan_review command with the plan file path
 - **`/js-workflows:work`** → Call the /js-workflows:work command with the plan file path
@@ -515,7 +520,7 @@ Based on selection:
 
 **Note:** If running `/js-workflows:plan` with ultrathink enabled, automatically run `/js-deepen-plan` after plan creation for maximum depth and grounding.
 
-Loop back to options after Simplify or Other changes until user selects `/js-workflows:work` or `/js-plan_review`.
+Loop back to options after Review and refine, Simplify, or Other changes until user selects `/js-workflows:work` or `/js-plan_review`.
 
 ## Issue Creation
 

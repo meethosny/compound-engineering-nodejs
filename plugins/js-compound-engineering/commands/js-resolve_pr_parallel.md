@@ -2,6 +2,7 @@
 name: js-resolve_pr_parallel
 description: Resolve all PR comments using parallel processing
 argument-hint: "[optional: PR number or current PR]"
+disable-model-invocation: true
 ---
 
 Resolve all PR comments using parallel processing.

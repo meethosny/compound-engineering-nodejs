@@ -118,7 +118,7 @@
             <div class="callout-content">
               <h4>Known Issue: MCP Servers</h4>
               <p>
-                The bundled MCP servers (Playwright for browser automation, Context7 for docs) don't always auto-load. If you need them, there's a manual config step below. Otherwise, ignore this—everything else works fine.
+                The bundled MCP server (Context7 for docs) doesn't always auto-load. If you need it, there's a manual config step below. Otherwise, ignore this—everything else works fine.
               </p>
             </div>
           </div>
@@ -147,26 +147,26 @@
           <p>Sometimes you just need one expert. Call them directly:</p>
           <div class="card-code-block">
             <pre><code># Node.js code review with strict conventions
-claude agent modern-nodejs-reviewer "Review the UserController"
+claude agent js-modern-nodejs-reviewer "Review the UserController"
 
 # Security audit
-claude agent security-sentinel "Audit authentication flow"
+claude agent js-security-sentinel "Audit authentication flow"
 
 # Research best practices
-claude agent best-practices-researcher "Find pagination patterns for Express"</code></pre>
+claude agent js-best-practices-researcher "Find pagination patterns for Express"</code></pre>
           </div>
 
           <h3>Invoke a Skill</h3>
           <p>Skills are like loading a reference book into Claude's brain. When you need deep knowledge in a specific domain:</p>
           <div class="card-code-block">
             <pre><code># Generate images with Gemini
-skill: gemini-imagegen
+skill: js-gemini-imagegen
 
 # Write Node.js in modern style
-skill: modern-nodejs-style
+skill: js-modern-nodejs-style
 
 # Create a new Claude Code skill
-skill: create-agent-skills</code></pre>
+skill: js-create-agent-skills</code></pre>
           </div>
         </section>
 
@@ -176,17 +176,11 @@ skill: create-agent-skills</code></pre>
 
           <h3 id="mcp-configuration">MCP Server Configuration</h3>
           <p>
-            If the MCP servers didn't load automatically, paste this into <code>.claude/settings.json</code>:
+            If the MCP server didn't load automatically, paste this into <code>.claude/settings.json</code>:
           </p>
           <div class="card-code-block">
             <pre><code>{
   "mcpServers": {
-    "playwright": {
-      "type": "stdio",
-      "command": "npx",
-      "args": ["-y", "@playwright/mcp@latest"],
-      "env": {}
-    },
     "context7": {
       "type": "http",
       "url": "https://mcp.context7.com/mcp"
@@ -271,9 +265,9 @@ skill: create-agent-skills</code></pre>
 claude agent [agent-name] "[optional message]"
 
 # Examples
-claude agent modern-nodejs-reviewer
-claude agent security-sentinel "Audit the payment flow"
-claude agent git-history-analyzer "Show changes to user model"</code></pre>
+claude agent js-modern-nodejs-reviewer
+claude agent js-security-sentinel "Audit the payment flow"
+claude agent js-git-history-analyzer "Show changes to user model"</code></pre>
           </div>
 
           <h3>Agent Categories</h3>
@@ -372,7 +366,7 @@ claude agent git-history-analyzer "Show changes to user model"</code></pre>
           <h3>Invoking Skills</h3>
           <div class="card-code-block">
             <pre><code># In your prompt, reference the skill
-skill: gemini-imagegen
+skill: js-gemini-imagegen
 
 # Or ask Claude to use it
 "Use the modern-nodejs-style skill to refactor this code"</code></pre>
@@ -529,7 +523,7 @@ Use templates from the `templates/` directory.</code></pre>
             <div class="callout-content">
               <h4>Get Help Building Skills</h4>
               <p>
-                Type <code>skill: create-agent-skills</code> and Claude loads expert guidance on skill architecture, best practices, file organization, and validation. It's like having a senior engineer walk you through it.
+                Type <code>skill: js-create-agent-skills</code> and Claude loads expert guidance on skill architecture, best practices, file organization, and validation. It's like having a senior engineer walk you through it.
               </p>
             </div>
           </div>

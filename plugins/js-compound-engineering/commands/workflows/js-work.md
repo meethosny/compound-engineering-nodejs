@@ -175,7 +175,13 @@ This command takes a work document (plan, specification, or todo file) and execu
 
 2. **Consider Reviewer Agents** (Optional)
 
-   Use for complex, risky, or large changes:
+   Use for complex, risky, or large changes.
+
+   **Check for configured review agents:**
+
+   Look for `js-compound-engineering.local.md` in the repository root and read the `review_agents:` list. If no settings file exists, either invoke the `js-setup` skill or use the defaults below.
+
+   **Default agents (if no settings file):**
 
    - **js-code-simplicity-reviewer**: Check for unnecessary complexity
    - **js-kieran-nodejs-reviewer**: Verify Node.js conventions (Node.js projects)
@@ -184,11 +190,11 @@ This command takes a work document (plan, specification, or todo file) and execu
    - **js-performance-oracle**: Check for performance issues
    - **js-security-sentinel**: Scan for security vulnerabilities
 
-   Run reviewers in parallel with Task tool:
+   Run configured reviewers in parallel with Task tool:
 
    ```
-   Task(js-code-simplicity-reviewer): "Review changes for simplicity"
-   Task(js-kieran-nodejs-reviewer): "Check Node.js conventions"
+   For each agent in review_agents list:
+     Task {agent-name}("Review changes for quality")
    ```
 
    Present findings to user and address critical issues.
@@ -203,7 +209,20 @@ This command takes a work document (plan, specification, or todo file) and execu
 
 ### Phase 4: Ship It
 
-1. **Create Commit**
+1. **Update Plan Status**
+
+   If working from a plan file (in `docs/plans/`), update its YAML frontmatter status:
+
+   ```yaml
+   # Change from:
+   status: active
+   # To:
+   status: completed
+   ```
+
+   Use the Edit tool to update the frontmatter. This marks the plan as done so future workflows know it's been shipped.
+
+2. **Create Commit**
 
    ```bash
    git add .
@@ -223,7 +242,7 @@ This command takes a work document (plan, specification, or todo file) and execu
    )"
    ```
 
-2. **Capture and Upload Screenshots for UI Changes** (REQUIRED for any UI work)
+3. **Capture and Upload Screenshots for UI Changes** (REQUIRED for any UI work)
 
    For **any** design changes, new views, or UI modifications, you MUST capture and upload screenshots:
 
@@ -255,7 +274,7 @@ This command takes a work document (plan, specification, or todo file) and execu
 
    **IMPORTANT**: Always include uploaded image URLs in PR description. This provides visual context for reviewers and documents the change.
 
-3. **Create Pull Request**
+4. **Create Pull Request**
 
    ```bash
    git push -u origin feature-branch-name
@@ -278,6 +297,20 @@ This command takes a work document (plan, specification, or todo file) and execu
    ## Figma Design
    [Link if applicable]
 
+   ## Post-Deploy Monitoring & Validation
+
+   **Log queries to verify:**
+   - [Describe what to search for in logs after deploy]
+
+   **Metrics to watch:**
+   - [Key metrics that should change or stay stable]
+
+   **Failure signals:**
+   - [What would indicate something went wrong]
+
+   **Rollback trigger:**
+   - [Conditions that warrant an immediate rollback]
+
    ---
 
    [![Compound Engineered](https://img.shields.io/badge/Compound-Engineered-6366f1)](https://github.com/meethosny/compound-engineering-nodejs) 🤖 Generated with [Claude Code](https://claude.com/claude-code)
@@ -285,7 +318,7 @@ This command takes a work document (plan, specification, or todo file) and execu
    )"
    ```
 
-4. **Notify User**
+5. **Notify User**
    - Summarize what was completed
    - Link to PR
    - Note any follow-up work needed
