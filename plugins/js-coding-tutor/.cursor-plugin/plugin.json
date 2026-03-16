@@ -1,0 +1,21 @@
+{
+  "name": "js-coding-tutor",
+  "displayName": "Coding Tutor",
+  "version": "1.2.1",
+  "description": "Personalized coding tutorials that use your actual codebase for examples with spaced repetition quizzes",
+  "author": {
+    "name": "Hosni Mohamed"
+  },
+  "homepage": "https://github.com/meethosny/compound-engineering-nodejs",
+  "repository": "https://github.com/meethosny/compound-engineering-nodejs",
+  "license": "MIT",
+  "keywords": [
+    "cursor",
+    "plugin",
+    "coding",
+    "programming",
+    "tutorial",
+    "learning",
+    "spaced-repetition"
+  ]
+}

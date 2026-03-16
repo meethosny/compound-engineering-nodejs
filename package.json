@@ -1,0 +1,32 @@
+{
+  "name": "@meethosny/js-compound-plugin",
+  "version": "1.0.0",
+  "type": "module",
+  "private": false,
+  "bin": {
+    "js-compound-plugin": "src/index.ts"
+  },
+  "homepage": "https://github.com/meethosny/compound-engineering-nodejs",
+  "repository": "https://github.com/meethosny/compound-engineering-nodejs",
+  "publishConfig": {
+    "access": "public"
+  },
+  "scripts": {
+    "dev": "bun run src/index.ts",
+    "convert": "bun run src/index.ts convert",
+    "list": "bun run src/index.ts list",
+    "cli:install": "bun run src/index.ts install",
+    "test": "bun test",
+    "release:dry-run": "semantic-release --dry-run"
+  },
+  "dependencies": {
+    "citty": "^0.1.6",
+    "js-yaml": "^4.1.0"
+  },
+  "devDependencies": {
+    "@semantic-release/changelog": "^6.0.3",
+    "@semantic-release/git": "^10.0.1",
+    "bun-types": "^1.0.0",
+    "semantic-release": "^25.0.3"
+  }
+}

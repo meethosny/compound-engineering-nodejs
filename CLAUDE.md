@@ -1,29 +1,37 @@
-# Every Marketplace - Claude Code Plugin Marketplace (Node.js Fork)
+# compound-engineering-nodejs - Claude Code Plugin Marketplace (Node.js Edition)
 
-> **🚀 Node.js Developer Edition** — This fork is optimized for Node.js and TypeScript developers. All Ruby/Rails patterns have been replaced with Express, Fastify, Hono, and TypeScript equivalents following TJ Holowaychuk (minimalism), Matteo Collina (performance), and Sindre Sorhus (package authoring) philosophies.
-
-This repository is a Claude Code plugin marketplace that distributes the `js-compound-engineering` plugin to developers building with AI-powered tools.
+This repository is a Claude Code plugin marketplace that distributes the `js-compound-engineering` plugin to developers building with AI-powered tools. It also includes a Bun/TypeScript CLI for converting plugins to other AI coding tool formats.
 
 ## Repository Structure
 
 ```
-every-marketplace/
+compound-engineering-nodejs/
 ├── .claude-plugin/
 │   └── marketplace.json          # Marketplace catalog (lists available plugins)
+├── src/                          # CLI converter (Bun/TypeScript)
+│   ├── commands/                 # convert, install, list, sync
+│   ├── converters/               # Claude → provider format converters
+│   ├── parsers/                  # Plugin structure parsers
+│   ├── sync/                     # Personal config sync per provider
+│   ├── targets/                  # 10 provider targets
+│   ├── types/                    # TypeScript types per provider
+│   └── utils/                    # Shared utilities
+├── tests/                        # Test suites
 ├── docs/                         # Documentation site (GitHub Pages)
-│   ├── index.html                # Landing page
-│   ├── css/                      # Stylesheets
-│   ├── js/                       # JavaScript
-│   └── pages/                    # Reference pages
 └── plugins/
-    └── js-compound-engineering/       # The actual plugin
+    ├── js-compound-engineering/  # The main plugin
+    │   ├── .claude-plugin/
+    │   │   └── plugin.json       # Plugin metadata
+    │   ├── agents/               # 28 specialized AI agents (all prefixed with js-)
+    │   ├── skills/               # 45 skills (all prefixed with js-)
+    │   ├── README.md             # Plugin documentation
+    │   └── CHANGELOG.md          # Version history
+    └── js-coding-tutor/          # Coding tutor plugin
         ├── .claude-plugin/
-        │   └── plugin.json        # Plugin metadata
-        ├── agents/                # 29 specialized AI agents (all prefixed with js-)
-        ├── commands/              # 25 slash commands (all prefixed with js-)
-        ├── skills/                # 19 skills (all prefixed with js-)
-        ├── README.md              # Plugin documentation
-        └── CHANGELOG.md           # Version history
+        │   └── plugin.json
+        ├── commands/
+        ├── skills/
+        └── README.md
 ```
 
 ## Philosophy: Compounding Engineering
@@ -63,11 +71,8 @@ When agents, commands, or skills are added/removed, follow this checklist:
 # Count agents
 ls plugins/js-compound-engineering/agents/**/*.md | wc -l
 
-# Count commands
-ls plugins/js-compound-engineering/commands/*.md | wc -l
-
 # Count skills
-ls -d plugins/js-compound-engineering/skills/*/ 2>/dev/null | wc -l
+find plugins/js-compound-engineering/skills -name "SKILL.md" | wc -l
 ```
 
 #### 2. Update ALL description strings with correct counts
@@ -78,19 +83,19 @@ The description appears in multiple places and must match everywhere:
 - [ ] `.claude-plugin/marketplace.json` → plugin `description` field
 - [ ] `plugins/js-compound-engineering/README.md` → intro paragraph
 
-Format: `"Includes X specialized agents, Y commands, and Z skill(s)."`
+Format: `"X agents, Y skills, Z MCP server(s)"`
 
-#### 3. Update version numbers
+#### 3. Do not pre-cut release versions
 
-When adding new functionality, bump the version in:
+Contributors should not guess the next released plugin version in a normal PR:
 
-- [ ] `plugins/js-compound-engineering/.claude-plugin/plugin.json` → `version`
-- [ ] `.claude-plugin/marketplace.json` → plugin `version`
+- [ ] No manual bump in `plugins/js-compound-engineering/.claude-plugin/plugin.json` → `version`
+- [ ] No manual bump in `.claude-plugin/marketplace.json` → plugin `version`
 
 #### 4. Update documentation
 
 - [ ] `plugins/js-compound-engineering/README.md` → list all components
-- [ ] `plugins/js-compound-engineering/CHANGELOG.md` → document changes
+- [ ] Do not cut a release section in `plugins/js-compound-engineering/CHANGELOG.md` for a normal feature PR
 - [ ] `CLAUDE.md` → update structure diagram if needed
 
 #### 5. Rebuild documentation site

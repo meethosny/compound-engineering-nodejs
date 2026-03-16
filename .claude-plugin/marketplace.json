@@ -11,7 +11,7 @@
   "plugins": [
     {
       "name": "js-compound-engineering",
-      "description": "AI-powered development tools that get smarter with every use. Make each unit of engineering work easier than the last. Includes 29 specialized agents, 25 commands, and 19 skills.",
+      "description": "AI-powered development tools that get smarter with every use. Make each unit of engineering work easier than the last. Includes 28 specialized agents and 45 skills.",
       "version": "3.4.0",
       "author": {
         "name": "Hosni Mohamed",
@@ -29,6 +29,24 @@
         "image-generation"
       ],
       "source": "./plugins/js-compound-engineering"
+    },
+    {
+      "name": "js-coding-tutor",
+      "description": "Personalized coding tutorials that use your actual codebase for examples with spaced repetition quizzes",
+      "version": "1.2.1",
+      "author": {
+        "name": "Hosni Mohamed",
+        "url": "https://github.com/meethosny"
+      },
+      "homepage": "https://github.com/meethosny/compound-engineering-nodejs",
+      "tags": [
+        "coding",
+        "programming",
+        "tutorial",
+        "learning",
+        "spaced-repetition"
+      ],
+      "source": "./plugins/js-coding-tutor"
     }
   ]
 }

@@ -2,26 +2,26 @@
 
 ## Versioning Requirements
 
-**IMPORTANT**: Every change to this plugin MUST include updates to all three files:
+**IMPORTANT**: Routine PRs should not cut releases for this plugin.
 
-1. **`.claude-plugin/plugin.json`** - Bump version using semver
-2. **`CHANGELOG.md`** - Document changes using Keep a Changelog format
-3. **`README.md`** - Verify/update component counts and tables
+The repo uses an automated release process to prepare plugin releases, including version selection and changelog generation. Because multiple PRs may merge before the next release, contributors cannot know the final released version from within an individual PR.
 
-### Version Bumping Rules
+### Contributor Rules
 
-- **MAJOR** (1.0.0 → 2.0.0): Breaking changes, major reorganization
-- **MINOR** (1.0.0 → 1.1.0): New agents, commands, or skills
-- **PATCH** (1.0.0 → 1.0.1): Bug fixes, doc updates, minor improvements
+- Do **not** manually bump `.claude-plugin/plugin.json` version in a normal feature PR.
+- Do **not** manually bump `.claude-plugin/marketplace.json` plugin version in a normal feature PR.
+- Do **not** cut a release section in `CHANGELOG.md` for a normal feature PR.
+- Do update substantive docs that are part of the actual change, such as `README.md`, component tables, usage instructions, or counts when they would otherwise become inaccurate.
 
 ### Pre-Commit Checklist
 
 Before committing ANY changes:
 
-- [ ] Version bumped in `.claude-plugin/plugin.json`
-- [ ] CHANGELOG.md updated with changes
+- [ ] No manual release-version bump in `.claude-plugin/plugin.json`
+- [ ] No manual release-version bump in `.claude-plugin/marketplace.json`
+- [ ] No manual release entry added to `CHANGELOG.md`
 - [ ] README.md component counts verified
-- [ ] README.md tables accurate (agents, commands, skills)
+- [ ] README.md tables accurate (agents, skills)
 - [ ] plugin.json description matches current counts
 
 ### Directory Structure
@@ -34,23 +34,26 @@ agents/
 ├── workflow/   # Workflow automation agents
 └── docs/       # Documentation agents
 
-commands/
-├── workflows/  # Core workflow commands (workflows:plan, workflows:review, etc.)
-└── *.md        # Utility commands
-
 skills/
-└── *.md        # All skills at root level
+├── js-ce-*/          # Core workflow skills (js-ce:plan, js-ce:review, etc.)
+├── js-workflows-*/   # Deprecated aliases for js-ce:* skills
+└── */                # All other skills
 ```
+
+> **Note:** Commands were migrated to skills in v4.0.0. All former
+> `/command-name` slash commands now live under `skills/command-name/SKILL.md`
+> and work identically (Claude Code 2.1.3+ merged the two formats).
 
 ## Command Naming Convention
 
-**Workflow commands** use `workflows:` prefix to avoid collisions with built-in commands:
-- `/js-workflows:plan` - Create implementation plans
-- `/js-workflows:review` - Run comprehensive code reviews
-- `/js-workflows:work` - Execute work items systematically
-- `/js-workflows:compound` - Document solved problems
+**Workflow commands** use `js-ce:` prefix to unambiguously identify them as js-compound-engineering commands:
+- `/js-ce:plan` - Create implementation plans
+- `/js-ce:review` - Run comprehensive code reviews
+- `/js-ce:work` - Execute work items systematically
+- `/js-ce:compound` - Document solved problems
+- `/js-ce:brainstorm` - Explore requirements and approaches before planning
 
-**Why `workflows:`?** Claude Code has built-in `/plan` and `/review` commands. Using `name: workflows:plan` in frontmatter creates a unique `/js-workflows:plan` command with no collision.
+**Why `js-ce:`?** Claude Code has built-in `/plan` and `/review` commands. The `js-ce:` namespace (short for js-compound-engineering) makes it immediately clear these commands belong to this plugin. The legacy `js-workflows:` prefix is still supported as deprecated aliases that forward to the `js-ce:*` equivalents.
 
 ## Skill Compliance Checklist
 
@@ -59,7 +62,7 @@ When adding or modifying skills, verify compliance with skill-creator spec:
 ### YAML Frontmatter (Required)
 
 - [ ] `name:` present and matches directory name (lowercase-with-hyphens)
-- [ ] `description:` present and uses **third person** ("This skill should be used when..." NOT "Use this skill when...")
+- [ ] `description:` present and describes **what it does and when to use it** (per official spec: "Explains code with diagrams. Use when exploring how code works.")
 
 ### Reference Links (Required if references/ exists)
 
@@ -73,6 +76,11 @@ When adding or modifying skills, verify compliance with skill-creator spec:
 - [ ] Use imperative/infinitive form (verb-first instructions)
 - [ ] Avoid second person ("you should") - use objective language ("To accomplish X, do Y")
 
+### AskUserQuestion Usage
+
+- [ ] If the skill uses `AskUserQuestion`, it must include an "Interaction Method" preamble explaining the numbered-list fallback for non-Claude environments
+- [ ] Prefer avoiding `AskUserQuestion` entirely (see `js-brainstorming/SKILL.md` pattern) for skills intended to run cross-platform
+
 ### Quick Validation Command
 
 ```bash
@@ -80,10 +88,17 @@ When adding or modifying skills, verify compliance with skill-creator spec:
 grep -E '`(references|assets|scripts)/[^`]+`' skills/*/SKILL.md
 # Should return nothing if all refs are properly linked
 
-# Check description format
-grep -E '^description:' skills/*/SKILL.md | grep -v 'This skill'
-# Should return nothing if all use third person
+# Check description format - should describe what + when
+grep -E '^description:' skills/*/SKILL.md
 ```
+
+## Agent References in Skills
+
+When referencing agents from within skill SKILL.md files (e.g., via the `Agent` or `Task` tool), always use the **fully-qualified namespace**: `js-compound-engineering:<category>:<agent-name>`. Never use the short agent name alone.
+
+Example:
+- `js-compound-engineering:research:js-learnings-researcher` (correct)
+- `js-learnings-researcher` (wrong - will fail to resolve at runtime)
 
 ## Documentation
 
