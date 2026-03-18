@@ -9,8 +9,8 @@ Structured self-review for brainstorm and plan documents. Assesses clarity, comp
 
 ## When to Use
 
-- After generating a plan with `/js-workflows:plan`
-- After a brainstorm session with `/js-workflows:brainstorm`
+- After generating a plan with `/js-ce:plan`
+- After a brainstorm session with `/js-ce:brainstorm`
 - When reviewing any specification or design document
 - As a quality gate before starting implementation
 

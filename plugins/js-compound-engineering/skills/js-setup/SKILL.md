@@ -1,15 +1,15 @@
 ---
 name: js-setup
-description: This skill should be used when configuring which review agents run during /js-workflows:review and /js-workflows:work. It auto-detects the project stack and writes a js-compound-engineering.local.md settings file.
+description: This skill should be used when configuring which review agents run during /js-ce:review and /js-ce:work. It auto-detects the project stack and writes a js-compound-engineering.local.md settings file.
 ---
 
 # Setup - Review Agent Configurator
 
-Interactive configurator for which review agents run during `/js-workflows:review` and `/js-workflows:work`. Auto-detects the project type and writes a `js-compound-engineering.local.md` settings file.
+Interactive configurator for which review agents run during `/js-ce:review` and `/js-ce:work`. Auto-detects the project type and writes a `js-compound-engineering.local.md` settings file.
 
 ## When to Use
 
-- First time running `/js-workflows:review` (no settings file exists)
+- First time running `/js-ce:review` (no settings file exists)
 - Changing which agents run during reviews
 - Setting up a new project with compound-engineering
 
@@ -113,7 +113,7 @@ review_agents:
 
 ## Notes
 
-- Edit this file to change which agents run during `/js-workflows:review`
+- Edit this file to change which agents run during `/js-ce:review`
 - The agents `js-agent-native-reviewer` and `js-learnings-researcher` always run regardless of this setting
 - Conditional agents (schema-drift-detector, data-migration-expert, deployment-verification-agent) run based on PR file patterns
 - Re-run `/js-compound-engineering:js-setup` to reconfigure interactively
@@ -137,5 +137,5 @@ If "Yes": append `js-compound-engineering.local.md` to `.gitignore`.
 Setup complete! Settings written to js-compound-engineering.local.md
 
 Your review workflow will now use 7 agents instead of the full 11.
-Run /js-workflows:review to try it out.
+Run /js-ce:review to try it out.
 ```

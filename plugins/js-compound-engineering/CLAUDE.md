@@ -36,7 +36,6 @@ agents/
 
 skills/
 ├── js-ce-*/          # Core workflow skills (js-ce:plan, js-ce:review, etc.)
-├── js-workflows-*/   # Deprecated aliases for js-ce:* skills
 └── */                # All other skills
 ```
 
@@ -53,7 +52,7 @@ skills/
 - `/js-ce:compound` - Document solved problems
 - `/js-ce:brainstorm` - Explore requirements and approaches before planning
 
-**Why `js-ce:`?** Claude Code has built-in `/plan` and `/review` commands. The `js-ce:` namespace (short for js-compound-engineering) makes it immediately clear these commands belong to this plugin. The legacy `js-workflows:` prefix is still supported as deprecated aliases that forward to the `js-ce:*` equivalents.
+**Why `js-ce:`?** Claude Code has built-in `/plan` and `/review` commands. The `js-ce:` namespace (short for js-compound-engineering) makes it immediately clear these commands belong to this plugin.
 
 ## Skill Compliance Checklist
 

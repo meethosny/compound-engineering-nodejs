@@ -84,7 +84,6 @@ Core workflow commands use `js-ce:` prefix to unambiguously identify them as js-
 | `/js-ce:work` | Execute work items systematically |
 | `/js-ce:compound` | Document solved problems to compound team knowledge |
 
-> **Deprecated aliases:** `/js-workflows:plan`, `/js-workflows:work`, `/js-workflows:review`, `/js-workflows:brainstorm`, `/js-workflows:compound` still work but show a deprecation warning. Use `js-ce:*` equivalents.
 
 ### Utility Commands
 

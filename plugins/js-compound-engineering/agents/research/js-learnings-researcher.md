@@ -236,7 +236,7 @@ Structure your findings as:
 ## Integration Points
 
 This agent is designed to be invoked by:
-- `/js-workflows:plan` - To inform planning with institutional knowledge
+- `/js-ce:plan` - To inform planning with institutional knowledge
 - `/js-deepen-plan` - To add depth with relevant learnings
 - Manual invocation before starting work on a feature
 
