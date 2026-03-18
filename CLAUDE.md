@@ -23,7 +23,7 @@ compound-engineering-nodejs/
     │   ├── .claude-plugin/
     │   │   └── plugin.json       # Plugin metadata
     │   ├── agents/               # 28 specialized AI agents (all prefixed with js-)
-    │   ├── skills/               # 45 skills (all prefixed with js-)
+    │   ├── skills/               # 40 skills (all prefixed with js-)
     │   ├── README.md             # Plugin documentation
     │   └── CHANGELOG.md          # Version history
     └── js-coding-tutor/          # Coding tutor plugin
@@ -278,7 +278,7 @@ python -m http.server 8000
 
 3. Test agents and commands:
    ```bash
-   claude /js-workflows:review
+   claude /js-ce:review
    claude agent js-kieran-nodejs-reviewer "test message"
    ```
 

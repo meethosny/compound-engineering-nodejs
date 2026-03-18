@@ -149,7 +149,7 @@ skill: js-create-agent-skills</code></pre>
             <h4>Integration</h4>
             <ul>
               <li>Outputs to <code>docs/brainstorms/</code> directory</li>
-              <li>Hands off to <code>/js-workflows:plan</code> for implementation details</li>
+              <li>Hands off to <code>/js-ce:plan</code> for implementation details</li>
             </ul>
             <div class="card-code-block">
               <pre><code>skill: js-brainstorming</code></pre>
@@ -509,8 +509,8 @@ bash scripts/worktree-manager.sh cleanup</code></pre>
             </div>
             <h4>Integration</h4>
             <ul>
-              <li>Works with <code>/js-workflows:review</code> for isolated PR analysis</li>
-              <li>Works with <code>/js-workflows:work</code> for parallel feature development</li>
+              <li>Works with <code>/js-ce:review</code> for isolated PR analysis</li>
+              <li>Works with <code>/js-ce:work</code> for parallel feature development</li>
             </ul>
             <h4>Requirements</h4>
             <ul>
@@ -554,7 +554,7 @@ bash scripts/worktree-manager.sh cleanup</code></pre>
               <span class="skill-badge">Config</span>
             </div>
             <p class="skill-detail-description">
-              Configure which review agents run during <code>/js-workflows:review</code> and <code>/js-workflows:work</code>. Auto-detects the project stack (TypeScript, Node.js, Python, frontend frameworks) and proposes appropriate review agents, then writes a <code>js-compound-engineering.local.md</code> settings file.
+              Configure which review agents run during <code>/js-ce:review</code> and <code>/js-ce:work</code>. Auto-detects the project stack (TypeScript, Node.js, Python, frontend frameworks) and proposes appropriate review agents, then writes a <code>js-compound-engineering.local.md</code> settings file.
             </p>
             <h4>Auto-Detection</h4>
             <table class="docs-table">

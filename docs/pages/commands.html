@@ -72,14 +72,14 @@
       <article class="docs-article">
         <h1><i class="fa-solid fa-terminal color-accent"></i> Command Reference</h1>
         <p class="lead">
-          Here's the thing about slash commands: they're workflows you'd spend 20 minutes doing manually, compressed into one line. Type <code>/js-workflows:plan</code> and watch three agents launch in parallel to research your codebase while you grab coffee. That's the point -- automation that actually saves time, not busywork dressed up as productivity.
+          Here's the thing about slash commands: they're workflows you'd spend 20 minutes doing manually, compressed into one line. Type <code>/js-ce:plan</code> and watch three agents launch in parallel to research your codebase while you grab coffee. That's the point -- automation that actually saves time, not busywork dressed up as productivity.
         </p>
 
         <div class="usage-box">
           <h3>How to Use Commands</h3>
           <div class="card-code-block">
-            <pre><code>/js-workflows:plan "Add user authentication"
-/js-workflows:review 123
+            <pre><code>/js-ce:plan "Add user authentication"
+/js-ce:review 123
 /js-lfg "Build the payment page"</code></pre>
           </div>
         </div>
@@ -91,7 +91,7 @@
 
           <div class="command-detail" id="workflows-brainstorm">
             <div class="command-detail-header">
-              <code class="command-detail-name">/js-workflows:brainstorm</code>
+              <code class="command-detail-name">/js-ce:brainstorm</code>
             </div>
             <p class="command-detail-description">
               Explore requirements and approaches through collaborative dialogue before planning. When you have a vague idea and need to flesh it out, this command helps you think through the problem space before committing to a plan.
@@ -106,14 +106,14 @@
               <li><strong>Converge</strong> - Narrow down to the most promising direction</li>
             </ol>
             <div class="card-code-block">
-              <pre><code>/js-workflows:brainstorm "How should we handle real-time notifications?"
-/js-workflows:brainstorm "Migrate from REST to GraphQL"</code></pre>
+              <pre><code>/js-ce:brainstorm "How should we handle real-time notifications?"
+/js-ce:brainstorm "Migrate from REST to GraphQL"</code></pre>
             </div>
           </div>
 
           <div class="command-detail" id="workflows-compound">
             <div class="command-detail-header">
-              <code class="command-detail-name">/js-workflows:compound</code>
+              <code class="command-detail-name">/js-ce:compound</code>
             </div>
             <p class="command-detail-description">
               Just fixed a gnarly bug? This captures the solution before you forget it. Seven agents analyze what you did, why it worked, and how to prevent it next time. Each documented solution compounds your team's knowledge.
@@ -139,14 +139,14 @@
             <h4>Auto-Triggers</h4>
             <p>Phrases: "that worked", "it's fixed", "working now", "problem solved"</p>
             <div class="card-code-block">
-              <pre><code>/js-workflows:compound
-/js-workflows:compound N+1 query optimization</code></pre>
+              <pre><code>/js-ce:compound
+/js-ce:compound N+1 query optimization</code></pre>
             </div>
           </div>
 
           <div class="command-detail" id="workflows-plan">
             <div class="command-detail-header">
-              <code class="command-detail-name">/js-workflows:plan</code>
+              <code class="command-detail-name">/js-ce:plan</code>
             </div>
             <p class="command-detail-description">
               You've got a feature request and a blank page. This command turns "we need OAuth" into a structured plan that actually tells you what to build -- researched, reviewed, and ready to execute.
@@ -180,14 +180,14 @@
               </div>
             </div>
             <div class="card-code-block">
-              <pre><code>/js-workflows:plan Add OAuth integration for third-party auth
-/js-workflows:plan Fix N+1 query in user dashboard</code></pre>
+              <pre><code>/js-ce:plan Add OAuth integration for third-party auth
+/js-ce:plan Fix N+1 query in user dashboard</code></pre>
             </div>
           </div>
 
           <div class="command-detail" id="workflows-review">
             <div class="command-detail-header">
-              <code class="command-detail-name">/js-workflows:review</code>
+              <code class="command-detail-name">/js-ce:review</code>
             </div>
             <p class="command-detail-description">
               Twelve specialized reviewers examine your PR in parallel -- security, performance, architecture, patterns. It's like code review by committee, except the committee finishes in two minutes instead of two days.
@@ -218,16 +218,16 @@
               </div>
             </div>
             <div class="card-code-block">
-              <pre><code>/js-workflows:review 42
-/js-workflows:review https://github.com/owner/repo/pull/42
-/js-workflows:review feature-branch-name
-/js-workflows:review latest</code></pre>
+              <pre><code>/js-ce:review 42
+/js-ce:review https://github.com/owner/repo/pull/42
+/js-ce:review feature-branch-name
+/js-ce:review latest</code></pre>
             </div>
           </div>
 
           <div class="command-detail" id="workflows-work">
             <div class="command-detail-header">
-              <code class="command-detail-name">/js-workflows:work</code>
+              <code class="command-detail-name">/js-ce:work</code>
             </div>
             <p class="command-detail-description">
               Point this at a plan file and watch it execute -- reading requirements, setting up environment, running tests, creating commits, opening PRs. It's the "just build the thing" button you wish you always had.
@@ -267,8 +267,8 @@
               </li>
             </ol>
             <div class="card-code-block">
-              <pre><code>/js-workflows:work plans/user-authentication.md
-/js-workflows:work todos/042-ready-p1-performance-issue.md</code></pre>
+              <pre><code>/js-ce:work plans/user-authentication.md
+/js-ce:work todos/042-ready-p1-performance-issue.md</code></pre>
             </div>
           </div>
         </section>
