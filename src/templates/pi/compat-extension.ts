@@ -48,8 +48,8 @@ function resolveBundledMcporterConfigPath(): string | undefined {
   try {
     const extensionDir = path.dirname(fileURLToPath(import.meta.url))
     const candidates = [
-      path.join(extensionDir, "..", "pi-resources", "compound-engineering", "mcporter.json"),
-      path.join(extensionDir, "..", "compound-engineering", "mcporter.json"),
+      path.join(extensionDir, "..", "pi-resources", "js-compound-engineering", "mcporter.json"),
+      path.join(extensionDir, "..", "js-compound-engineering", "mcporter.json"),
     ]
 
     for (const candidate of candidates) {
@@ -67,10 +67,10 @@ function resolveMcporterConfigPath(cwd: string, explicit?: string): string | und
     return path.resolve(explicit)
   }
 
-  const projectPath = path.join(cwd, ".pi", "compound-engineering", "mcporter.json")
+  const projectPath = path.join(cwd, ".pi", "js-compound-engineering", "mcporter.json")
   if (fs.existsSync(projectPath)) return projectPath
 
-  const globalPath = path.join(os.homedir(), ".pi", "agent", "compound-engineering", "mcporter.json")
+  const globalPath = path.join(os.homedir(), ".pi", "agent", "js-compound-engineering", "mcporter.json")
   if (fs.existsSync(globalPath)) return globalPath
 
   return resolveBundledMcporterConfigPath()

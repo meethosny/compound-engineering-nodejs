@@ -22,7 +22,7 @@ Compatibility notes:
 - For parallel agent runs, batch multiple subagent calls with multi_tool_use.parallel
 - AskUserQuestion maps to the ask_user_question extension tool
 - MCP access uses MCPorter via mcporter_list and mcporter_call extension tools
-- MCPorter config path: .pi/compound-engineering/mcporter.json (project) or ~/.pi/agent/compound-engineering/mcporter.json (global)
+- MCPorter config path: .pi/js-compound-engineering/mcporter.json (project) or ~/.pi/agent/js-compound-engineering/mcporter.json (global)
 `
 
 export async function writePiBundle(outputRoot: string, bundle: PiBundle): Promise<void> {
@@ -68,7 +68,7 @@ function resolvePiPaths(outputRoot: string) {
       skillsDir: path.join(outputRoot, "skills"),
       promptsDir: path.join(outputRoot, "prompts"),
       extensionsDir: path.join(outputRoot, "extensions"),
-      mcporterConfigPath: path.join(outputRoot, "compound-engineering", "mcporter.json"),
+      mcporterConfigPath: path.join(outputRoot, "js-compound-engineering", "mcporter.json"),
       agentsPath: path.join(outputRoot, "AGENTS.md"),
     }
   }
@@ -79,7 +79,7 @@ function resolvePiPaths(outputRoot: string) {
       skillsDir: path.join(outputRoot, "skills"),
       promptsDir: path.join(outputRoot, "prompts"),
       extensionsDir: path.join(outputRoot, "extensions"),
-      mcporterConfigPath: path.join(outputRoot, "compound-engineering", "mcporter.json"),
+      mcporterConfigPath: path.join(outputRoot, "js-compound-engineering", "mcporter.json"),
       agentsPath: path.join(outputRoot, "AGENTS.md"),
     }
   }
@@ -89,7 +89,7 @@ function resolvePiPaths(outputRoot: string) {
     skillsDir: path.join(outputRoot, ".pi", "skills"),
     promptsDir: path.join(outputRoot, ".pi", "prompts"),
     extensionsDir: path.join(outputRoot, ".pi", "extensions"),
-    mcporterConfigPath: path.join(outputRoot, ".pi", "compound-engineering", "mcporter.json"),
+    mcporterConfigPath: path.join(outputRoot, ".pi", "js-compound-engineering", "mcporter.json"),
     agentsPath: path.join(outputRoot, "AGENTS.md"),
   }
 }

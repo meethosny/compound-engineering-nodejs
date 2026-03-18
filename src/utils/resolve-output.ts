@@ -46,5 +46,9 @@ export function resolveTargetOutputRoot(options: {
     const home = qwenHome ?? path.join(os.homedir(), ".qwen", "extensions")
     return path.join(home, pluginName ?? "plugin")
   }
+  // OpenCode: default to XDG config path when no explicit output given
+  if (targetName === "opencode" && !hasExplicitOutput) {
+    return path.join(os.homedir(), ".config", "opencode")
+  }
   return outputRoot
 }

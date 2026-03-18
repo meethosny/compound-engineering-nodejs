@@ -208,7 +208,8 @@ function buildSteeringFiles(plugin: ClaudePlugin, knownAgentNames: string[]): Ki
   if (!content || content.trim().length === 0) return []
 
   const transformed = transformContentForKiro(content, knownAgentNames)
-  return [{ name: "compound-engineering", content: transformed }]
+  const steeringName = plugin.manifest.name || "js-compound-engineering"
+  return [{ name: steeringName, content: transformed }]
 }
 
 function normalizeName(value: string): string {

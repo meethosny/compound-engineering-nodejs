@@ -44,7 +44,9 @@ describe("syncToCodex", () => {
 
     await syncToCodex(config, tempRoot)
 
-    const skillPath = path.join(tempRoot, "skills", "skill-one")
+    // Skills are synced to .agents/skills/ relative to the parent of the codex root
+    const agentsSkillsRoot = path.join(path.dirname(tempRoot), ".agents", "skills")
+    const skillPath = path.join(agentsSkillsRoot, "skill-one")
     expect((await fs.lstat(skillPath)).isSymbolicLink()).toBe(true)
 
     const content = await fs.readFile(configPath, "utf8")

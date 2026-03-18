@@ -28,7 +28,7 @@ export function convertClaudeToPi(
 
   const extensions = [
     {
-      name: "compound-engineering-compat.ts",
+      name: "js-compound-engineering-compat.ts",
       content: PI_COMPAT_EXTENSION_SOURCE,
     },
   ]

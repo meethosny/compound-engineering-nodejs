@@ -72,13 +72,15 @@ export async function syncCodexCommands(
 ): Promise<void> {
   if (!hasCommands(config)) return
 
+  // Codex discovers skills from ~/.agents/skills/, not ~/.codex/skills/
+  const agentsSkillsRoot = path.join(path.dirname(outputRoot), ".agents", "skills")
   const plugin = buildClaudeHomePlugin(config)
   const bundle = convertClaudeToCodex(plugin, DEFAULT_SYNC_OPTIONS)
   for (const prompt of bundle.prompts) {
     await writeText(path.join(outputRoot, "prompts", `${prompt.name}.md`), prompt.content + "\n")
   }
   for (const skill of bundle.generatedSkills) {
-    await writeText(path.join(outputRoot, "skills", skill.name, "SKILL.md"), skill.content + "\n")
+    await writeText(path.join(agentsSkillsRoot, skill.name, "SKILL.md"), skill.content + "\n")
   }
 }
 

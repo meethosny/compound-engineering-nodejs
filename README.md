@@ -19,46 +19,73 @@ A Claude Code plugin marketplace featuring the **Compounding Engineering Plugin 
 /add-plugin js-compound-engineering
 ```
 
-## OpenCode, Codex, Droid, Pi, Gemini, Copilot, Kiro, Windsurf, OpenClaw & Qwen (experimental) Install
+## Convert to Other AI Coding Tools (experimental)
 
-This repo includes a Bun/TypeScript CLI that converts Claude Code plugins to OpenCode, Codex, Factory Droid, Pi, Gemini CLI, GitHub Copilot, Kiro CLI, Windsurf, OpenClaw, and Qwen Code.
+This repo includes a Bun/TypeScript CLI that converts the Claude Code plugin to OpenCode, Codex, Factory Droid, Pi, Gemini CLI, GitHub Copilot, Kiro CLI, Windsurf, OpenClaw, and Qwen Code. No npm publishing needed — run directly from the repo.
+
+### Quick Start
 
 ```bash
-# convert the js-compound-engineering plugin into OpenCode format
-bunx @meethosny/js-compound-plugin install js-compound-engineering --to opencode
+# clone the repo (if you haven't already)
+git clone https://github.com/meethosny/compound-engineering-nodejs.git
+cd compound-engineering-nodejs
+
+# install dependencies
+bun install
+```
+
+### Convert the Plugin
+
+Use `bun run cli` to run any CLI command locally:
+
+```bash
+# convert to OpenCode format
+bun run cli convert ./plugins/js-compound-engineering --to opencode
 
 # convert to Codex format
-bunx @meethosny/js-compound-plugin install js-compound-engineering --to codex
+bun run cli convert ./plugins/js-compound-engineering --to codex
 
 # convert to Factory Droid format
-bunx @meethosny/js-compound-plugin install js-compound-engineering --to droid
+bun run cli convert ./plugins/js-compound-engineering --to droid
 
 # convert to Pi format
-bunx @meethosny/js-compound-plugin install js-compound-engineering --to pi
+bun run cli convert ./plugins/js-compound-engineering --to pi
 
 # convert to Gemini CLI format
-bunx @meethosny/js-compound-plugin install js-compound-engineering --to gemini
+bun run cli convert ./plugins/js-compound-engineering --to gemini
 
 # convert to GitHub Copilot format
-bunx @meethosny/js-compound-plugin install js-compound-engineering --to copilot
+bun run cli convert ./plugins/js-compound-engineering --to copilot
 
 # convert to Kiro CLI format
-bunx @meethosny/js-compound-plugin install js-compound-engineering --to kiro
+bun run cli convert ./plugins/js-compound-engineering --to kiro
 
 # convert to OpenClaw format
-bunx @meethosny/js-compound-plugin install js-compound-engineering --to openclaw
+bun run cli convert ./plugins/js-compound-engineering --to openclaw
 
 # convert to Windsurf format (global scope by default)
-bunx @meethosny/js-compound-plugin install js-compound-engineering --to windsurf
+bun run cli convert ./plugins/js-compound-engineering --to windsurf
 
 # convert to Windsurf workspace scope
-bunx @meethosny/js-compound-plugin install js-compound-engineering --to windsurf --scope workspace
+bun run cli convert ./plugins/js-compound-engineering --to windsurf --scope workspace
 
 # convert to Qwen Code format
-bunx @meethosny/js-compound-plugin install js-compound-engineering --to qwen
+bun run cli convert ./plugins/js-compound-engineering --to qwen
 
-# auto-detect installed tools and install to all
-bunx @meethosny/js-compound-plugin install js-compound-engineering --to all
+# auto-detect installed tools and convert to all
+bun run cli convert ./plugins/js-compound-engineering --to all
+```
+
+### Global Command (optional)
+
+If you prefer a global `js-compound-plugin` command that works from any directory:
+
+```bash
+cd compound-engineering-nodejs
+bun link
+
+# now use from anywhere
+js-compound-plugin convert /path/to/plugins/js-compound-engineering --to droid
 ```
 
 ### Local Development
@@ -72,24 +99,12 @@ When developing and testing local changes to the plugin:
 alias claude-dev-ce='claude --plugin-dir ~/code/compound-engineering-nodejs/plugins/js-compound-engineering'
 ```
 
-One-liner to append it:
-
-```bash
-echo "alias claude-dev-ce='claude --plugin-dir ~/code/compound-engineering-nodejs/plugins/js-compound-engineering'" >> ~/.zshrc
-```
-
 Then run `claude-dev-ce` instead of `claude` to test your changes. Your production install stays untouched.
 
-**Codex** — point the install command at your local path:
+**Other targets** — use `convert` with a local path:
 
 ```bash
-bunx @meethosny/js-compound-plugin install ./plugins/js-compound-engineering --to codex
-```
-
-**Other targets** — same pattern, swap the target:
-
-```bash
-bun run src/index.ts install ./plugins/js-compound-engineering --to opencode
+bun run cli convert ./plugins/js-compound-engineering --to codex
 ```
 
 <details>
@@ -98,7 +113,7 @@ bun run src/index.ts install ./plugins/js-compound-engineering --to opencode
 | Target | Output path | Notes |
 |--------|------------|-------|
 | `opencode` | `~/.config/opencode/` | Commands as `.md` files; `opencode.json` MCP config deep-merged; backups made before overwriting |
-| `codex` | `~/.codex/prompts` + `~/.codex/skills` | Each command becomes a prompt + skill pair; descriptions truncated to 1024 chars |
+| `codex` | `~/.codex/prompts` + `~/.agents/skills` | Each command becomes a prompt + skill pair; skills written to `~/.agents/skills/` where Codex discovers them; descriptions truncated to 1024 chars |
 | `droid` | `~/.factory/` | Tool names mapped (`Bash`→`Execute`, `Write`→`Create`); namespace prefixes stripped |
 | `pi` | `~/.pi/agent/` | Prompts, skills, extensions, and `mcporter.json` for MCPorter interoperability |
 | `gemini` | `.gemini/` | Skills from agents; commands as `.toml`; namespaced commands become directories (`ce:plan` → `commands/ce/plan.toml`) |
@@ -118,40 +133,40 @@ Sync your personal Claude Code config (`~/.claude/`) to other AI coding tools. O
 
 ```bash
 # Sync to all detected tools (default)
-bunx @meethosny/js-compound-plugin sync
+bun run cli sync
 
 # Sync skills and MCP servers to OpenCode
-bunx @meethosny/js-compound-plugin sync --target opencode
+bun run cli sync --target opencode
 
 # Sync to Codex
-bunx @meethosny/js-compound-plugin sync --target codex
+bun run cli sync --target codex
 
 # Sync to Pi
-bunx @meethosny/js-compound-plugin sync --target pi
+bun run cli sync --target pi
 
 # Sync to Droid
-bunx @meethosny/js-compound-plugin sync --target droid
+bun run cli sync --target droid
 
 # Sync to GitHub Copilot (skills + MCP servers)
-bunx @meethosny/js-compound-plugin sync --target copilot
+bun run cli sync --target copilot
 
 # Sync to Gemini (skills + MCP servers)
-bunx @meethosny/js-compound-plugin sync --target gemini
+bun run cli sync --target gemini
 
 # Sync to Windsurf
-bunx @meethosny/js-compound-plugin sync --target windsurf
+bun run cli sync --target windsurf
 
 # Sync to Kiro
-bunx @meethosny/js-compound-plugin sync --target kiro
+bun run cli sync --target kiro
 
 # Sync to Qwen
-bunx @meethosny/js-compound-plugin sync --target qwen
+bun run cli sync --target qwen
 
 # Sync to OpenClaw (skills only; MCP is validation-gated)
-bunx @meethosny/js-compound-plugin sync --target openclaw
+bun run cli sync --target openclaw
 
 # Sync to all detected tools
-bunx @meethosny/js-compound-plugin sync --target all
+bun run cli sync --target all
 ```
 
 This syncs:

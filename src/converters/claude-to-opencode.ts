@@ -19,6 +19,7 @@ export type ClaudeToOpenCodeOptions = {
   agentMode: "primary" | "subagent"
   inferTemperature: boolean
   permissions: PermissionMode
+  stripModels?: boolean
 }
 
 const TOOL_MAP: Record<string, string> = {
@@ -66,7 +67,7 @@ export function convertClaudeToOpenCode(
   options: ClaudeToOpenCodeOptions,
 ): OpenCodeBundle {
   const agentFiles = plugin.agents.map((agent) => convertAgent(agent, options))
-  const cmdFiles = convertCommands(plugin.commands)
+  const cmdFiles = convertCommands(plugin.commands, options)
   const mcp = plugin.mcpServers ? convertMcp(plugin.mcpServers) : undefined
   const plugins = plugin.hooks ? [convertHooks(plugin.hooks)] : []
 
@@ -92,11 +93,11 @@ function convertAgent(agent: ClaudeAgent, options: ClaudeToOpenCodeOptions) {
     mode: options.agentMode,
   }
 
-  if (agent.model && agent.model !== "inherit") {
+  if (!options.stripModels && agent.model && agent.model !== "inherit") {
     frontmatter.model = normalizeModel(agent.model)
   }
 
-  if (options.inferTemperature) {
+  if (!options.stripModels && options.inferTemperature) {
     const temperature = inferTemperature(agent)
     if (temperature !== undefined) {
       frontmatter.temperature = temperature
@@ -113,14 +114,14 @@ function convertAgent(agent: ClaudeAgent, options: ClaudeToOpenCodeOptions) {
 
 // Commands are written as individual .md files rather than entries in opencode.json.
 // Chosen over JSON map because opencode resolves commands by filename at runtime (ADR-001).
-function convertCommands(commands: ClaudeCommand[]): OpenCodeCommandFile[] {
+function convertCommands(commands: ClaudeCommand[], options: ClaudeToOpenCodeOptions): OpenCodeCommandFile[] {
   const files: OpenCodeCommandFile[] = []
   for (const command of commands) {
     if (command.disableModelInvocation) continue
     const frontmatter: Record<string, unknown> = {
       description: command.description,
     }
-    if (command.model && command.model !== "inherit") {
+    if (!options.stripModels && command.model && command.model !== "inherit") {
       frontmatter.model = normalizeModel(command.model)
     }
     const content = formatFrontmatter(frontmatter, rewriteClaudePaths(command.body))

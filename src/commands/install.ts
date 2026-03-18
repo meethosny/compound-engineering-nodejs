@@ -37,7 +37,7 @@ export default defineCommand({
     codexHome: {
       type: "string",
       alias: "codex-home",
-      description: "Write Codex output to this .codex root (ex: ~/.codex)",
+      description: "Write Codex output to this .codex root (ex: ~/.codex). Skills are written to ~/.agents/skills/",
     },
     piHome: {
       type: "string",
@@ -77,6 +77,11 @@ export default defineCommand({
       default: true,
       description: "Infer agent temperature from name/description",
     },
+    stripModels: {
+      type: "boolean",
+      default: true,
+      description: "Omit model assignments so agents use your configured model (default: true)",
+    },
   },
   async run({ args }) {
     const targetName = String(args.to)
@@ -101,6 +106,7 @@ export default defineCommand({
         agentMode: String(args.agentMode) === "primary" ? "primary" : "subagent",
         inferTemperature: Boolean(args.inferTemperature),
         permissions: permissions as PermissionMode,
+        stripModels: args.stripModels !== false,
       }
 
       if (targetName === "all") {
@@ -282,7 +288,7 @@ async function resolveGitHubPluginPath(pluginName: string): Promise<ResolvedPlug
 function resolveGitHubSource(): string {
   const override = process.env.COMPOUND_PLUGIN_GITHUB_SOURCE
   if (override && override.trim()) return override.trim()
-  return "https://github.com/EveryInc/compound-engineering-plugin"
+  return "https://github.com/meethosny/compound-engineering-nodejs"
 }
 
 async function cloneGitHubRepo(source: string, destination: string): Promise<void> {

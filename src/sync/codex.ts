@@ -14,7 +14,9 @@ export async function syncToCodex(
   config: ClaudeHomeConfig,
   outputRoot: string,
 ): Promise<void> {
-  await syncSkills(config.skills, path.join(outputRoot, "skills"))
+  // Codex discovers skills from ~/.agents/skills/, not ~/.codex/skills/
+  const agentsSkillsRoot = path.join(path.dirname(outputRoot), ".agents", "skills")
+  await syncSkills(config.skills, agentsSkillsRoot)
   await syncCodexCommands(config, outputRoot)
 
   // Write MCP servers to config.toml (TOML format)

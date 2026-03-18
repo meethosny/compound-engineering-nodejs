@@ -37,11 +37,14 @@ describe("writeCodexBundle", () => {
 
     await writeCodexBundle(tempRoot, bundle)
 
+    // Prompts and config stay in .codex/
     expect(await exists(path.join(tempRoot, ".codex", "prompts", "command-one.md"))).toBe(true)
-    expect(await exists(path.join(tempRoot, ".codex", "skills", "skill-one", "SKILL.md"))).toBe(true)
-    expect(await exists(path.join(tempRoot, ".codex", "skills", "agent-skill", "SKILL.md"))).toBe(true)
     const configPath = path.join(tempRoot, ".codex", "config.toml")
     expect(await exists(configPath)).toBe(true)
+
+    // Skills go to .agents/skills/ (where Codex CLI discovers them)
+    expect(await exists(path.join(tempRoot, ".agents", "skills", "skill-one", "SKILL.md"))).toBe(true)
+    expect(await exists(path.join(tempRoot, ".agents", "skills", "agent-skill", "SKILL.md"))).toBe(true)
 
     const config = await fs.readFile(configPath, "utf8")
     expect(config).toContain("[mcp_servers.local]")
@@ -70,8 +73,10 @@ describe("writeCodexBundle", () => {
 
     await writeCodexBundle(codexRoot, bundle)
 
+    // Prompts stay in .codex/
     expect(await exists(path.join(codexRoot, "prompts", "command-one.md"))).toBe(true)
-    expect(await exists(path.join(codexRoot, "skills", "skill-one", "SKILL.md"))).toBe(true)
+    // Skills go to sibling .agents/skills/ directory
+    expect(await exists(path.join(tempRoot, ".agents", "skills", "skill-one", "SKILL.md"))).toBe(true)
   })
 
   test("backs up existing config.toml before overwriting", async () => {

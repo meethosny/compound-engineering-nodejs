@@ -23,7 +23,20 @@ export function parseFrontmatter(raw: string): FrontmatterResult {
     return { data: {}, body: raw }
   }
 
-  const yamlText = lines.slice(1, endIndex).join("\n")
+  const rawYaml = lines.slice(1, endIndex).join("\n")
+  // Sanitize frontmatter values that break js-yaml:
+  // - Literal \n sequences (common in Claude agent descriptions)
+  // - Long values with colons that YAML misinterprets as nested mappings
+  const yamlText = rawYaml.replace(/^(\w[\w-]*:\s*)(.+)$/gm, (_match, key: string, value: string) => {
+    // Skip values already properly quoted
+    if (/^["']/.test(value.trim())) return _match
+    // Skip simple values (no special chars)
+    const needsQuoting = value.includes("\\n") || (value.length > 200 && value.includes(": "))
+    if (!needsQuoting) return _match
+    const cleaned = value.replace(/\\n/g, " ").replace(/\s+/g, " ").trim()
+    const escaped = cleaned.replace(/\\/g, "\\\\").replace(/"/g, '\\"')
+    return key + '"' + escaped + '"'
+  })
   const body = lines.slice(endIndex + 1).join("\n")
   const parsed = load(yamlText)
   const data = (parsed && typeof parsed === "object") ? (parsed as Record<string, unknown>) : {}

@@ -7,6 +7,10 @@ export async function writeCodexBundle(outputRoot: string, bundle: CodexBundle):
   const codexRoot = resolveCodexRoot(outputRoot)
   await ensureDir(codexRoot)
 
+  // Codex discovers skills from ~/.agents/skills/ (user scope), not ~/.codex/skills/
+  // See: https://developers.openai.com/codex/skills/
+  const agentsSkillsRoot = resolveAgentsSkillsRoot(codexRoot)
+
   if (bundle.prompts.length > 0) {
     const promptsDir = path.join(codexRoot, "prompts")
     for (const prompt of bundle.prompts) {
@@ -15,16 +19,14 @@ export async function writeCodexBundle(outputRoot: string, bundle: CodexBundle):
   }
 
   if (bundle.skillDirs.length > 0) {
-    const skillsRoot = path.join(codexRoot, "skills")
     for (const skill of bundle.skillDirs) {
-      await copyDir(skill.sourceDir, path.join(skillsRoot, skill.name))
+      await copyDir(skill.sourceDir, path.join(agentsSkillsRoot, skill.name))
     }
   }
 
   if (bundle.generatedSkills.length > 0) {
-    const skillsRoot = path.join(codexRoot, "skills")
     for (const skill of bundle.generatedSkills) {
-      await writeText(path.join(skillsRoot, skill.name, "SKILL.md"), skill.content + "\n")
+      await writeText(path.join(agentsSkillsRoot, skill.name, "SKILL.md"), skill.content + "\n")
     }
   }
 
@@ -41,6 +43,12 @@ export async function writeCodexBundle(outputRoot: string, bundle: CodexBundle):
 
 function resolveCodexRoot(outputRoot: string): string {
   return path.basename(outputRoot) === ".codex" ? outputRoot : path.join(outputRoot, ".codex")
+}
+
+// Codex CLI discovers user-scope skills from ~/.agents/skills/, not ~/.codex/skills/
+// Derive the .agents/skills path from the codex root's parent directory
+function resolveAgentsSkillsRoot(codexRoot: string): string {
+  return path.join(path.dirname(codexRoot), ".agents", "skills")
 }
 
 export function renderCodexConfig(mcpServers?: Record<string, ClaudeMcpServer>): string | null {

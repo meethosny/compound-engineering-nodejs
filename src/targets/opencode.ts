@@ -2,7 +2,7 @@ import path from "path"
 import { backupFile, copyDir, ensureDir, pathExists, readJson, resolveCommandPath, writeJson, writeText } from "../utils/files"
 import type { OpenCodeBundle, OpenCodeConfig } from "../types/opencode"
 
-// Merges plugin config into existing opencode.json. User keys win on conflict. See ADR-002.
+// Merges plugin config into existing .opencode.json. User keys win on conflict. See ADR-002.
 async function mergeOpenCodeConfig(
   configPath: string,
   incoming: OpenCodeConfig,
@@ -58,6 +58,10 @@ export async function writeOpenCodeBundle(outputRoot: string, bundle: OpenCodeBu
   const openCodePaths = resolveOpenCodePaths(outputRoot)
   await ensureDir(openCodePaths.root)
 
+  // OpenCode only supports custom commands (accessed via Ctrl+K).
+  // Agents and skills don't exist as user-extensible features in OpenCode.
+  // Everything gets written as commands.
+
   const hadExistingConfig = await pathExists(openCodePaths.configPath)
   const backupPath = await backupFile(openCodePaths.configPath)
   if (backupPath) {
@@ -66,16 +70,18 @@ export async function writeOpenCodeBundle(outputRoot: string, bundle: OpenCodeBu
   const merged = await mergeOpenCodeConfig(openCodePaths.configPath, bundle.config)
   await writeJson(openCodePaths.configPath, merged)
   if (hadExistingConfig) {
-    console.log("Merged plugin config into existing opencode.json (user settings preserved)")
+    console.log("Merged plugin config into existing .opencode.json (user settings preserved)")
   }
 
-  const agentsDir = openCodePaths.agentsDir
+  // Write agents as commands (OpenCode has no user-defined agents)
+  const commandsDir = openCodePaths.commandDir
   for (const agent of bundle.agents) {
-    await writeText(path.join(agentsDir, `${agent.name}.md`), agent.content + "\n")
+    await writeText(path.join(commandsDir, `${agent.name}.md`), agent.content + "\n")
   }
 
+  // Write command files as commands
   for (const commandFile of bundle.commandFiles) {
-    const dest = await resolveCommandPath(openCodePaths.commandDir, commandFile.name, ".md")
+    const dest = await resolveCommandPath(commandsDir, commandFile.name, ".md")
     const cmdBackupPath = await backupFile(dest)
     if (cmdBackupPath) {
       console.log(`Backed up existing command file to ${cmdBackupPath}`)
@@ -83,6 +89,7 @@ export async function writeOpenCodeBundle(outputRoot: string, bundle: OpenCodeBu
     await writeText(dest, commandFile.content + "\n")
   }
 
+  // Write hooks/plugins if any
   if (bundle.plugins.length > 0) {
     const pluginsDir = openCodePaths.pluginsDir
     for (const plugin of bundle.plugins) {
@@ -90,38 +97,30 @@ export async function writeOpenCodeBundle(outputRoot: string, bundle: OpenCodeBu
     }
   }
 
+  // Write skills as commands (OpenCode has no skills concept)
   if (bundle.skillDirs.length > 0) {
-    const skillsRoot = openCodePaths.skillsDir
     for (const skill of bundle.skillDirs) {
-      await copyDir(skill.sourceDir, path.join(skillsRoot, skill.name))
+      // Copy the SKILL.md content as a command file
+      const skillMdPath = path.join(skill.sourceDir, "SKILL.md")
+      if (await pathExists(skillMdPath)) {
+        const destPath = path.join(commandsDir, `${skill.name}.md`)
+        const content = await import("fs").then(fs => fs.promises.readFile(skillMdPath, "utf8"))
+        await writeText(destPath, content + "\n")
+      }
     }
   }
 }
 
 function resolveOpenCodePaths(outputRoot: string) {
-  const base = path.basename(outputRoot)
-  // Global install: ~/.config/opencode (basename is "opencode")
-  // Project install: .opencode (basename is ".opencode")
-  if (base === "opencode" || base === ".opencode") {
-    return {
-      root: outputRoot,
-      configPath: path.join(outputRoot, "opencode.json"),
-      agentsDir: path.join(outputRoot, "agents"),
-      pluginsDir: path.join(outputRoot, "plugins"),
-      skillsDir: path.join(outputRoot, "skills"),
-      // .md command files; alternative to the command key in opencode.json
-      commandDir: path.join(outputRoot, "commands"),
-    }
-  }
+  const commandsDir = path.join(outputRoot, "commands")
 
-  // Custom output directory - nest under .opencode subdirectory
   return {
     root: outputRoot,
-    configPath: path.join(outputRoot, "opencode.json"),
-    agentsDir: path.join(outputRoot, ".opencode", "agents"),
-    pluginsDir: path.join(outputRoot, ".opencode", "plugins"),
-    skillsDir: path.join(outputRoot, ".opencode", "skills"),
-    // .md command files; alternative to the command key in opencode.json
-    commandDir: path.join(outputRoot, ".opencode", "commands"),
+    // OpenCode config is .opencode.json (with dot prefix)
+    configPath: path.join(outputRoot, ".opencode.json"),
+    // Commands are the only user-extensible feature
+    commandDir: commandsDir,
+    // Plugins dir for hooks (if supported)
+    pluginsDir: path.join(outputRoot, "plugins"),
   }
 }
