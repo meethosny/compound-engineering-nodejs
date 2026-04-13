@@ -1,205 +1,174 @@
 # Testing Patterns
 
-Testing patterns for npm packages using Node.js built-in test runner.
+## Node.js Built-in Test Runner
 
-## Basic Test Structure
+Sindre and modern Node.js packages use `node:test` -- no external test runner needed.
 
 ```javascript
 // test.js
-import { test, describe } from 'node:test';
+import test from 'node:test';
 import assert from 'node:assert/strict';
-import { doThing } from './index.js';
+import {doThing} from './index.js';
 
-describe('doThing', () => {
-  test('returns expected output', () => {
-    assert.equal(doThing('input'), 'expected');
-  });
-
-  test('handles options', () => {
-    assert.equal(
-      doThing('input', { uppercase: true }),
-      'EXPECTED'
-    );
-  });
-});
-```
-
-## Running Tests
-
-```bash
-# Run all tests
-node --test
-
-# Run specific file
-node --test test.js
-
-# Watch mode
-node --test --watch
-
-# With coverage
-node --test --experimental-test-coverage
-```
-
-## Testing Async Functions
-
-```javascript
-test('async operation', async () => {
-  const result = await asyncDoThing('input');
-  assert.equal(result, 'expected');
+test('basic functionality', () => {
+  assert.equal(doThing('hello'), 'processed hello');
 });
 
-test('resolves with value', async () => {
-  await assert.doesNotReject(async () => {
-    await asyncDoThing('valid');
-  });
+test('with options', () => {
+  assert.equal(
+    doThing('hello', {uppercase: true}),
+    'PROCESSED HELLO',
+  );
 });
-```
 
-## Testing Errors
-
-```javascript
-test('throws TypeError on invalid input', () => {
+test('throws on invalid input', () => {
   assert.throws(
     () => doThing(123),
-    {
-      name: 'TypeError',
-      message: /Expected string/
-    }
+    {name: 'TypeError', message: /Expected a string/},
   );
 });
 
-test('async rejection', async () => {
-  await assert.rejects(
-    async () => asyncDoThing('invalid'),
-    {
-      name: 'Error',
-      message: 'Invalid input'
-    }
-  );
+test('async operation', async () => {
+  const result = await doAsyncThing('hello');
+  assert.equal(result, 'processed hello');
 });
 ```
 
-## Snapshot-like Testing
+## Test File Structure
 
-```javascript
-test('complex output', () => {
-  const result = transformData(complexInput);
-  
-  assert.deepEqual(result, {
-    id: 1,
-    name: 'expected',
-    items: ['a', 'b', 'c']
-  });
-});
+```
+test/
+├── core.js           # Core functionality tests
+├── options.js        # Options handling tests
+├── errors.js         # Error case tests
+└── fixtures/         # Test data
+    ├── valid.json
+    └── invalid.json
 ```
 
-## Test Organization
+Or for simple packages, a single `test.js` at the root.
 
-```javascript
-describe('publicAPI', () => {
-  describe('parse', () => {
-    test('basic parsing', () => { /* ... */ });
-    test('with options', () => { /* ... */ });
-  });
-
-  describe('stringify', () => {
-    test('basic stringify', () => { /* ... */ });
-    test('with formatting', () => { /* ... */ });
-  });
-});
-```
-
-## Setup and Teardown
-
-```javascript
-import { before, after, beforeEach, afterEach } from 'node:test';
-
-describe('with setup', () => {
-  let tempDir;
-
-  before(async () => {
-    tempDir = await fs.mkdtemp(path.join(os.tmpdir(), 'test-'));
-  });
-
-  after(async () => {
-    await fs.rm(tempDir, { recursive: true });
-  });
-
-  test('uses temp directory', async () => {
-    // Test using tempDir
-  });
-});
-```
-
-## Mocking (Node.js 20+)
-
-```javascript
-import { mock } from 'node:test';
-
-test('with mock', () => {
-  const fn = mock.fn((x) => x * 2);
-  
-  const result = fn(5);
-  
-  assert.equal(result, 10);
-  assert.equal(fn.mock.calls.length, 1);
-  assert.deepEqual(fn.mock.calls[0].arguments, [5]);
-});
-```
-
-## Package.json Scripts
-
-```json
-{
-  "scripts": {
-    "test": "node --test",
-    "test:watch": "node --test --watch",
-    "test:coverage": "node --test --experimental-test-coverage"
-  }
-}
-```
-
-## CI Configuration (GitHub Actions)
+## Multi-Version Testing with GitHub Actions
 
 ```yaml
-# .github/workflows/test.yml
-name: Test
+# .github/workflows/main.yml
+name: CI
+
 on: [push, pull_request]
 
 jobs:
   test:
     runs-on: ubuntu-latest
+
     strategy:
+      fail-fast: false
       matrix:
-        node-version: [18, 20, 22]
+        node-version:
+          - 18
+          - 20
+          - 22
+
     steps:
       - uses: actions/checkout@v4
+
       - uses: actions/setup-node@v4
         with:
           node-version: ${{ matrix.node-version }}
+
       - run: npm install
+
       - run: npm test
 ```
 
-## Alternative: Vitest
+## Package.json Test Script
 
-For more features (watch mode, UI, better DX):
-
-```javascript
-// vitest.config.js
-export default {
-  test: {
-    globals: false
+```json
+{
+  "scripts": {
+    "test": "node --test",
+    "test:watch": "node --test --watch"
   }
-};
+}
 ```
 
-```javascript
-// test.js
-import { test, expect } from 'vitest';
-import { doThing } from './index.js';
+## Assertion Patterns
 
-test('basic usage', () => {
-  expect(doThing('input')).toBe('expected');
+```javascript
+import assert from 'node:assert/strict';
+
+// Equality
+assert.equal(actual, expected);
+assert.deepEqual(actualObject, expectedObject);
+
+// Truthiness
+assert.ok(value);
+
+// Throws
+assert.throws(() => badCode(), {name: 'TypeError'});
+await assert.rejects(async () => badAsyncCode(), {name: 'Error'});
+
+// Negation
+assert.notEqual(actual, unexpected);
+assert.notDeepEqual(actualObject, unexpectedObject);
+```
+
+## Test Helpers
+
+```javascript
+// test/helpers.js
+import {mkdtemp, rm} from 'node:fs/promises';
+import {tmpdir} from 'node:os';
+import {join} from 'node:path';
+
+export async function createTempDir() {
+  return mkdtemp(join(tmpdir(), 'test-'));
+}
+
+export async function cleanTempDir(dir) {
+  await rm(dir, {recursive: true, force: true});
+}
+```
+
+## Testing with Environment Variables
+
+```javascript
+test('reads from environment', () => {
+  const original = process.env.MY_VAR;
+  process.env.MY_VAR = 'test-value';
+
+  try {
+    const result = doThing();
+    assert.equal(result, 'test-value');
+  } finally {
+    if (original === undefined) {
+      delete process.env.MY_VAR;
+    } else {
+      process.env.MY_VAR = original;
+    }
+  }
 });
+```
+
+## Type Checking in CI
+
+```yaml
+# Add to CI workflow
+- run: npx tsd
+```
+
+```json
+{
+  "devDependencies": {
+    "tsd": "^0.31.0"
+  }
+}
+```
+
+```typescript
+// index.test-d.ts
+import {expectType, expectError} from 'tsd';
+import {doThing} from './index.js';
+
+expectType<string>(doThing('hello'));
+expectError(doThing(123));
 ```

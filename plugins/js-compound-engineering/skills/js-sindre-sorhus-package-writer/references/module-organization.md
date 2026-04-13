@@ -1,163 +1,135 @@
-# ES Module Organization
+# Module Organization Patterns
 
-Patterns for organizing modern ES Module packages following Sindre Sorhus's approach.
+## Simple Package Layout
 
-## Single Export Package
+```
+package-name/
+├── index.js          # Entry point, main API
+├── index.d.ts        # TypeScript definitions
+├── package.json      # Metadata
+├── readme.md         # Documentation
+├── license           # MIT
+└── test.js           # Tests
+```
 
-Most packages should do one thing. Single export is cleanest:
+## Complex Package Layout (execa/ky pattern)
+
+```
+package-name/
+├── index.js          # Public API re-exports
+├── index.d.ts        # TypeScript definitions
+├── source/           # Internal modules
+│   ├── core.js       # Core logic
+│   ├── options.js    # Options normalization
+│   ├── errors.js     # Custom error classes
+│   └── utils.js      # Shared utilities
+├── test/
+│   ├── core.js
+│   ├── options.js
+│   └── errors.js
+├── package.json
+└── readme.md
+```
+
+## Functional Decomposition Pattern
+
+Break large modules into focused files:
 
 ```javascript
-// index.js
-export function slugify(string, options = {}) {
+// index.js - Public API
+export {doThing} from './source/core.js';
+export {doOtherThing} from './source/other.js';
+export {PackageError} from './source/errors.js';
+
+// source/core.js
+import {validate} from './utils.js';
+
+export function doThing(input, options = {}) {
+  validate(input, options);
   // Implementation
+}
+
+// source/utils.js
+export function validate(input, options) {
+  if (typeof input !== 'string') {
+    throw new TypeError(`Expected a string, got ${typeof input}`);
+  }
 }
 ```
 
-```typescript
-// index.d.ts
-export function slugify(string: string, options?: Options): string;
+## Exports Field Patterns
+
+```json
+{
+  "exports": "./index.js"
+}
 ```
 
-## Multiple Related Exports
-
-When exports are closely related, use named exports:
-
-```javascript
-// index.js
-export function parse(input) { /* ... */ }
-export function stringify(object) { /* ... */ }
-export function validate(input) { /* ... */ }
-```
-
-```typescript
-// index.d.ts
-export function parse(input: string): ParsedResult;
-export function stringify(object: object): string;
-export function validate(input: string): boolean;
-```
-
-## Subpath Exports
-
-For packages with distinct features that users may want to import separately:
+For packages with multiple entry points:
 
 ```json
 {
   "exports": {
     ".": "./index.js",
-    "./parse": "./parse.js",
-    "./stringify": "./stringify.js"
+    "./browser": "./browser.js",
+    "./utils": "./source/utils.js"
   }
 }
 ```
 
-```javascript
-// Usage
-import { parse } from 'package-name/parse';
-import { stringify } from 'package-name/stringify';
-```
+## ESM Best Practices
 
-## Re-exporting Pattern
-
-Keep implementation separate, export from index:
-
-```
-src/
-├── index.js          # Re-exports only
-├── parse.js          # Implementation
-├── stringify.js      # Implementation
-└── utils.js          # Internal only
-```
+Use explicit file extensions in imports:
 
 ```javascript
-// index.js
-export { parse } from './parse.js';
-export { stringify } from './stringify.js';
-// utils.js is NOT exported - internal use only
+// CORRECT
+import {helper} from './source/utils.js';
+
+// WRONG - no extension
+import {helper} from './source/utils';
 ```
 
-## Constants and Types
+Use `node:` protocol for built-in modules:
 
 ```javascript
-// index.js
-export const VERSION = '1.0.0';
-export const DEFAULTS = Object.freeze({
-  timeout: 5000,
-  retries: 3
-});
+// CORRECT
+import {readFile} from 'node:fs/promises';
+import path from 'node:path';
+import process from 'node:process';
+
+// AVOID
+import {readFile} from 'fs/promises';
 ```
+
+## TypeScript Definitions Organization
 
 ```typescript
 // index.d.ts
-export const VERSION: string;
-export const DEFAULTS: {
-  readonly timeout: number;
-  readonly retries: number;
-};
-```
-
-## Factory Pattern
-
-When instances are needed:
-
-```javascript
-// index.js
-export function createClient(options = {}) {
-  const { baseUrl, timeout = 5000 } = options;
-  
-  if (!baseUrl) {
-    throw new Error('baseUrl is required');
-  }
-
-  return {
-    async get(path) {
-      // Implementation
-    },
-    async post(path, data) {
-      // Implementation
-    }
-  };
+export interface Options {
+  /**
+   * Description with JSDoc.
+   * @default true
+   */
+  readonly optionA?: boolean;
 }
+
+export function doThing(input: string, options?: Options): string;
 ```
 
-## Class Export (When Appropriate)
+For complex packages, use separate `.d.ts` files:
 
-Classes when there's real state management:
+```
+├── index.d.ts        # Re-exports public types
+├── source/
+│   ├── core.d.ts
+│   └── errors.d.ts
+```
+
+## Comments Style
+
+Minimal, let the code speak:
 
 ```javascript
-// index.js
-export class Cache {
-  #store = new Map();
-  
-  constructor(options = {}) {
-    this.maxSize = options.maxSize ?? 100;
-  }
-  
-  get(key) {
-    return this.#store.get(key);
-  }
-  
-  set(key, value) {
-    if (this.#store.size >= this.maxSize) {
-      const firstKey = this.#store.keys().next().value;
-      this.#store.delete(firstKey);
-    }
-    this.#store.set(key, value);
-  }
-}
+// Only for non-obvious logic
+const timeout = options.timeout ?? (isCI ? 60_000 : 5000);
 ```
-
-## Avoid Default Exports
-
-```javascript
-// ❌ Bad - default export
-export default function doThing() {}
-
-// ✅ Good - named export
-export function doThing() {}
-```
-
-Reasons to avoid default exports:
-- Harder to rename consistently
-- No autocomplete at import site
-- Mixed usage with named exports is confusing
-- Tree-shaking is less effective

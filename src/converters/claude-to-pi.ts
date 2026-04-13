@@ -1,5 +1,5 @@
 import { formatFrontmatter } from "../utils/frontmatter"
-import type { ClaudeAgent, ClaudeCommand, ClaudeMcpServer, ClaudePlugin } from "../types/claude"
+import { type ClaudeAgent, type ClaudeCommand, type ClaudeMcpServer, type ClaudePlugin, filterSkillsByPlatform } from "../types/claude"
 import type {
   PiBundle,
   PiGeneratedSkill,
@@ -17,8 +17,9 @@ export function convertClaudeToPi(
   plugin: ClaudePlugin,
   _options: ClaudeToPiOptions,
 ): PiBundle {
+  const platformSkills = filterSkillsByPlatform(plugin.skills, "pi")
   const promptNames = new Set<string>()
-  const usedSkillNames = new Set<string>(plugin.skills.map((skill) => normalizeName(skill.name)))
+  const usedSkillNames = new Set<string>(platformSkills.map((skill) => normalizeName(skill.name)))
 
   const prompts = plugin.commands
     .filter((command) => !command.disableModelInvocation)
@@ -35,7 +36,7 @@ export function convertClaudeToPi(
 
   return {
     prompts,
-    skillDirs: plugin.skills.map((skill) => ({
+    skillDirs: platformSkills.map((skill) => ({
       name: skill.name,
       sourceDir: skill.sourceDir,
     })),
@@ -90,22 +91,25 @@ function convertAgent(agent: ClaudeAgent, usedNames: Set<string>): PiGeneratedSk
   }
 }
 
-function transformContentForPi(body: string): string {
+export function transformContentForPi(body: string): string {
   let result = body
 
-  // Task repo-research-analyst(feature_description)
+  // Task repo-research-analyst(feature_description) or Task js-compound-engineering:research:repo-research-analyst(args)
   // -> Run subagent with agent="repo-research-analyst" and task="feature_description"
-  const taskPattern = /^(\s*-?\s*)Task\s+([a-z][a-z0-9-]*)\(([^)]+)\)/gm
+  const taskPattern = /^(\s*-?\s*)Task\s+([a-z][a-z0-9:-]*)\(([^)]*)\)/gm
   result = result.replace(taskPattern, (_match, prefix: string, agentName: string, args: string) => {
-    const skillName = normalizeName(agentName)
+    const finalSegment = agentName.includes(":") ? agentName.split(":").pop()! : agentName
+    const skillName = normalizeName(finalSegment)
     const trimmedArgs = args.trim().replace(/\s+/g, " ")
-    return `${prefix}Run subagent with agent=\"${skillName}\" and task=\"${trimmedArgs}\".`
+    return trimmedArgs
+      ? `${prefix}Run subagent with agent=\"${skillName}\" and task=\"${trimmedArgs}\".`
+      : `${prefix}Run subagent with agent=\"${skillName}\".`
   })
 
   // Claude-specific tool references
   result = result.replace(/\bAskUserQuestion\b/g, "ask_user_question")
-  result = result.replace(/\bTodoWrite\b/g, "file-based todos (todos/ + /skill:file-todos)")
-  result = result.replace(/\bTodoRead\b/g, "file-based todos (todos/ + /skill:file-todos)")
+  result = result.replace(/\bTodoWrite\b/g, "file-based todos (todos/ + /skill:todo-create)")
+  result = result.replace(/\bTodoRead\b/g, "file-based todos (todos/ + /skill:todo-create)")
 
   // /command-name or /workflows:command-name -> /workflows-command-name
   const slashCommandPattern = /(?<![:\w])\/([a-z][a-z0-9_:-]*?)(?=[\s,."')\]}`]|$)/gi

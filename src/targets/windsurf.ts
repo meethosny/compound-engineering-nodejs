@@ -1,6 +1,7 @@
 import path from "path"
-import { backupFile, copyDir, ensureDir, pathExists, readJson, writeJsonSecure, writeText } from "../utils/files"
+import { backupFile, copySkillDir, ensureDir, pathExists, readJson, sanitizePathName, writeJsonSecure, writeText } from "../utils/files"
 import { formatFrontmatter } from "../utils/frontmatter"
+import { transformContentForWindsurf } from "../converters/claude-to-windsurf"
 import type { WindsurfBundle } from "../types/windsurf"
 import type { TargetScope } from "./index"
 
@@ -19,7 +20,7 @@ export async function writeWindsurfBundle(outputRoot: string, bundle: WindsurfBu
     await ensureDir(skillsDir)
     for (const skill of bundle.agentSkills) {
       validatePathSafe(skill.name, "agent skill")
-      const destDir = path.join(skillsDir, skill.name)
+      const destDir = path.join(skillsDir, sanitizePathName(skill.name))
 
       const resolvedDest = path.resolve(destDir)
       if (!resolvedDest.startsWith(path.resolve(skillsDir))) {
@@ -50,7 +51,7 @@ export async function writeWindsurfBundle(outputRoot: string, bundle: WindsurfBu
     await ensureDir(skillsDir)
     for (const skill of bundle.skillDirs) {
       validatePathSafe(skill.name, "skill directory")
-      const destDir = path.join(skillsDir, skill.name)
+      const destDir = path.join(skillsDir, sanitizePathName(skill.name))
 
       const resolvedDest = path.resolve(destDir)
       if (!resolvedDest.startsWith(path.resolve(skillsDir))) {
@@ -58,7 +59,10 @@ export async function writeWindsurfBundle(outputRoot: string, bundle: WindsurfBu
         continue
       }
 
-      await copyDir(skill.sourceDir, destDir)
+      const knownAgentNames = bundle.agentSkills.map((s) => s.name)
+      await copySkillDir(skill.sourceDir, destDir, (content) =>
+        transformContentForWindsurf(content, knownAgentNames),
+      )
     }
   }
 

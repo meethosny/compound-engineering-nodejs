@@ -115,7 +115,7 @@ curl -H "Content-Type: application/json" \
   $DISCORD_WEBHOOK_URL
 ```
 
-To get a webhook URL, go to your Discord server → Server Settings → Integrations → Webhooks → New Webhook.
+To get a webhook URL, go to your Discord server -> Server Settings -> Integrations -> Webhooks -> New Webhook.
 
 ## Error Handling
 

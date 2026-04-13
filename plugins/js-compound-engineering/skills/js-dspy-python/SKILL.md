@@ -1,286 +1,305 @@
 ---
 name: js-dspy-python
-description: Build type-safe, composable LLM applications with Stanford's DSPy Python framework. Use this skill when implementing predictable AI features, creating LLM signatures and modules, configuring language model providers (OpenAI, Anthropic, Gemini), building agent systems with tools, optimizing prompts, or testing LLM-powered functionality. Integrates with Node.js via API/HTTP microservice architecture.
+description: Build type-safe, composable LLM applications with Stanford's DSPy Python framework. Use when implementing predictable AI features, creating LLM signatures and modules, configuring language model providers (OpenAI, Anthropic, Gemini), building agent systems with tools, optimizing prompts, or testing LLM-powered functionality in Python applications. Integrates with Node.js via API/HTTP microservice architecture.
 ---
 
-# DSPy Python Framework
+# DSPy (Python)
 
-Build type-safe, composable LLM applications using Stanford's DSPy framework - the canonical implementation for programming (not prompting) language models.
+> Build LLM apps like you build software. Type-safe, modular, testable.
 
-**Repository**: https://github.com/stanfordnlp/dspy
-**Documentation**: https://dspy.ai/
+DSPy brings software engineering best practices to LLM development. Instead of tweaking prompts, define what you want with Python types and let DSPy handle the rest.
 
-## Why DSPy?
+## Overview
 
-DSPy lets you **program LLMs, not prompt them**. Instead of manually crafting prompts, define application requirements through type-safe, composable modules that can be tested, optimized, and version-controlled like regular code.
+DSPy is Stanford's Python framework for building language model applications with programmatic prompts. It provides:
 
-### First Principles Decision
+- **Type-safe signatures** -- Define inputs/outputs with Pydantic types
+- **Modular components** -- Compose and reuse LLM logic
+- **Automatic optimization** -- Use data to improve prompts, not guesswork
+- **Production-ready** -- Built-in observability, testing, and error handling
 
-Using original Python DSPy instead of JS alternatives because:
-1. Stanford's DSPy is the canonical, most mature implementation
-2. Python ML ecosystem is richer for LLM optimization
-3. Microservice architecture keeps concerns separated
-4. Node.js app calls Python DSPy service via HTTP/gRPC
+## Core Concepts
 
-## Quick Start
+### 1. Signatures
 
-### Installation
-
-```bash
-pip install dspy
-```
-
-### Basic Configuration
+Define interfaces between your app and LLMs using Python types:
 
 ```python
 import dspy
 
-# Configure language model
-lm = dspy.LM('openai/gpt-4o-mini', api_key='your-key')
+class EmailClassifier(dspy.Signature):
+    """Classify customer support emails by category and priority."""
+
+    email_content: str = dspy.InputField()
+    sender: str = dspy.InputField()
+
+    category: str = dspy.OutputField()
+    priority: str = dspy.OutputField(desc="low, medium, high, or urgent")
+    confidence: float = dspy.OutputField()
+```
+
+### 2. Modules
+
+Build complex workflows from simple building blocks:
+
+- **Predict** -- Basic LLM calls with signatures
+- **ChainOfThought** -- Step-by-step reasoning
+- **ReAct** -- Tool-using agents
+- **ProgramOfThought** -- Code generation agents
+
+### 3. Tools
+
+Create tools for ReAct agents:
+
+```python
+def calculator(expression: str) -> str:
+    """Evaluate a math expression."""
+    try:
+        result = eval(expression)
+        return str(result)
+    except Exception as e:
+        return f"Error: {e}"
+
+def search(query: str) -> str:
+    """Search the web for information."""
+    # Implementation
+    return results
+
+# Use with ReAct
+react = dspy.ReAct(
+    signature="question -> answer",
+    tools=[calculator, search],
+)
+```
+
+### 4. Optimization
+
+Improve accuracy with real data:
+
+- **BootstrapFewShot** -- Few-shot example selection
+- **BootstrapFewShotWithRandomSearch** -- Optimized few-shot
+- **MIPROv2** -- Advanced multi-prompt optimization
+- **Evaluation** -- Comprehensive testing framework
+
+## Quick Start
+
+```python
+# Install
+pip install dspy
+
+# Configure
+import dspy
+lm = dspy.LM('openai/gpt-4o-mini', api_key=os.environ['OPENAI_API_KEY'])
 dspy.configure(lm=lm)
-```
 
-## Core Concepts
-
-### Signatures
-
-Define input/output structure for LLM calls:
-
-```python
-# Simple signature using docstring
-class Summarize(dspy.Signature):
-    """Summarize the given text concisely."""
+# Define a task
+class SentimentAnalysis(dspy.Signature):
+    """Analyze sentiment of text."""
     text: str = dspy.InputField()
-    summary: str = dspy.OutputField()
+    sentiment: str = dspy.OutputField(desc="positive, negative, or neutral")
+    score: float = dspy.OutputField(desc="0.0 to 1.0")
 
-# With detailed descriptions
-class ExtractEntities(dspy.Signature):
-    """Extract named entities from text."""
-    text: str = dspy.InputField(desc="The input text to analyze")
-    entities: list[str] = dspy.OutputField(desc="List of named entities found")
-```
-
-### Modules
-
-Composable units that use signatures:
-
-```python
-# Basic module
-summarizer = dspy.Predict(Summarize)
-result = summarizer(text="Long article content here...")
-print(result.summary)
-
-# Chain of Thought for complex reasoning
-cot_summarizer = dspy.ChainOfThought(Summarize)
-result = cot_summarizer(text="Complex document...")
-print(result.reasoning)  # Shows the reasoning
-print(result.summary)
-```
-
-### Custom Modules
-
-Build complex pipelines:
-
-```python
-class RAGPipeline(dspy.Module):
-    def __init__(self, num_passages=3):
-        self.retrieve = dspy.Retrieve(k=num_passages)
-        self.generate = dspy.ChainOfThought('context, question -> answer')
-    
-    def forward(self, question):
-        context = self.retrieve(question).passages
-        return self.generate(context=context, question=question)
-
-# Usage
-rag = RAGPipeline()
-answer = rag(question="What is DSPy?")
+# Use it
+analyzer = dspy.Predict(SentimentAnalysis)
+result = analyzer(text="This product is amazing!")
+print(result.sentiment)  # => "positive"
+print(result.score)      # => 0.92
 ```
 
 ## Provider Configuration
 
+DSPy supports multiple LLM providers:
+
 ```python
-import dspy
-
 # OpenAI
-lm = dspy.LM('openai/gpt-4o', api_key='sk-...')
+lm = dspy.LM('openai/gpt-4o-mini', api_key=os.environ['OPENAI_API_KEY'])
 
-# Anthropic Claude
-lm = dspy.LM('anthropic/claude-3-5-sonnet-20241022', api_key='sk-ant-...')
+# Anthropic
+lm = dspy.LM('anthropic/claude-sonnet-4-20250514', api_key=os.environ['ANTHROPIC_API_KEY'])
 
 # Google Gemini
-lm = dspy.LM('google/gemini-1.5-pro', api_key='...')
+lm = dspy.LM('google/gemini-2.5-flash', api_key=os.environ['GEMINI_API_KEY'])
 
-# Ollama (local)
-lm = dspy.LM('ollama/llama3.2', api_base='http://localhost:11434')
+# Local (Ollama)
+lm = dspy.LM('ollama_chat/llama3.2', api_base='http://localhost:11434')
+```
 
-# Apply configuration
-dspy.configure(lm=lm)
+## ChainOfThought Module
+
+Step-by-step reasoning before answering:
+
+```python
+class FactCheck(dspy.Signature):
+    """Check if a claim is factual."""
+    claim: str = dspy.InputField()
+    verdict: str = dspy.OutputField(desc="true, false, or uncertain")
+    reasoning: str = dspy.OutputField()
+
+cot = dspy.ChainOfThought(FactCheck)
+result = cot(claim="The Earth is flat")
+print(result.reasoning)  # Shows step-by-step analysis
+print(result.verdict)    # => "false"
+```
+
+## Typed Predictors with Pydantic
+
+Use Pydantic models for structured outputs:
+
+```python
+from pydantic import BaseModel, Field
+from typing import Literal
+
+class ExtractedEntity(BaseModel):
+    name: str
+    entity_type: Literal["person", "organization", "location"]
+    confidence: float = Field(ge=0.0, le=1.0)
+
+class EntityExtraction(dspy.Signature):
+    """Extract named entities from text."""
+    text: str = dspy.InputField()
+    entities: list[ExtractedEntity] = dspy.OutputField()
+
+extractor = dspy.TypedPredictor(EntityExtraction)
+result = extractor(text="Tim Cook announced new products at Apple Park in Cupertino.")
+for entity in result.entities:
+    print(f"{entity.name} ({entity.entity_type}): {entity.confidence}")
+```
+
+## Evaluation Framework
+
+Systematically test LLM application performance:
+
+```python
+# Define metric
+def exact_match(example, prediction, trace=None):
+    return example.answer.lower() == prediction.answer.lower()
+
+# Create evaluator
+evaluator = dspy.Evaluate(
+    devset=test_examples,
+    metric=exact_match,
+    num_threads=4,
+    display_progress=True,
+)
+
+# Run evaluation
+score = evaluator(program)
+print(f"Accuracy: {score}%")
+```
+
+## Optimization
+
+Use data to improve prompts automatically:
+
+```python
+# Bootstrap few-shot examples
+teleprompter = dspy.BootstrapFewShotWithRandomSearch(
+    metric=exact_match,
+    max_bootstrapped_demos=4,
+    max_labeled_demos=4,
+    num_candidate_programs=10,
+)
+
+optimized = teleprompter.compile(program, trainset=train_examples)
 ```
 
 ## Integration with Node.js
 
-### HTTP API Pattern (Recommended)
+DSPy runs in Python. To integrate with Node.js applications:
 
-Create a FastAPI service to expose DSPy functionality:
+**FastAPI microservice pattern:**
 
 ```python
 # dspy_service.py
 from fastapi import FastAPI
-from pydantic import BaseModel
 import dspy
 
 app = FastAPI()
-dspy.configure(lm=dspy.LM('openai/gpt-4o-mini'))
 
-class SummarizeRequest(BaseModel):
-    text: str
+lm = dspy.LM('openai/gpt-4o-mini')
+dspy.configure(lm=lm)
 
-class SummarizeResponse(BaseModel):
-    summary: str
+classifier = dspy.Predict(EmailClassifier)
 
-class Summarize(dspy.Signature):
-    """Summarize text concisely."""
-    text: str = dspy.InputField()
-    summary: str = dspy.OutputField()
-
-summarizer = dspy.Predict(Summarize)
-
-@app.post("/summarize", response_model=SummarizeResponse)
-def summarize(req: SummarizeRequest):
-    result = summarizer(text=req.text)
-    return SummarizeResponse(summary=result.summary)
+@app.post("/classify")
+async def classify_email(email: dict):
+    result = classifier(
+        email_content=email["content"],
+        sender=email["sender"],
+    )
+    return {
+        "category": result.category,
+        "priority": result.priority,
+        "confidence": result.confidence,
+    }
 ```
 
-### Calling from Node.js
+**Call from Node.js:**
 
 ```javascript
-// node-client.js
-const summarize = async (text) => {
-  const response = await fetch('http://localhost:8000/summarize', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ text })
-  });
-  return response.json();
-};
-
-const result = await summarize('Long article text...');
-console.log(result.summary);
-```
-
-### Docker Deployment
-
-```dockerfile
-# Dockerfile
-FROM python:3.11-slim
-
-WORKDIR /app
-COPY requirements.txt .
-RUN pip install --no-cache-dir -r requirements.txt
-
-COPY . .
-CMD ["uvicorn", "dspy_service:app", "--host", "0.0.0.0", "--port", "8000"]
-```
-
-```yaml
-# docker-compose.yml
-services:
-  dspy-service:
-    build: ./dspy-service
-    ports:
-      - "8000:8000"
-    environment:
-      - OPENAI_API_KEY=${OPENAI_API_KEY}
-  
-  node-app:
-    build: ./node-app
-    depends_on:
-      - dspy-service
-    environment:
-      - DSPY_SERVICE_URL=http://dspy-service:8000
-```
-
-## Optimizers
-
-DSPy can automatically optimize prompts:
-
-```python
-from dspy.teleprompt import BootstrapFewShot
-
-# Define your module
-module = dspy.ChainOfThought(Summarize)
-
-# Create optimizer
-optimizer = BootstrapFewShot(metric=your_metric_fn)
-
-# Optimize with training examples
-optimized_module = optimizer.compile(module, trainset=training_examples)
-```
-
-## Assertions & Validation
-
-```python
-class ValidatedSummary(dspy.Module):
-    def __init__(self):
-        self.summarize = dspy.ChainOfThought(Summarize)
-    
-    def forward(self, text):
-        result = self.summarize(text=text)
-        
-        # Assert constraints
-        dspy.Assert(
-            len(result.summary.split()) <= 50,
-            "Summary must be 50 words or less"
-        )
-        
-        return result
+const response = await fetch('http://localhost:8000/classify', {
+  method: 'POST',
+  headers: {'Content-Type': 'application/json'},
+  body: JSON.stringify({content: emailBody, sender: senderEmail}),
+});
+const result = await response.json();
 ```
 
 ## Testing
 
+### Unit Tests
+
 ```python
-# test_dspy_modules.py
 import pytest
 import dspy
 
-class TestSummarizer:
-    def setup_method(self):
-        # Use a deterministic model for testing
-        dspy.configure(lm=dspy.LM('openai/gpt-4o-mini', temperature=0))
-    
-    def test_summarize_returns_shorter_text(self):
-        summarizer = dspy.Predict(Summarize)
-        result = summarizer(text="A" * 1000)
-        assert len(result.summary) < 1000
-    
-    def test_summarize_preserves_key_info(self):
-        summarizer = dspy.Predict(Summarize)
-        result = summarizer(text="Python is a programming language.")
-        assert "python" in result.summary.lower()
+def test_sentiment_analysis():
+    dspy.configure(lm=dspy.LM('openai/gpt-4o-mini'))
+    analyzer = dspy.Predict(SentimentAnalysis)
+
+    result = analyzer(text="This is great!")
+    assert result.sentiment in ["positive", "negative", "neutral"]
+    assert 0.0 <= result.score <= 1.0
 ```
 
-## Project Structure
+### Signature Schema Tests
 
-```
-dspy-service/
-├── app/
-│   ├── __init__.py
-│   ├── main.py           # FastAPI app
-│   ├── modules/          # DSPy modules
-│   │   ├── __init__.py
-│   │   ├── summarizer.py
-│   │   └── qa.py
-│   └── config.py         # LM configuration
-├── tests/
-│   └── test_modules.py
-├── requirements.txt
-├── Dockerfile
-└── docker-compose.yml
+Test that signatures produce valid schemas without calling any LLM:
+
+```python
+def test_email_classifier_signature():
+    fields = EmailClassifier.model_fields
+    assert "email_content" in fields
+    assert "category" in fields
 ```
 
 ## Resources
 
-- **DSPy Documentation**: https://dspy.ai/
-- **GitHub Repository**: https://github.com/stanfordnlp/dspy
-- **DSPy Paper**: https://arxiv.org/abs/2310.03714
-- **Examples**: https://github.com/stanfordnlp/dspy/tree/main/examples
+- `references/core-concepts.md` -- Signatures, modules, predictors, type system
+- `references/toolsets.md` -- ReAct tools, tool creation, structured inputs
+- `references/providers.md` -- Provider configuration, model selection
+- `references/optimization.md` -- BootstrapFewShot, MIPROv2, evaluation
+- `references/observability.md` -- Logging, tracing, debugging
+
+## Key URLs
+
+- Homepage: https://dspy.ai/
+- GitHub: https://github.com/stanfordnlp/dspy
+- Documentation: https://dspy.ai/learn/
+
+## Guidelines for Claude
+
+When helping users with DSPy:
+
+1. **Signatures over prompts** -- Define structure with typed fields, not prose
+2. **Pydantic for complex outputs** -- Use BaseModel for nested/structured data
+3. **Per-task model selection** -- Use different LMs for different modules
+4. **Short-circuit LLM calls** -- Skip the LLM for trivial cases
+5. **Evaluate before optimizing** -- Measure baseline, then optimize
+6. **Type annotations everywhere** -- Leverage Python typing for clarity
+7. **Test schemas without LLM** -- Validate signatures in unit tests
+8. **Graceful degradation** -- Handle LLM errors with fallback behavior
+
+## Version
+
+Current: 2.6+

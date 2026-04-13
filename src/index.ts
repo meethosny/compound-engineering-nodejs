@@ -4,11 +4,12 @@ import packageJson from "../package.json"
 import convert from "./commands/convert"
 import install from "./commands/install"
 import listCommand from "./commands/list"
+import pluginPath from "./commands/plugin-path"
 import sync from "./commands/sync"
 
 const main = defineCommand({
   meta: {
-    name: "js-compound-plugin",
+    name: "compound-plugin",
     version: packageJson.version,
     description: "Convert Claude Code plugins into other agent formats",
   },
@@ -16,6 +17,7 @@ const main = defineCommand({
     convert: () => convert,
     install: () => install,
     list: () => listCommand,
+    "plugin-path": () => pluginPath,
     sync: () => sync,
   },
 })

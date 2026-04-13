@@ -1,7 +1,7 @@
 import { describe, expect, test } from "bun:test"
 import path from "path"
 import { loadClaudePlugin } from "../src/parsers/claude"
-import { convertClaudeToOpenCode } from "../src/converters/claude-to-opencode"
+import { convertClaudeToOpenCode, transformSkillContentForOpenCode } from "../src/converters/claude-to-opencode"
 import { parseFrontmatter } from "../src/utils/frontmatter"
 import type { ClaudePlugin } from "../src/types/claude"
 
@@ -61,7 +61,7 @@ describe("convertClaudeToOpenCode", () => {
   test("normalizes models and infers temperature", async () => {
     const plugin = await loadClaudePlugin(fixtureRoot)
     const bundle = convertClaudeToOpenCode(plugin, {
-      agentMode: "subagent",
+      agentMode: "primary",
       inferTemperature: true,
       permissions: "none",
     })
@@ -78,7 +78,36 @@ describe("convertClaudeToOpenCode", () => {
     expect(commandParsed.data.model).toBe("openai/gpt-4o")
   })
 
-  test("resolves bare Claude model aliases to full IDs", () => {
+  test("resolves bare Claude model aliases for primary agents", () => {
+    const plugin: ClaudePlugin = {
+      root: "/tmp/plugin",
+      manifest: { name: "fixture", version: "1.0.0" },
+      agents: [
+        {
+          name: "cheap-agent",
+          description: "Agent using bare alias",
+          body: "Test agent.",
+          sourcePath: "/tmp/plugin/agents/cheap-agent.md",
+          model: "haiku",
+        },
+      ],
+      commands: [],
+      skills: [],
+    }
+
+    const bundle = convertClaudeToOpenCode(plugin, {
+      agentMode: "primary",
+      inferTemperature: false,
+      permissions: "none",
+    })
+
+    const agent = bundle.agents.find((a) => a.name === "cheap-agent")
+    expect(agent).toBeDefined()
+    const parsed = parseFrontmatter(agent!.content)
+    expect(parsed.data.model).toBe("anthropic/claude-haiku-4-5")
+  })
+
+  test("omits model for subagents to allow provider inheritance (#477)", () => {
     const plugin: ClaudePlugin = {
       root: "/tmp/plugin",
       manifest: { name: "fixture", version: "1.0.0" },
@@ -104,7 +133,63 @@ describe("convertClaudeToOpenCode", () => {
     const agent = bundle.agents.find((a) => a.name === "cheap-agent")
     expect(agent).toBeDefined()
     const parsed = parseFrontmatter(agent!.content)
-    expect(parsed.data.model).toBe("anthropic/claude-haiku-4-5")
+    expect(parsed.data.model).toBeUndefined()
+  })
+
+  test("omits model when agent has no model field regardless of mode", () => {
+    const plugin: ClaudePlugin = {
+      root: "/tmp/plugin",
+      manifest: { name: "fixture", version: "1.0.0" },
+      agents: [
+        {
+          name: "no-model-agent",
+          description: "Agent without model",
+          body: "Test agent.",
+          sourcePath: "/tmp/plugin/agents/no-model-agent.md",
+        },
+      ],
+      commands: [],
+      skills: [],
+    }
+
+    for (const mode of ["primary", "subagent"] as const) {
+      const bundle = convertClaudeToOpenCode(plugin, {
+        agentMode: mode,
+        inferTemperature: false,
+        permissions: "none",
+      })
+      const agent = bundle.agents.find((a) => a.name === "no-model-agent")
+      const parsed = parseFrontmatter(agent!.content)
+      expect(parsed.data.model).toBeUndefined()
+    }
+  })
+
+  test("omits model: inherit even in primary mode", () => {
+    const plugin: ClaudePlugin = {
+      root: "/tmp/plugin",
+      manifest: { name: "fixture", version: "1.0.0" },
+      agents: [
+        {
+          name: "inherit-agent",
+          description: "Agent with inherit model",
+          body: "Test agent.",
+          sourcePath: "/tmp/plugin/agents/inherit-agent.md",
+          model: "inherit",
+        },
+      ],
+      commands: [],
+      skills: [],
+    }
+
+    const bundle = convertClaudeToOpenCode(plugin, {
+      agentMode: "primary",
+      inferTemperature: false,
+      permissions: "none",
+    })
+
+    const agent = bundle.agents.find((a) => a.name === "inherit-agent")
+    const parsed = parseFrontmatter(agent!.content)
+    expect(parsed.data.model).toBeUndefined()
   })
 
   test("converts hooks into plugin file", async () => {
@@ -238,11 +323,11 @@ describe("convertClaudeToOpenCode", () => {
         {
           name: "review",
           description: "Review command",
-          body: `Read \`compound-engineering.local.md\` in the project root.
+          body: `Read \`js-compound-engineering.local.md\` in the project root.
 
 If no settings file exists, auto-detect project type.
 
-Run \`/compound-engineering-setup\` to create a settings file.`,
+Run \`/js-compound-engineering-setup\` to create a settings file.`,
           sourcePath: "/tmp/plugin/commands/review.md",
         },
       ],
@@ -259,7 +344,7 @@ Run \`/compound-engineering-setup\` to create a settings file.`,
     expect(commandFile).toBeDefined()
 
     // Tool-agnostic path in project root — no rewriting needed
-    expect(commandFile!.content).toContain("compound-engineering.local.md")
+    expect(commandFile!.content).toContain("js-compound-engineering.local.md")
   })
 
   test("rewrites .claude/ paths in agent bodies", () => {
@@ -270,7 +355,7 @@ Run \`/compound-engineering-setup\` to create a settings file.`,
         {
           name: "test-agent",
           description: "Test agent",
-          body: "Read `compound-engineering.local.md` for config.",
+          body: "Read `js-compound-engineering.local.md` for config.",
           sourcePath: "/tmp/plugin/agents/test-agent.md",
         },
       ],
@@ -287,7 +372,7 @@ Run \`/compound-engineering-setup\` to create a settings file.`,
     const agentFile = bundle.agents.find((a) => a.name === "test-agent")
     expect(agentFile).toBeDefined()
     // Tool-agnostic path in project root — no rewriting needed
-    expect(agentFile!.content).toContain("compound-engineering.local.md")
+    expect(agentFile!.content).toContain("js-compound-engineering.local.md")
   })
 
   test("command .md files include description in frontmatter", () => {
@@ -317,5 +402,93 @@ Run \`/compound-engineering-setup\` to create a settings file.`,
     const parsed = parseFrontmatter(commandFile!.content)
     expect(parsed.data.description).toBe("Test description")
     expect(parsed.body).toContain("Do the thing")
+  })
+})
+
+describe("transformSkillContentForOpenCode", () => {
+  test("rewrites 3-segment FQ agent names to flat names", () => {
+    const input = "- `js-compound-engineering:document-review:coherence-reviewer`"
+    expect(transformSkillContentForOpenCode(input)).toBe("- `coherence-reviewer`")
+  })
+
+  test("rewrites multiple FQ agent refs in one block", () => {
+    const input = [
+      "- `js-compound-engineering:document-review:coherence-reviewer`",
+      "- `js-compound-engineering:document-review:feasibility-reviewer`",
+      "- `js-compound-engineering:review:security-sentinel`",
+    ].join("\n")
+    const result = transformSkillContentForOpenCode(input)
+    expect(result).toContain("- `coherence-reviewer`")
+    expect(result).toContain("- `feasibility-reviewer`")
+    expect(result).toContain("- `security-sentinel`")
+    expect(result).not.toContain("js-compound-engineering:")
+  })
+
+  test("preserves 2-segment skill references", () => {
+    const input = 'load the `js-compound-engineering:document-review` skill'
+    // 2-segment refs are skill names, not agent names — left unchanged
+    expect(transformSkillContentForOpenCode(input)).toBe(input)
+  })
+
+  test("rewrites .claude/ paths to .opencode/", () => {
+    const input = "Read `.claude/config.json`"
+    expect(transformSkillContentForOpenCode(input)).toBe("Read `.opencode/config.json`")
+  })
+
+  test("rewrites ~/. claude/ paths to ~/.config/opencode/", () => {
+    const input = "Look in `~/.claude/plugins/`"
+    expect(transformSkillContentForOpenCode(input)).toBe("Look in `~/.config/opencode/plugins/`")
+  })
+
+  test("handles FQ names in JSON-like contexts", () => {
+    const input = '  subagent_type: "js-compound-engineering:review:security-sentinel",'
+    expect(transformSkillContentForOpenCode(input)).toBe(
+      '  subagent_type: "security-sentinel",'
+    )
+  })
+
+  test("does not match URLs or non-agent colon patterns", () => {
+    const cases = [
+      "Visit https://example.com/path",
+      "Use http://localhost:8080/api",
+      "Set font-size: 12px; color: red;",
+      "Time is 10:30:45 UTC",
+      'key: "value"',
+    ]
+    for (const input of cases) {
+      expect(transformSkillContentForOpenCode(input)).toBe(input)
+    }
+  })
+
+  test("rewrites FQ names from any plugin namespace", () => {
+    const input = "- `other-plugin:category:my-agent`"
+    expect(transformSkillContentForOpenCode(input)).toBe("- `my-agent`")
+  })
+
+  test("preserves bare agent names (no namespace)", () => {
+    const input = "Use `coherence-reviewer` for review."
+    expect(transformSkillContentForOpenCode(input)).toBe(input)
+  })
+
+  test("preserves 2-segment plugin:agent names (no category)", () => {
+    const input = "Spawn `js-compound-engineering:coherence-reviewer` as subagent."
+    // 2-segment names could be skill refs or flat agent refs — not rewritten
+    expect(transformSkillContentForOpenCode(input)).toBe(input)
+  })
+
+  test("does not partially rewrite 4-segment colon patterns", () => {
+    const input = "`a:b:c:d`"
+    // Without the lookahead, this would become `c:d` — a broken partial rewrite
+    expect(transformSkillContentForOpenCode(input)).toBe(input)
+  })
+
+  test("preserves 3-segment slash commands", () => {
+    const cases = [
+      "Run `/team:ops:deploy` to deploy.",
+      "Use /js-compound-engineering:review:check after changes.",
+    ]
+    for (const input of cases) {
+      expect(transformSkillContentForOpenCode(input)).toBe(input)
+    }
   })
 })

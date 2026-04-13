@@ -1,3 +1,6 @@
+import { mkdtempSync, rmSync, writeFileSync } from "fs"
+import os from "os"
+import path from "path"
 import { describe, expect, test } from "bun:test"
 import { convertClaudeToKiro, transformContentForKiro } from "../src/converters/claude-to-kiro"
 import { parseFrontmatter } from "../src/utils/frontmatter"
@@ -174,11 +177,7 @@ describe("convertClaudeToKiro", () => {
     expect(bundle.mcpServers.local.args).toEqual(["hello"])
   })
 
-  test("MCP HTTP servers skipped with warning", () => {
-    const warnings: string[] = []
-    const originalWarn = console.warn
-    console.warn = (msg: string) => warnings.push(msg)
-
+  test("MCP HTTP servers converted with url", () => {
     const plugin: ClaudePlugin = {
       ...fixturePlugin,
       mcpServers: {
@@ -190,10 +189,31 @@ describe("convertClaudeToKiro", () => {
     }
 
     const bundle = convertClaudeToKiro(plugin, defaultOptions)
+
+    expect(Object.keys(bundle.mcpServers)).toHaveLength(1)
+    expect(bundle.mcpServers.httpServer).toEqual({ url: "https://example.com/mcp" })
+  })
+
+  test("MCP servers with no command or url skipped with warning", () => {
+    const warnings: string[] = []
+    const originalWarn = console.warn
+    console.warn = (msg: string) => warnings.push(msg)
+
+    const plugin: ClaudePlugin = {
+      ...fixturePlugin,
+      mcpServers: {
+        broken: {} as any,
+      },
+      agents: [],
+      commands: [],
+      skills: [],
+    }
+
+    const bundle = convertClaudeToKiro(plugin, defaultOptions)
     console.warn = originalWarn
 
     expect(Object.keys(bundle.mcpServers)).toHaveLength(0)
-    expect(warnings.some((w) => w.includes("no command") || w.includes("HTTP"))).toBe(true)
+    expect(warnings.some((w) => w.includes("no command or url"))).toBe(true)
   })
 
   test("plugin with zero agents produces empty agents array", () => {
@@ -257,7 +277,7 @@ describe("convertClaudeToKiro", () => {
     expect(warnings.some((w) => w.includes("Kiro"))).toBe(true)
   })
 
-  test("steering file not generated when CLAUDE.md missing", () => {
+  test("steering file not generated when repo instruction files are missing", () => {
     const plugin: ClaudePlugin = {
       ...fixturePlugin,
       root: "/tmp/nonexistent-plugin-dir",
@@ -268,6 +288,27 @@ describe("convertClaudeToKiro", () => {
 
     const bundle = convertClaudeToKiro(plugin, defaultOptions)
     expect(bundle.steeringFiles).toHaveLength(0)
+  })
+
+  test("steering file prefers AGENTS.md over CLAUDE.md", () => {
+    const root = mkdtempSync(path.join(os.tmpdir(), "kiro-steering-"))
+    writeFileSync(path.join(root, "AGENTS.md"), "# AGENTS\nUse AGENTS instructions.")
+    writeFileSync(path.join(root, "CLAUDE.md"), "# CLAUDE\nUse CLAUDE instructions.")
+
+    const plugin: ClaudePlugin = {
+      ...fixturePlugin,
+      root,
+      agents: [],
+      commands: [],
+      skills: [],
+    }
+
+    const bundle = convertClaudeToKiro(plugin, defaultOptions)
+    rmSync(root, { recursive: true, force: true })
+
+    expect(bundle.steeringFiles).toHaveLength(1)
+    expect(bundle.steeringFiles[0].content).toContain("Use AGENTS instructions.")
+    expect(bundle.steeringFiles[0].content).not.toContain("Use CLAUDE instructions.")
   })
 
   test("name normalization handles various inputs", () => {
@@ -348,6 +389,27 @@ Task best-practices-researcher(topic)`
     expect(result).toContain("Use the use_subagent tool to delegate to the learnings-researcher agent: feature_description")
     expect(result).toContain("Use the use_subagent tool to delegate to the best-practices-researcher agent: topic")
     expect(result).not.toContain("Task repo-research-analyst")
+  })
+
+  test("transforms namespaced Task agent calls using final segment", () => {
+    const input = `Run agents:
+
+- Task js-compound-engineering:research:repo-research-analyst(feature_description)
+- Task js-compound-engineering:review:security-reviewer(code_diff)`
+
+    const result = transformContentForKiro(input)
+    expect(result).toContain("Use the use_subagent tool to delegate to the repo-research-analyst agent: feature_description")
+    expect(result).toContain("Use the use_subagent tool to delegate to the security-reviewer agent: code_diff")
+    expect(result).not.toContain("js-compound-engineering:")
+  })
+
+  test("transforms zero-argument Task calls", () => {
+    const input = `- Task js-compound-engineering:review:code-simplicity-reviewer()`
+
+    const result = transformContentForKiro(input)
+    expect(result).toContain("Use the use_subagent tool to delegate to the code-simplicity-reviewer agent")
+    expect(result).not.toContain("js-compound-engineering:")
+    expect(result).not.toContain("code-simplicity-reviewer agent:")
   })
 
   test("transforms @agent references for known agents only", () => {

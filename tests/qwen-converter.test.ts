@@ -5,7 +5,7 @@ import type { ClaudePlugin } from "../src/types/claude"
 
 const fixturePlugin: ClaudePlugin = {
   root: "/tmp/plugin",
-  manifest: { name: "compound-engineering", version: "1.2.0", description: "A plugin for engineers" },
+  manifest: { name: "js-compound-engineering", version: "1.2.0", description: "A plugin for engineers" },
   agents: [
     {
       name: "security-sentinel",
@@ -123,7 +123,7 @@ describe("convertClaudeToQwen", () => {
 
   test("config uses plugin manifest name and version", () => {
     const bundle = convertClaudeToQwen(fixturePlugin, defaultOptions)
-    expect(bundle.config.name).toBe("compound-engineering")
+    expect(bundle.config.name).toBe("js-compound-engineering")
     expect(bundle.config.version).toBe("1.2.0")
     expect(bundle.config.commands).toBe("commands")
     expect(bundle.config.skills).toBe("skills")
@@ -165,7 +165,7 @@ describe("convertClaudeToQwen", () => {
 
   test("context file uses plugin.manifest.name and manifest.description", () => {
     const bundle = convertClaudeToQwen(fixturePlugin, defaultOptions)
-    expect(bundle.contextFile).toContain("# compound-engineering")
+    expect(bundle.contextFile).toContain("# js-compound-engineering")
     expect(bundle.contextFile).toContain("A plugin for engineers")
     expect(bundle.contextFile).toContain("## Agents")
     expect(bundle.contextFile).toContain("security-sentinel")
@@ -216,7 +216,17 @@ describe("convertClaudeToQwen", () => {
     expect(skill!.sourceDir).toBe("/tmp/plugin/skills/existing-skill")
   })
 
-  test("normalizeModel prefixes claude models with anthropic/", () => {
+  test("normalizes bare aliases to provider-prefixed model IDs", () => {
+    const plugin: ClaudePlugin = {
+      ...fixturePlugin,
+      agents: [{ name: "a", description: "d", model: "sonnet", body: "b", sourcePath: "/tmp/a.md" }],
+    }
+    const bundle = convertClaudeToQwen(plugin, defaultOptions)
+    const parsed = parseFrontmatter(bundle.agents[0].content)
+    expect(parsed.data.model).toBe("anthropic/claude-sonnet-4-6")
+  })
+
+  test("prefixes claude models with anthropic/", () => {
     const plugin: ClaudePlugin = {
       ...fixturePlugin,
       agents: [{ name: "a", description: "d", model: "claude-opus-4-5", body: "b", sourcePath: "/tmp/a.md" }],
@@ -226,7 +236,27 @@ describe("convertClaudeToQwen", () => {
     expect(parsed.data.model).toBe("anthropic/claude-opus-4-5")
   })
 
-  test("normalizeModel passes through already-namespaced models unchanged", () => {
+  test("prefixes qwen models with qwen/ provider", () => {
+    const plugin: ClaudePlugin = {
+      ...fixturePlugin,
+      agents: [{ name: "a", description: "d", model: "qwen-max", body: "b", sourcePath: "/tmp/a.md" }],
+    }
+    const bundle = convertClaudeToQwen(plugin, defaultOptions)
+    const parsed = parseFrontmatter(bundle.agents[0].content)
+    expect(parsed.data.model).toBe("qwen/qwen-max")
+  })
+
+  test("prefixes minimax models with minimax/ provider", () => {
+    const plugin: ClaudePlugin = {
+      ...fixturePlugin,
+      agents: [{ name: "a", description: "d", model: "minimax-m2.7", body: "b", sourcePath: "/tmp/a.md" }],
+    }
+    const bundle = convertClaudeToQwen(plugin, defaultOptions)
+    const parsed = parseFrontmatter(bundle.agents[0].content)
+    expect(parsed.data.model).toBe("minimax/minimax-m2.7")
+  })
+
+  test("passes through already-namespaced models unchanged", () => {
     const plugin: ClaudePlugin = {
       ...fixturePlugin,
       agents: [{ name: "a", description: "d", model: "google/gemini-2.0", body: "b", sourcePath: "/tmp/a.md" }],

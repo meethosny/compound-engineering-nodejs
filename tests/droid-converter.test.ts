@@ -89,7 +89,31 @@ describe("convertClaudeToDroid", () => {
     expect(bundle.skillDirs[0].sourceDir).toBe("/tmp/plugin/skills/existing-skill")
   })
 
-  test("sets model to inherit when not specified", () => {
+  test("passes through model as-is (Factory resolves bare aliases natively)", () => {
+    const plugin: ClaudePlugin = {
+      ...fixturePlugin,
+      agents: [
+        {
+          name: "fast-agent",
+          description: "Fast agent",
+          model: "sonnet",
+          body: "Do things quickly.",
+          sourcePath: "/tmp/plugin/agents/fast.md",
+        },
+      ],
+    }
+
+    const bundle = convertClaudeToDroid(plugin, {
+      agentMode: "subagent",
+      inferTemperature: false,
+      permissions: "none",
+    })
+
+    const parsed = parseFrontmatter(bundle.droids[0].content)
+    expect(parsed.data.model).toBe("sonnet")
+  })
+
+  test("omits model when set to inherit", () => {
     const plugin: ClaudePlugin = {
       ...fixturePlugin,
       agents: [
@@ -110,7 +134,7 @@ describe("convertClaudeToDroid", () => {
     })
 
     const parsed = parseFrontmatter(bundle.droids[0].content)
-    expect(parsed.data.model).toBe("inherit")
+    expect(parsed.data.model).toBeUndefined()
   })
 
   test("transforms Task agent calls to droid-compatible syntax", () => {
@@ -148,6 +172,63 @@ Task best-practices-researcher(topic)`,
     expect(parsed.body).not.toContain("Task repo-research-analyst(")
   })
 
+  test("transforms namespaced Task agent calls using final segment", () => {
+    const plugin: ClaudePlugin = {
+      ...fixturePlugin,
+      commands: [
+        {
+          name: "plan",
+          description: "Planning with namespaced agents",
+          body: `Run agents:
+
+- Task js-compound-engineering:research:repo-research-analyst(feature_description)
+- Task js-compound-engineering:review:security-reviewer(code_diff)`,
+          sourcePath: "/tmp/plugin/commands/plan.md",
+        },
+      ],
+      agents: [],
+      skills: [],
+    }
+
+    const bundle = convertClaudeToDroid(plugin, {
+      agentMode: "subagent",
+      inferTemperature: false,
+      permissions: "none",
+    })
+
+    const parsed = parseFrontmatter(bundle.commands[0].content)
+    expect(parsed.body).toContain("Task repo-research-analyst: feature_description")
+    expect(parsed.body).toContain("Task security-reviewer: code_diff")
+    expect(parsed.body).not.toContain("js-compound-engineering:")
+  })
+
+  test("transforms zero-argument Task calls", () => {
+    const plugin: ClaudePlugin = {
+      ...fixturePlugin,
+      commands: [
+        {
+          name: "review",
+          description: "Review code",
+          body: `- Task js-compound-engineering:review:code-simplicity-reviewer()`,
+          sourcePath: "/tmp/plugin/commands/review.md",
+        },
+      ],
+      agents: [],
+      skills: [],
+    }
+
+    const bundle = convertClaudeToDroid(plugin, {
+      agentMode: "subagent",
+      inferTemperature: false,
+      permissions: "none",
+    })
+
+    const parsed = parseFrontmatter(bundle.commands[0].content)
+    expect(parsed.body).toContain("Task code-simplicity-reviewer")
+    expect(parsed.body).not.toContain("js-compound-engineering:")
+    expect(parsed.body).not.toContain("()")
+  })
+
   test("transforms slash commands by flattening namespaces", () => {
     const plugin: ClaudePlugin = {
       ...fixturePlugin,
@@ -157,7 +238,7 @@ Task best-practices-researcher(topic)`,
           description: "Planning with commands",
           body: `After planning, you can:
 
-1. Run /deepen-plan to enhance
+1. Run /todo-resolve to enhance
 2. Run /plan_review for feedback
 3. Start /workflows:work to implement
 
@@ -176,7 +257,7 @@ Don't confuse with file paths like /tmp/output.md or /dev/null.`,
     })
 
     const parsed = parseFrontmatter(bundle.commands[0].content)
-    expect(parsed.body).toContain("/deepen-plan")
+    expect(parsed.body).toContain("/todo-resolve")
     expect(parsed.body).toContain("/plan_review")
     expect(parsed.body).toContain("/work")
     expect(parsed.body).not.toContain("/workflows:work")

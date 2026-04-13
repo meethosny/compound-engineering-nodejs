@@ -55,8 +55,9 @@ describe("convertClaudeToCopilot", () => {
 
     const parsed = parseFrontmatter(agent.content)
     expect(parsed.data.description).toBe("Security-focused code review agent")
-    expect(parsed.data.tools).toEqual(["*"])
-    expect(parsed.data.infer).toBe(true)
+    expect(parsed.data.tools).toBeUndefined()
+    expect(parsed.data.infer).toBeUndefined()
+    expect(parsed.data["user-invocable"]).toBe(true)
     expect(parsed.body).toContain("Capabilities")
     expect(parsed.body).toContain("Threat modeling")
     expect(parsed.body).toContain("Focus on vulnerabilities.")
@@ -103,44 +104,27 @@ describe("convertClaudeToCopilot", () => {
     expect(parsed.body).toMatch(/## Capabilities\n- Threat modeling\n- OWASP/)
   })
 
-  test("agent model field is passed through", () => {
+  test("model field is dropped (Copilot model format differs from Claude model IDs)", () => {
     const bundle = convertClaudeToCopilot(fixturePlugin, defaultOptions)
-    const parsed = parseFrontmatter(bundle.agents[0].content)
-    expect(parsed.data.model).toBe("claude-sonnet-4-20250514")
-  })
-
-  test("agent without model omits model field", () => {
-    const plugin: ClaudePlugin = {
-      ...fixturePlugin,
-      agents: [
-        {
-          name: "no-model",
-          description: "No model agent",
-          body: "Content.",
-          sourcePath: "/tmp/plugin/agents/no-model.md",
-        },
-      ],
-    }
-
-    const bundle = convertClaudeToCopilot(plugin, defaultOptions)
     const parsed = parseFrontmatter(bundle.agents[0].content)
     expect(parsed.data.model).toBeUndefined()
   })
 
-  test("agent tools defaults to [*]", () => {
+  test("agent omits tools (Copilot uses defaults when omitted)", () => {
     const bundle = convertClaudeToCopilot(fixturePlugin, defaultOptions)
     const parsed = parseFrontmatter(bundle.agents[0].content)
-    expect(parsed.data.tools).toEqual(["*"])
+    expect(parsed.data.tools).toBeUndefined()
   })
 
-  test("agent infer defaults to true", () => {
+  test("agent replaces infer with user-invocable", () => {
     const bundle = convertClaudeToCopilot(fixturePlugin, defaultOptions)
     const parsed = parseFrontmatter(bundle.agents[0].content)
-    expect(parsed.data.infer).toBe(true)
+    expect(parsed.data.infer).toBeUndefined()
+    expect(parsed.data["user-invocable"]).toBe(true)
   })
 
   test("warns when agent body exceeds 30k characters", () => {
-    const warnSpy = spyOn(console, "warn").mockImplementation(() => {})
+    const warnSpy = spyOn(console, "warn").mockImplementation(() => { })
 
     const plugin: ClaudePlugin = {
       ...fixturePlugin,
@@ -359,7 +343,7 @@ describe("convertClaudeToCopilot", () => {
   })
 
   test("warns when hooks are present", () => {
-    const warnSpy = spyOn(console, "warn").mockImplementation(() => {})
+    const warnSpy = spyOn(console, "warn").mockImplementation(() => { })
 
     const plugin: ClaudePlugin = {
       ...fixturePlugin,
@@ -382,7 +366,7 @@ describe("convertClaudeToCopilot", () => {
   })
 
   test("no warning when hooks are absent", () => {
-    const warnSpy = spyOn(console, "warn").mockImplementation(() => {})
+    const warnSpy = spyOn(console, "warn").mockImplementation(() => { })
 
     convertClaudeToCopilot(fixturePlugin, defaultOptions)
     expect(warnSpy).not.toHaveBeenCalled()
@@ -416,9 +400,9 @@ describe("convertClaudeToCopilot", () => {
 
 describe("transformContentForCopilot", () => {
   test("rewrites .claude/ paths to .github/", () => {
-    const input = "Read `.claude/compound-engineering.local.md` for config."
+    const input = "Read `.claude/js-compound-engineering.local.md` for config."
     const result = transformContentForCopilot(input)
-    expect(result).toContain(".github/compound-engineering.local.md")
+    expect(result).toContain(".github/js-compound-engineering.local.md")
     expect(result).not.toContain(".claude/")
   })
 
@@ -444,13 +428,34 @@ Task best-practices-researcher(topic)`
     expect(result).not.toContain("Task repo-research-analyst(")
   })
 
+  test("transforms namespaced Task agent calls using final segment", () => {
+    const input = `Run agents:
+
+- Task js-compound-engineering:research:repo-research-analyst(feature_description)
+- Task js-compound-engineering:review:security-reviewer(code_diff)`
+
+    const result = transformContentForCopilot(input)
+    expect(result).toContain("Use the repo-research-analyst skill to: feature_description")
+    expect(result).toContain("Use the security-reviewer skill to: code_diff")
+    expect(result).not.toContain("js-compound-engineering:")
+  })
+
+  test("transforms zero-argument Task calls", () => {
+    const input = `- Task js-compound-engineering:review:code-simplicity-reviewer()`
+
+    const result = transformContentForCopilot(input)
+    expect(result).toContain("Use the code-simplicity-reviewer skill")
+    expect(result).not.toContain("js-compound-engineering:")
+    expect(result).not.toContain("skill to:")
+  })
+
   test("replaces colons with hyphens in slash commands", () => {
-    const input = `1. Run /deepen-plan to enhance
+    const input = `1. Run /todo-resolve to enhance
 2. Start /workflows:work to implement
 3. File at /tmp/output.md`
 
     const result = transformContentForCopilot(input)
-    expect(result).toContain("/deepen-plan")
+    expect(result).toContain("/todo-resolve")
     expect(result).toContain("/workflows-work")
     expect(result).not.toContain("/workflows:work")
     // File paths preserved
@@ -463,5 +468,65 @@ Task best-practices-researcher(topic)`
     expect(result).toContain("the security-sentinel agent")
     expect(result).toContain("the dhh-rails-reviewer agent")
     expect(result).not.toContain("@security-sentinel")
+  })
+
+  test("replaces ce: namespace with ce- in body text", () => {
+    const input = "prefer ce:brainstorm first. Then run ce:plan and ce:review. Use ce:* skills."
+    const result = transformContentForCopilot(input)
+    expect(result).toBe("prefer ce-brainstorm first. Then run ce-plan and ce-review. Use ce-* skills.")
+    expect(result).not.toContain("js-ce:")
+  })
+
+  test("replaces multi-colon ce: references fully", () => {
+    const input = "run ce:work:beta and ce:review:deep"
+    const result = transformContentForCopilot(input)
+    expect(result).toBe("run ce-work-beta and ce-review-deep")
+    expect(result).not.toContain(":")
+  })
+
+  test("js-ce: replacement does not corrupt non-command patterns", () => {
+    const input = "Use source: explicit and Confidence: high. See https://example.com/ace:thing"
+    const result = transformContentForCopilot(input)
+    expect(result).toContain("source: explicit")
+    expect(result).toContain("Confidence: high")
+    expect(result).toContain("ace:thing")
+  })
+
+  test("js-ce: replacement does not corrupt URLs", () => {
+    const input = "See https://example.com/ce:plan and http://docs.example.com/ce:review/overview"
+    const result = transformContentForCopilot(input)
+    expect(result).toContain("https://example.com/ce:plan")
+    expect(result).toContain("http://docs.example.com/ce:review/overview")
+  })
+
+  test("generated skill deduplicates against sanitized pass-through skill names", () => {
+    const plugin: ClaudePlugin = {
+      ...fixturePlugin,
+      agents: [],
+      commands: [
+        {
+          name: "js-ce:plan",
+          description: "Planning command",
+          model: "inherit",
+          allowedTools: [],
+          body: "Plan the work.",
+          sourcePath: "/tmp/plugin/commands/ce-plan.md",
+        },
+      ],
+      skills: [
+        {
+          name: "js-ce:plan",
+          description: "Planning skill",
+          sourceDir: "/tmp/plugin/skills/js-ce-plan",
+          skillPath: "/tmp/plugin/skills/js-ce-plan/SKILL.md",
+        },
+      ],
+    }
+
+    const bundle = convertClaudeToCopilot(plugin, defaultOptions)
+
+    // The generated skill from the command should get a deduplicated name
+    // since "js-ce:plan" and "js-ce-plan" both map to "js-ce-plan" on disk
+    expect(bundle.generatedSkills[0].name).not.toBe("js-ce-plan")
   })
 })

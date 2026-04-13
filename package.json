@@ -1,6 +1,7 @@
 {
   "name": "@meethosny/js-compound-plugin",
-  "version": "1.0.0",
+  "version": "2.65.0",
+  "description": "Node.js edition of the Compound Engineering plugin for Claude Code, Codex, and more",
   "type": "module",
   "private": true,
   "bin": {
@@ -10,13 +11,13 @@
   "repository": "https://github.com/meethosny/compound-engineering-nodejs",
   "scripts": {
     "dev": "bun run src/index.ts",
-    "cli": "bun run src/index.ts",
     "convert": "bun run src/index.ts convert",
-    "install-plugin": "bun run src/index.ts install",
     "list": "bun run src/index.ts list",
-    "sync": "bun run src/index.ts sync",
-    "test": "bun test",
-    "release:dry-run": "semantic-release --dry-run"
+    "cli:install": "bun run src/index.ts install",
+    "test": "bun test tests/",
+    "release:preview": "bun run scripts/release/preview.ts",
+    "release:sync-metadata": "bun run scripts/release/sync-metadata.ts --write",
+    "release:validate": "bun run scripts/release/validate.ts"
   },
   "dependencies": {
     "citty": "^0.1.6",
@@ -25,6 +26,7 @@
   "devDependencies": {
     "@semantic-release/changelog": "^6.0.3",
     "@semantic-release/git": "^10.0.1",
+    "@types/js-yaml": "^4.0.9",
     "bun-types": "^1.0.0",
     "semantic-release": "^25.0.3"
   }

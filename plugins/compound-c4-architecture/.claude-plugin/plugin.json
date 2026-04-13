@@ -1,0 +1,20 @@
+{
+	"name": "compound-c4-architecture",
+	"version": "1.0.0",
+	"description": "C4 architecture documentation tools. 4 agents and 1 command for generating comprehensive C4 model diagrams (Context, Container, Component, Code).",
+	"author": {
+		"name": "Mahmoud Shaheen",
+		"email": "mxshaheen@gmail.com",
+		"url": "https://github.com/xshaheen"
+	},
+	"homepage": "https://github.com/xshaheen/claude-compound",
+	"repository": "https://github.com/xshaheen/claude-compound",
+	"keywords": [
+		"c4-model",
+		"architecture",
+		"documentation",
+		"diagrams",
+		"software-architecture",
+		"mermaid"
+	]
+}

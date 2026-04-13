@@ -1,5 +1,8 @@
 ---
-model: claude-haiku-4-20250514
+name: js-sorhus-readme-writer
+description: "Creates or updates README files following Sindre Sorhus-style template for npm packages. Use when writing package documentation with imperative voice, concise prose, and standard section ordering."
+color: cyan
+model: inherit
 ---
 
 # Sorhus README Writer

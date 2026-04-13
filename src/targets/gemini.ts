@@ -1,5 +1,6 @@
 import path from "path"
-import { backupFile, copyDir, ensureDir, pathExists, readJson, resolveCommandPath, writeJson, writeText } from "../utils/files"
+import { backupFile, copySkillDir, ensureDir, pathExists, readJson, resolveCommandPath, sanitizePathName, writeJson, writeText } from "../utils/files"
+import { transformContentForGemini } from "../converters/claude-to-gemini"
 import type { GeminiBundle } from "../types/gemini"
 
 export async function writeGeminiBundle(outputRoot: string, bundle: GeminiBundle): Promise<void> {
@@ -8,13 +9,13 @@ export async function writeGeminiBundle(outputRoot: string, bundle: GeminiBundle
 
   if (bundle.generatedSkills.length > 0) {
     for (const skill of bundle.generatedSkills) {
-      await writeText(path.join(paths.skillsDir, skill.name, "SKILL.md"), skill.content + "\n")
+      await writeText(path.join(paths.skillsDir, sanitizePathName(skill.name), "SKILL.md"), skill.content + "\n")
     }
   }
 
   if (bundle.skillDirs.length > 0) {
     for (const skill of bundle.skillDirs) {
-      await copyDir(skill.sourceDir, path.join(paths.skillsDir, skill.name))
+      await copySkillDir(skill.sourceDir, path.join(paths.skillsDir, sanitizePathName(skill.name)), transformContentForGemini)
     }
   }
 

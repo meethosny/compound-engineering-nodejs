@@ -28,7 +28,7 @@ describe("writePiBundle", () => {
         },
       ],
       generatedSkills: [{ name: "repo-research-analyst", content: "---\nname: repo-research-analyst\n---\n\nBody" }],
-      extensions: [{ name: "compound-engineering-compat.ts", content: "export default function () {}" }],
+      extensions: [{ name: "js-compound-engineering-compat.ts", content: "export default function () {}" }],
       mcporterConfig: {
         mcpServers: {
           context7: { baseUrl: "https://mcp.context7.com/mcp" },
@@ -41,13 +41,53 @@ describe("writePiBundle", () => {
     expect(await exists(path.join(outputRoot, "prompts", "workflows-plan.md"))).toBe(true)
     expect(await exists(path.join(outputRoot, "skills", "skill-one", "SKILL.md"))).toBe(true)
     expect(await exists(path.join(outputRoot, "skills", "repo-research-analyst", "SKILL.md"))).toBe(true)
-    expect(await exists(path.join(outputRoot, "extensions", "compound-engineering-compat.ts"))).toBe(true)
-    expect(await exists(path.join(outputRoot, "compound-engineering", "mcporter.json"))).toBe(true)
+    expect(await exists(path.join(outputRoot, "extensions", "js-compound-engineering-compat.ts"))).toBe(true)
+    expect(await exists(path.join(outputRoot, "js-compound-engineering", "mcporter.json"))).toBe(true)
 
     const agentsPath = path.join(outputRoot, "AGENTS.md")
     const agentsContent = await fs.readFile(agentsPath, "utf8")
     expect(agentsContent).toContain("BEGIN COMPOUND PI TOOL MAP")
     expect(agentsContent).toContain("MCPorter")
+  })
+
+  test("transforms Task calls in copied SKILL.md files", async () => {
+    const tempRoot = await fs.mkdtemp(path.join(os.tmpdir(), "pi-skill-transform-"))
+    const outputRoot = path.join(tempRoot, ".pi")
+    const sourceSkillDir = path.join(tempRoot, "source-skill")
+    await fs.mkdir(sourceSkillDir, { recursive: true })
+    await fs.writeFile(
+      path.join(sourceSkillDir, "SKILL.md"),
+      `---
+name: ce:plan
+description: Planning workflow
+---
+
+Run these research agents:
+
+- Task js-compound-engineering:research:repo-research-analyst(feature_description)
+- Task js-compound-engineering:research:learnings-researcher(feature_description)
+- Task js-compound-engineering:review:code-simplicity-reviewer()
+`,
+    )
+
+    const bundle: PiBundle = {
+      prompts: [],
+      skillDirs: [{ name: "js-ce:plan", sourceDir: sourceSkillDir }],
+      generatedSkills: [],
+      extensions: [],
+    }
+
+    await writePiBundle(outputRoot, bundle)
+
+    const installedSkill = await fs.readFile(
+      path.join(outputRoot, "skills", "js-ce-plan", "SKILL.md"),
+      "utf8",
+    )
+
+    expect(installedSkill).toContain('Run subagent with agent="repo-research-analyst" and task="feature_description".')
+    expect(installedSkill).toContain('Run subagent with agent="learnings-researcher" and task="feature_description".')
+    expect(installedSkill).toContain('Run subagent with agent="code-simplicity-reviewer".')
+    expect(installedSkill).not.toContain("Task js-compound-engineering:")
   })
 
   test("writes to ~/.pi/agent style roots without nesting under .pi", async () => {
@@ -70,7 +110,7 @@ describe("writePiBundle", () => {
   test("backs up existing mcporter config before overwriting", async () => {
     const tempRoot = await fs.mkdtemp(path.join(os.tmpdir(), "pi-backup-"))
     const outputRoot = path.join(tempRoot, ".pi")
-    const configPath = path.join(outputRoot, "compound-engineering", "mcporter.json")
+    const configPath = path.join(outputRoot, "js-compound-engineering", "mcporter.json")
 
     await fs.mkdir(path.dirname(configPath), { recursive: true })
     await fs.writeFile(configPath, JSON.stringify({ previous: true }, null, 2))

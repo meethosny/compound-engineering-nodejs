@@ -3,7 +3,7 @@ import os from "os"
 import path from "path"
 import { loadClaudePlugin } from "../parsers/claude"
 import { targets, validateScope } from "../targets"
-import type { PermissionMode } from "../converters/claude-to-opencode"
+import type { ClaudeToOpenCodeOptions, PermissionMode } from "../converters/claude-to-opencode"
 import { ensureCodexAgentsFile } from "../utils/codex-agents"
 import { expandHome, resolveTargetHome } from "../utils/resolve-home"
 import { resolveTargetOutputRoot } from "../utils/resolve-output"
@@ -35,7 +35,7 @@ export default defineCommand({
     codexHome: {
       type: "string",
       alias: "codex-home",
-      description: "Write Codex output to this .codex root (ex: ~/.codex). Skills are written to ~/.agents/skills/",
+      description: "Write Codex output to this .codex root (ex: ~/.codex)",
     },
     piHome: {
       type: "string",
@@ -75,11 +75,6 @@ export default defineCommand({
       default: true,
       description: "Infer agent temperature from name/description",
     },
-    stripModels: {
-      type: "boolean",
-      default: true,
-      description: "Omit model assignments so agents use your configured model (default: true)",
-    },
   },
   async run({ args }) {
     const targetName = String(args.to)
@@ -97,11 +92,10 @@ export default defineCommand({
     const openclawHome = resolveTargetHome(args.openclawHome, path.join(os.homedir(), ".openclaw", "extensions"))
     const qwenHome = resolveTargetHome(args.qwenHome, path.join(os.homedir(), ".qwen", "extensions"))
 
-    const options = {
+    const options: ClaudeToOpenCodeOptions = {
       agentMode: String(args.agentMode) === "primary" ? "primary" : "subagent",
       inferTemperature: Boolean(args.inferTemperature),
       permissions: permissions as PermissionMode,
-      stripModels: args.stripModels !== false,
     }
 
     if (targetName === "all") {

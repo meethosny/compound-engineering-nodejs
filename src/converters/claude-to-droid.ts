@@ -1,5 +1,5 @@
 import { formatFrontmatter } from "../utils/frontmatter"
-import type { ClaudeAgent, ClaudeCommand, ClaudePlugin } from "../types/claude"
+import { type ClaudeAgent, type ClaudeCommand, type ClaudePlugin, filterSkillsByPlatform } from "../types/claude"
 import type { DroidBundle, DroidCommandFile, DroidAgentFile } from "../types/droid"
 import type { ClaudeToOpenCodeOptions } from "./claude-to-opencode"
 
@@ -45,7 +45,7 @@ export function convertClaudeToDroid(
 ): DroidBundle {
   const commands = plugin.commands.map((command) => convertCommand(command))
   const droids = plugin.agents.map((agent) => convertAgent(agent))
-  const skillDirs = plugin.skills.map((skill) => ({
+  const skillDirs = filterSkillsByPlatform(plugin.skills, "droid").map((skill) => ({
     name: skill.name,
     sourceDir: skill.sourceDir,
   }))
@@ -75,7 +75,10 @@ function convertAgent(agent: ClaudeAgent): DroidAgentFile {
   const frontmatter: Record<string, unknown> = {
     name,
     description: agent.description,
-    model: agent.model && agent.model !== "inherit" ? agent.model : "inherit",
+  }
+
+  if (agent.model && agent.model !== "inherit") {
+    frontmatter.model = agent.model
   }
 
   const tools = mapAgentTools(agent)
@@ -119,15 +122,19 @@ function mapAgentTools(agent: ClaudeAgent): string[] | undefined {
  * 2. Task agent calls: Task agent-name(args) → Task agent-name: args
  * 3. Agent references: @agent-name → the agent-name droid
  */
-function transformContentForDroid(body: string): string {
+export function transformContentForDroid(body: string): string {
   let result = body
 
   // 1. Transform Task agent calls
-  // Match: Task repo-research-analyst(feature_description)
-  const taskPattern = /^(\s*-?\s*)Task\s+([a-z][a-z0-9-]*)\(([^)]+)\)/gm
+  // Match: Task repo-research-analyst(args) or Task js-compound-engineering:research:repo-research-analyst(args)
+  const taskPattern = /^(\s*-?\s*)Task\s+([a-z][a-z0-9:-]*)\(([^)]*)\)/gm
   result = result.replace(taskPattern, (_match, prefix: string, agentName: string, args: string) => {
-    const name = normalizeName(agentName)
-    return `${prefix}Task ${name}: ${args.trim()}`
+    const finalSegment = agentName.includes(":") ? agentName.split(":").pop()! : agentName
+    const name = normalizeName(finalSegment)
+    const trimmedArgs = args.trim()
+    return trimmedArgs
+      ? `${prefix}Task ${name}: ${trimmedArgs}`
+      : `${prefix}Task ${name}`
   })
 
   // 2. Transform slash command references

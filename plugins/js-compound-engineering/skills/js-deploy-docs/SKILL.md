@@ -108,5 +108,5 @@ Provide a summary:
 - [ ] Commit any pending changes
 - [ ] Push to main branch
 - [ ] Verify GitHub Pages workflow exists
-- [ ] Check deployment at https://meethosny.github.io/compound-engineering-nodejs/
+- [ ] Check deployment at the GitHub Pages URL
 ```

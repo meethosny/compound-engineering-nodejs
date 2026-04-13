@@ -55,7 +55,7 @@ describe("CLI", () => {
       throw new Error(`CLI failed (exit ${exitCode}).\nstdout: ${stdout}\nstderr: ${stderr}`)
     }
 
-    expect(stdout).toContain("Installed compound-engineering")
+    expect(stdout).toContain("Installed js-compound-engineering")
     expect(await exists(path.join(tempRoot, "opencode.json"))).toBe(true)
     expect(await exists(path.join(tempRoot, ".opencode", "agents", "repo-research-analyst.md"))).toBe(true)
     expect(await exists(path.join(tempRoot, ".opencode", "agents", "security-sentinel.md"))).toBe(true)
@@ -94,7 +94,7 @@ describe("CLI", () => {
       throw new Error(`CLI failed (exit ${exitCode}).\nstdout: ${stdout}\nstderr: ${stderr}`)
     }
 
-    expect(stdout).toContain("Installed compound-engineering")
+    expect(stdout).toContain("Installed js-compound-engineering")
     // OpenCode global config lives at ~/.config/opencode per XDG spec
     expect(await exists(path.join(tempRoot, ".config", "opencode", "opencode.json"))).toBe(true)
     expect(await exists(path.join(tempRoot, ".config", "opencode", "agents", "repo-research-analyst.md"))).toBe(true)
@@ -129,7 +129,7 @@ describe("CLI", () => {
     const workspaceRoot = await fs.mkdtemp(path.join(os.tmpdir(), "cli-github-workspace-"))
     const repoRoot = await fs.mkdtemp(path.join(os.tmpdir(), "cli-github-repo-"))
     const fixtureRoot = path.join(import.meta.dir, "fixtures", "sample-plugin")
-    const pluginRoot = path.join(repoRoot, "plugins", "compound-engineering")
+    const pluginRoot = path.join(repoRoot, "plugins", "js-compound-engineering")
 
     await fs.mkdir(path.dirname(pluginRoot), { recursive: true })
     await fs.cp(fixtureRoot, pluginRoot, { recursive: true })
@@ -152,7 +152,7 @@ describe("CLI", () => {
       "run",
       path.join(projectRoot, "src", "index.ts"),
       "install",
-      "compound-engineering",
+      "js-compound-engineering",
       "--to",
       "opencode",
     ], {
@@ -174,10 +174,52 @@ describe("CLI", () => {
       throw new Error(`CLI failed (exit ${exitCode}).\nstdout: ${stdout}\nstderr: ${stderr}`)
     }
 
-    expect(stdout).toContain("Installed compound-engineering")
+    expect(stdout).toContain("Installed js-compound-engineering")
     // OpenCode global config lives at ~/.config/opencode per XDG spec
     expect(await exists(path.join(tempRoot, ".config", "opencode", "opencode.json"))).toBe(true)
-    expect(await exists(path.join(tempRoot, ".config", "opencode", "agents", "repo-research-analyst.md"))).toBe(true)
+    // Bundled plugin takes priority over GitHub when no --branch is specified,
+    // so agents have the js- prefix from the real plugin
+    expect(await exists(path.join(tempRoot, ".config", "opencode", "agents", "js-repo-research-analyst.md"))).toBe(true)
+  })
+
+  test("install uses bundled js-compound-engineering plugin for codex output", async () => {
+    const tempRoot = await fs.mkdtemp(path.join(os.tmpdir(), "cli-bundled-codex-home-"))
+    const workspaceRoot = await fs.mkdtemp(path.join(os.tmpdir(), "cli-bundled-codex-workspace-"))
+    const projectRoot = path.join(import.meta.dir, "..")
+    const codexRoot = path.join(tempRoot, ".codex")
+
+    const proc = Bun.spawn([
+      "bun",
+      "run",
+      path.join(projectRoot, "src", "index.ts"),
+      "install",
+      "js-compound-engineering",
+      "--to",
+      "codex",
+    ], {
+      cwd: workspaceRoot,
+      stdout: "pipe",
+      stderr: "pipe",
+      env: {
+        ...process.env,
+        HOME: tempRoot,
+        COMPOUND_PLUGIN_GITHUB_SOURCE: "/definitely-not-a-valid-plugin-source",
+      },
+    })
+
+    const exitCode = await proc.exited
+    const stdout = await new Response(proc.stdout).text()
+    const stderr = await new Response(proc.stderr).text()
+
+    if (exitCode !== 0) {
+      throw new Error(`CLI failed (exit ${exitCode}).\nstdout: ${stdout}\nstderr: ${stderr}`)
+    }
+
+    expect(stdout).toContain("Installed js-compound-engineering")
+    expect(stdout).toContain(codexRoot)
+    expect(await exists(path.join(codexRoot, "prompts", "js-ce-plan.md"))).toBe(true)
+    expect(await exists(path.join(codexRoot, "skills", "js-ce-plan", "SKILL.md"))).toBe(true)
+    expect(await exists(path.join(codexRoot, "AGENTS.md"))).toBe(true)
   })
 
   test("install by name ignores same-named local directory", async () => {
@@ -186,13 +228,13 @@ describe("CLI", () => {
     const repoRoot = await fs.mkdtemp(path.join(os.tmpdir(), "cli-shadow-repo-"))
 
     // Create a directory with the plugin name that is NOT a valid plugin
-    const shadowDir = path.join(workspaceRoot, "compound-engineering")
+    const shadowDir = path.join(workspaceRoot, "js-compound-engineering")
     await fs.mkdir(shadowDir, { recursive: true })
     await fs.writeFile(path.join(shadowDir, "README.md"), "Not a plugin")
 
     // Set up a fake GitHub source with a valid plugin
     const fixtureRoot = path.join(import.meta.dir, "fixtures", "sample-plugin")
-    const pluginRoot = path.join(repoRoot, "plugins", "compound-engineering")
+    const pluginRoot = path.join(repoRoot, "plugins", "js-compound-engineering")
     await fs.mkdir(path.dirname(pluginRoot), { recursive: true })
     await fs.cp(fixtureRoot, pluginRoot, { recursive: true })
 
@@ -213,7 +255,7 @@ describe("CLI", () => {
       "run",
       path.join(projectRoot, "src", "index.ts"),
       "install",
-      "compound-engineering",
+      "js-compound-engineering",
       "--to",
       "opencode",
       "--output",
@@ -238,7 +280,69 @@ describe("CLI", () => {
     }
 
     // Should succeed by fetching from GitHub, NOT failing on the local shadow directory
-    expect(stdout).toContain("Installed compound-engineering")
+    expect(stdout).toContain("Installed js-compound-engineering")
+    expect(await exists(path.join(tempRoot, "opencode.json"))).toBe(true)
+  })
+
+  test("install --branch clones a specific branch for non-Claude targets", async () => {
+    const tempRoot = await fs.mkdtemp(path.join(os.tmpdir(), "cli-branch-install-"))
+    const repoRoot = await fs.mkdtemp(path.join(os.tmpdir(), "cli-branch-repo-"))
+    const fixtureRoot = path.join(import.meta.dir, "fixtures", "sample-plugin")
+    const pluginRoot = path.join(repoRoot, "plugins", "js-compound-engineering")
+
+    await fs.mkdir(path.dirname(pluginRoot), { recursive: true })
+    await fs.cp(fixtureRoot, pluginRoot, { recursive: true })
+
+    const gitEnv = {
+      ...process.env,
+      GIT_AUTHOR_NAME: "Test",
+      GIT_AUTHOR_EMAIL: "test@example.com",
+      GIT_COMMITTER_NAME: "Test",
+      GIT_COMMITTER_EMAIL: "test@example.com",
+    }
+
+    await runGit(["init", "-b", "main"], repoRoot, gitEnv)
+    await runGit(["add", "."], repoRoot, gitEnv)
+    await runGit(["commit", "-m", "initial"], repoRoot, gitEnv)
+    await runGit(["checkout", "-b", "feat/test-branch"], repoRoot, gitEnv)
+    await fs.writeFile(path.join(pluginRoot, "BRANCH_MARKER.txt"), "from-branch")
+    await runGit(["add", "."], repoRoot, gitEnv)
+    await runGit(["commit", "-m", "branch commit"], repoRoot, gitEnv)
+    await runGit(["checkout", "main"], repoRoot, gitEnv)
+
+    const projectRoot = path.join(import.meta.dir, "..")
+    const proc = Bun.spawn([
+      "bun",
+      "run",
+      path.join(projectRoot, "src", "index.ts"),
+      "install",
+      "js-compound-engineering",
+      "--to",
+      "opencode",
+      "--output",
+      tempRoot,
+      "--branch",
+      "feat/test-branch",
+    ], {
+      cwd: tempRoot,
+      stdout: "pipe",
+      stderr: "pipe",
+      env: {
+        ...process.env,
+        HOME: tempRoot,
+        COMPOUND_PLUGIN_GITHUB_SOURCE: repoRoot,
+      },
+    })
+
+    const exitCode = await proc.exited
+    const stdout = await new Response(proc.stdout).text()
+    const stderr = await new Response(proc.stderr).text()
+
+    if (exitCode !== 0) {
+      throw new Error(`CLI failed (exit ${exitCode}).\nstdout: ${stdout}\nstderr: ${stderr}`)
+    }
+
+    expect(stdout).toContain("Installed js-compound-engineering")
     expect(await exists(path.join(tempRoot, "opencode.json"))).toBe(true)
   })
 
@@ -270,7 +374,7 @@ describe("CLI", () => {
       throw new Error(`CLI failed (exit ${exitCode}).\nstdout: ${stdout}\nstderr: ${stderr}`)
     }
 
-    expect(stdout).toContain("Converted compound-engineering")
+    expect(stdout).toContain("Converted js-compound-engineering")
     expect(await exists(path.join(tempRoot, "opencode.json"))).toBe(true)
   })
 
@@ -303,7 +407,7 @@ describe("CLI", () => {
       throw new Error(`CLI failed (exit ${exitCode}).\nstdout: ${stdout}\nstderr: ${stderr}`)
     }
 
-    expect(stdout).toContain("Converted compound-engineering")
+    expect(stdout).toContain("Converted js-compound-engineering")
     expect(stdout).toContain(codexRoot)
     expect(await exists(path.join(codexRoot, "prompts", "workflows-review.md"))).toBe(true)
     expect(await exists(path.join(codexRoot, "skills", "workflows-review", "SKILL.md"))).toBe(true)
@@ -343,7 +447,7 @@ describe("CLI", () => {
       throw new Error(`CLI failed (exit ${exitCode}).\nstdout: ${stdout}\nstderr: ${stderr}`)
     }
 
-    expect(stdout).toContain("Installed compound-engineering")
+    expect(stdout).toContain("Installed js-compound-engineering")
     expect(stdout).toContain(codexRoot)
     expect(await exists(path.join(codexRoot, "prompts", "workflows-review.md"))).toBe(true)
     expect(await exists(path.join(codexRoot, "skills", "workflows-review", "SKILL.md"))).toBe(true)
@@ -380,12 +484,12 @@ describe("CLI", () => {
       throw new Error(`CLI failed (exit ${exitCode}).\nstdout: ${stdout}\nstderr: ${stderr}`)
     }
 
-    expect(stdout).toContain("Converted compound-engineering")
+    expect(stdout).toContain("Converted js-compound-engineering")
     expect(stdout).toContain(piRoot)
     expect(await exists(path.join(piRoot, "prompts", "workflows-review.md"))).toBe(true)
     expect(await exists(path.join(piRoot, "skills", "repo-research-analyst", "SKILL.md"))).toBe(true)
-    expect(await exists(path.join(piRoot, "extensions", "compound-engineering-compat.ts"))).toBe(true)
-    expect(await exists(path.join(piRoot, "compound-engineering", "mcporter.json"))).toBe(true)
+    expect(await exists(path.join(piRoot, "extensions", "js-compound-engineering-compat.ts"))).toBe(true)
+    expect(await exists(path.join(piRoot, "js-compound-engineering", "mcporter.json"))).toBe(true)
   })
 
   test("install supports --also with pi output", async () => {
@@ -421,10 +525,10 @@ describe("CLI", () => {
       throw new Error(`CLI failed (exit ${exitCode}).\nstdout: ${stdout}\nstderr: ${stderr}`)
     }
 
-    expect(stdout).toContain("Installed compound-engineering")
+    expect(stdout).toContain("Installed js-compound-engineering")
     expect(stdout).toContain(piRoot)
     expect(await exists(path.join(piRoot, "prompts", "workflows-review.md"))).toBe(true)
-    expect(await exists(path.join(piRoot, "extensions", "compound-engineering-compat.ts"))).toBe(true)
+    expect(await exists(path.join(piRoot, "extensions", "js-compound-engineering-compat.ts"))).toBe(true)
   })
 
   test("install --to opencode uses permissions:none by default", async () => {
@@ -455,7 +559,7 @@ describe("CLI", () => {
       throw new Error(`CLI failed (exit ${exitCode}).\nstdout: ${stdout}\nstderr: ${stderr}`)
     }
 
-    expect(stdout).toContain("Installed compound-engineering")
+    expect(stdout).toContain("Installed js-compound-engineering")
 
     const opencodeJsonPath = path.join(tempRoot, "opencode.json")
     const content = await fs.readFile(opencodeJsonPath, "utf-8")
@@ -495,7 +599,7 @@ describe("CLI", () => {
       throw new Error(`CLI failed (exit ${exitCode}).\nstdout: ${stdout}\nstderr: ${stderr}`)
     }
 
-    expect(stdout).toContain("Installed compound-engineering")
+    expect(stdout).toContain("Installed js-compound-engineering")
 
     const opencodeJsonPath = path.join(tempRoot, "opencode.json")
     const content = await fs.readFile(opencodeJsonPath, "utf-8")
@@ -588,7 +692,7 @@ describe("CLI", () => {
     expect(stdout).toContain("Synced to gemini")
     expect(stdout).not.toContain("cursor")
 
-    expect(await exists(path.join(tempHome, ".config", "opencode", "commands", "workflows:plan.md"))).toBe(true)
+    expect(await exists(path.join(tempHome, ".config", "opencode", "commands", "workflows", "plan.md"))).toBe(true)
     expect(await exists(path.join(tempHome, ".codex", "config.toml"))).toBe(true)
     expect(await exists(path.join(tempHome, ".codex", "prompts", "workflows-plan.md"))).toBe(true)
     expect(await exists(path.join(tempHome, ".codex", "skills", "workflows-plan", "SKILL.md"))).toBe(true)

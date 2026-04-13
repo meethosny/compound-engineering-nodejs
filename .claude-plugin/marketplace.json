@@ -6,13 +6,13 @@
   },
   "metadata": {
     "description": "Node.js edition of the Every plugin marketplace for Claude Code extensions",
-    "version": "1.0.0"
+    "version": "1.0.2"
   },
   "plugins": [
     {
       "name": "js-compound-engineering",
-      "description": "AI-powered development tools that get smarter with every use. Make each unit of engineering work easier than the last. Includes 28 specialized agents and 40 skills.",
-      "version": "3.4.0",
+      "description": "AI-powered development tools that get smarter with every use. Make each unit of engineering work easier than the last. Includes 49 agents, 41 skills, 1 MCP server.",
+      "version": "2.65.0",
       "author": {
         "name": "Hosni Mohamed",
         "url": "https://github.com/meethosny",
@@ -47,6 +47,25 @@
         "spaced-repetition"
       ],
       "source": "./plugins/js-coding-tutor"
+    },
+    {
+      "name": "compound-c4-architecture",
+      "description": "C4 architecture documentation tools. 4 agents and 1 command for generating comprehensive C4 model diagrams (Context, Container, Component, Code).",
+      "version": "1.0.0",
+      "author": {
+        "name": "Mahmoud Shaheen",
+        "url": "https://github.com/xshaheen"
+      },
+      "homepage": "https://github.com/xshaheen/claude-compound",
+      "tags": [
+        "c4-model",
+        "architecture",
+        "documentation",
+        "diagrams",
+        "software-architecture",
+        "mermaid"
+      ],
+      "source": "./plugins/compound-c4-architecture"
     }
   ]
 }

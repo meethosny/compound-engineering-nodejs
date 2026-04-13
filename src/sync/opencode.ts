@@ -10,13 +10,12 @@ export async function syncToOpenCode(
   config: ClaudeHomeConfig,
   outputRoot: string,
 ): Promise<void> {
-  // OpenCode only supports custom commands (no skills/agents concept)
-  // Skills are synced as commands
+  await syncSkills(config.skills, path.join(outputRoot, "skills"))
   await syncOpenCodeCommands(config, outputRoot)
 
-  // Merge MCP servers into .opencode.json (note dot prefix)
+  // Merge MCP servers into opencode.json
   if (Object.keys(config.mcpServers).length > 0) {
-    const configPath = path.join(outputRoot, ".opencode.json")
+    const configPath = path.join(outputRoot, "opencode.json")
     const mcpConfig = convertMcpForOpenCode(config.mcpServers)
     await mergeJsonConfigAtKey({
       configPath,

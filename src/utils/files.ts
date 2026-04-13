@@ -76,8 +76,18 @@ export async function walkFiles(root: string): Promise<string[]> {
 }
 
 /**
+ * Sanitize a name for use as a filesystem path component.
+ * Replaces colons with hyphens so colon-namespaced names
+ * (e.g. "js-ce:brainstorm") become flat directory names ("ce-brainstorm")
+ * instead of failing on Windows where colons are illegal in filenames.
+ */
+export function sanitizePathName(name: string): string {
+  return name.replace(/:/g, "-")
+}
+
+/**
  * Resolve a colon-separated command name into a filesystem path.
- * e.g. resolveCommandPath("/commands", "ce:plan", ".md") -> "/commands/ce/plan.md"
+ * e.g. resolveCommandPath("/commands", "js-ce:plan", ".md") -> "/commands/ce/plan.md"
  * Creates intermediate directories as needed.
  */
 export async function resolveCommandPath(dir: string, name: string, ext: string): Promise<string> {
@@ -101,6 +111,46 @@ export async function copyDir(sourceDir: string, targetDir: string): Promise<voi
     } else if (entry.isFile()) {
       await ensureDir(path.dirname(targetPath))
       await fs.copyFile(sourcePath, targetPath)
+    }
+  }
+}
+
+/**
+ * Copy a skill directory, optionally transforming markdown content.
+ * Non-markdown files are copied verbatim. Used by target writers to apply
+ * platform-specific content transforms to pass-through skills.
+ *
+ * By default only SKILL.md is transformed (safe for slash-command rewrites
+ * that shouldn't touch reference files). Set `transformAllMarkdown` to also
+ * transform reference .md files — needed when the transform rewrites content
+ * that appears in reference files (e.g. fully-qualified agent names).
+ */
+export async function copySkillDir(
+  sourceDir: string,
+  targetDir: string,
+  transformSkillContent?: (content: string) => string,
+  transformAllMarkdown?: boolean,
+): Promise<void> {
+  await ensureDir(targetDir)
+  const entries = await fs.readdir(sourceDir, { withFileTypes: true })
+
+  for (const entry of entries) {
+    const sourcePath = path.join(sourceDir, entry.name)
+    const targetPath = path.join(targetDir, entry.name)
+
+    if (entry.isDirectory()) {
+      await copySkillDir(sourcePath, targetPath, transformSkillContent, transformAllMarkdown)
+    } else if (entry.isFile()) {
+      const shouldTransform = transformSkillContent && (
+        entry.name === "SKILL.md" || (transformAllMarkdown && entry.name.endsWith(".md"))
+      )
+      if (shouldTransform) {
+        const content = await readText(sourcePath)
+        await writeText(targetPath, transformSkillContent(content))
+      } else {
+        await ensureDir(path.dirname(targetPath))
+        await fs.copyFile(sourcePath, targetPath)
+      }
     }
   }
 }

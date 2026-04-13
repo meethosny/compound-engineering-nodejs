@@ -508,6 +508,27 @@ Task best-practices-researcher(topic)`
     expect(result).not.toContain("Task repo-research-analyst")
   })
 
+  test("transforms namespaced Task agent calls using final segment", () => {
+    const input = `Run agents:
+
+- Task js-compound-engineering:research:repo-research-analyst(feature_description)
+- Task js-compound-engineering:review:security-reviewer(code_diff)`
+
+    const result = transformContentForWindsurf(input)
+    expect(result).toContain("Use the @repo-research-analyst skill: feature_description")
+    expect(result).toContain("Use the @security-reviewer skill: code_diff")
+    expect(result).not.toContain("js-compound-engineering:")
+  })
+
+  test("transforms zero-argument Task calls", () => {
+    const input = `- Task js-compound-engineering:review:code-simplicity-reviewer()`
+
+    const result = transformContentForWindsurf(input)
+    expect(result).toContain("Use the @code-simplicity-reviewer skill")
+    expect(result).not.toContain("js-compound-engineering:")
+    expect(result).not.toContain("code-simplicity-reviewer skill:")
+  })
+
   test("keeps @agent references as-is for known agents (Windsurf skill invocation syntax)", () => {
     const result = transformContentForWindsurf("Ask @security-sentinel for a review.", ["security-sentinel"])
     expect(result).toContain("@security-sentinel")
@@ -569,5 +590,44 @@ describe("normalizeName", () => {
 
   test("non-letter start returns item", () => {
     expect(normalizeName("123-agent")).toBe("item")
+  })
+})
+
+describe("convertClaudeToWindsurf dedupe", () => {
+  test("agent skill deduplicates against sanitized pass-through skill names", () => {
+    const { convertClaudeToWindsurf } = require("../src/converters/claude-to-windsurf")
+    const plugin: import("../src/types/claude").ClaudePlugin = {
+      root: "/tmp/plugin",
+      manifest: { name: "fixture", version: "1.0.0" },
+      agents: [
+        {
+          name: "js-ce:plan",
+          description: "Planning agent",
+          body: "Plan things.",
+          sourcePath: "/tmp/plugin/agents/ce-plan.md",
+        },
+      ],
+      commands: [],
+      skills: [
+        {
+          name: "js-ce:plan",
+          description: "Planning skill",
+          sourceDir: "/tmp/plugin/skills/js-ce-plan",
+          skillPath: "/tmp/plugin/skills/js-ce-plan/SKILL.md",
+        },
+      ],
+      hooks: undefined,
+      mcpServers: undefined,
+    }
+
+    const bundle = convertClaudeToWindsurf(plugin, {
+      agentMode: "subagent" as const,
+      inferTemperature: false,
+      permissions: "none" as const,
+    })
+
+    // The agent skill should get a deduplicated name since "js-ce:plan" normalizes
+    // to "js-ce-plan" which collides with the pass-through skill on disk
+    expect(bundle.agentSkills[0].name).not.toBe("js-ce-plan")
   })
 })

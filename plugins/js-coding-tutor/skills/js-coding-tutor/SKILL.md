@@ -185,10 +185,10 @@ A quiz isn't an exam - it's a conversation that reveals understanding. Ask quest
 Mix question types based on what the concept demands:
 - Conceptual ("when would you use X over Y?")
 - Code reading ("what does this code in your app do?")
-- Code writing ("write a scope that does X")
+- Code writing ("write a function that does X")
 - Debugging ("what's wrong here?")
 
-Use their codebase for examples whenever possible. "What does line 47 of `app/models/user.rb` do?" is more valuable than abstract snippets.
+Use their codebase for examples whenever possible. "What does line 47 of `src/models/user.ts` do?" is more valuable than abstract snippets.
 
 **Scoring:**
 

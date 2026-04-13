@@ -1,5 +1,6 @@
 import { formatFrontmatter } from "../utils/frontmatter"
-import type { ClaudeAgent, ClaudeCommand, ClaudeMcpServer, ClaudePlugin } from "../types/claude"
+import { sanitizePathName } from "../utils/files"
+import { type ClaudeAgent, type ClaudeCommand, type ClaudeMcpServer, type ClaudePlugin, filterSkillsByPlatform } from "../types/claude"
 import type {
   CopilotAgent,
   CopilotBundle,
@@ -21,9 +22,9 @@ export function convertClaudeToCopilot(
 
   const agents = plugin.agents.map((agent) => convertAgent(agent, usedAgentNames))
 
-  // Reserve skill names first so generated skills (from commands) don't collide
-  const skillDirs = plugin.skills.map((skill) => {
-    usedSkillNames.add(skill.name)
+  // Reserve sanitized skill names so generated skills (from commands) don't collide on disk
+  const skillDirs = filterSkillsByPlatform(plugin.skills, "copilot").map((skill) => {
+    usedSkillNames.add(sanitizePathName(skill.name))
     return {
       name: skill.name,
       sourceDir: skill.sourceDir,
@@ -49,12 +50,7 @@ function convertAgent(agent: ClaudeAgent, usedNames: Set<string>): CopilotAgent 
 
   const frontmatter: Record<string, unknown> = {
     description,
-    tools: ["*"],
-    infer: true,
-  }
-
-  if (agent.model) {
-    frontmatter.model = agent.model
+    "user-invocable": true,
   }
 
   let body = transformContentForCopilot(agent.body.trim())
@@ -106,11 +102,15 @@ function convertCommandToSkill(
 export function transformContentForCopilot(body: string): string {
   let result = body
 
-  // 1. Transform Task agent calls
-  const taskPattern = /^(\s*-?\s*)Task\s+([a-z][a-z0-9-]*)\(([^)]+)\)/gm
+  // 1. Transform Task agent calls (supports namespaced names like js-compound-engineering:research:agent-name)
+  const taskPattern = /^(\s*-?\s*)Task\s+([a-z][a-z0-9:-]*)\(([^)]*)\)/gm
   result = result.replace(taskPattern, (_match, prefix: string, agentName: string, args: string) => {
-    const skillName = normalizeName(agentName)
-    return `${prefix}Use the ${skillName} skill to: ${args.trim()}`
+    const finalSegment = agentName.includes(":") ? agentName.split(":").pop()! : agentName
+    const skillName = normalizeName(finalSegment)
+    const trimmedArgs = args.trim()
+    return trimmedArgs
+      ? `${prefix}Use the ${skillName} skill to: ${trimmedArgs}`
+      : `${prefix}Use the ${skillName} skill`
   })
 
   // 2. Transform slash command references (replace colons with hyphens)
@@ -122,12 +122,20 @@ export function transformContentForCopilot(body: string): string {
     return `/${normalized}`
   })
 
-  // 3. Rewrite .claude/ paths to .github/ and ~/.claude/ to ~/.copilot/
+  // 3. Replace plugin colon-namespaced command references (e.g. ce:plan → ce-plan, ce:* → ce-*)
+  // Scoped to `js-ce:` prefix which is the js-compound-engineering plugin namespace.
+  // The lookbehind ensures we only match at word boundaries or after common delimiters,
+  // avoiding corruption of URLs, code identifiers, or unrelated namespace:value patterns.
+  // Note: / is intentionally excluded — slash commands are already handled in step 2.
+  // Captures colons in the name segment so multi-colon refs like ce:work:beta → ce-work-beta.
+  result = result.replace(/(?<=^|[\s,.()`'"])ce:([a-z*][a-z0-9_*:-]*)/gim, (_, name: string) => `ce-${name.replace(/:/g, "-")}`)
+
+  // 4. Rewrite .claude/ paths to .github/ and ~/.claude/ to ~/.copilot/
   result = result
     .replace(/~\/\.claude\//g, "~/.copilot/")
     .replace(/\.claude\//g, ".github/")
 
-  // 4. Transform @agent-name references
+  // 5. Transform @agent-name references
   const agentRefPattern =
     /@([a-z][a-z0-9-]*-(?:agent|reviewer|researcher|analyst|specialist|oracle|sentinel|guardian|strategist))/gi
   result = result.replace(agentRefPattern, (_match, agentName: string) => {

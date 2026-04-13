@@ -1,5 +1,6 @@
 import path from "path"
-import { backupFile, copyDir, ensureDir, pathExists, readJson, writeJson, writeText } from "../utils/files"
+import { backupFile, copySkillDir, ensureDir, pathExists, readJson, sanitizePathName, writeJson, writeText } from "../utils/files"
+import { transformContentForKiro } from "../converters/claude-to-kiro"
 import type { KiroBundle } from "../types/kiro"
 
 export async function writeKiroBundle(outputRoot: string, bundle: KiroBundle): Promise<void> {
@@ -14,13 +15,13 @@ export async function writeKiroBundle(outputRoot: string, bundle: KiroBundle): P
 
       // Write agent JSON config
       await writeJson(
-        path.join(paths.agentsDir, `${agent.name}.json`),
+        path.join(paths.agentsDir, `${sanitizePathName(agent.name)}.json`),
         agent.config,
       )
 
       // Write agent prompt file
       await writeText(
-        path.join(paths.agentsDir, "prompts", `${agent.name}.md`),
+        path.join(paths.agentsDir, "prompts", `${sanitizePathName(agent.name)}.md`),
         agent.promptContent + "\n",
       )
     }
@@ -31,7 +32,7 @@ export async function writeKiroBundle(outputRoot: string, bundle: KiroBundle): P
     for (const skill of bundle.generatedSkills) {
       validatePathSafe(skill.name, "skill")
       await writeText(
-        path.join(paths.skillsDir, skill.name, "SKILL.md"),
+        path.join(paths.skillsDir, sanitizePathName(skill.name), "SKILL.md"),
         skill.content + "\n",
       )
     }
@@ -41,7 +42,7 @@ export async function writeKiroBundle(outputRoot: string, bundle: KiroBundle): P
   if (bundle.skillDirs.length > 0) {
     for (const skill of bundle.skillDirs) {
       validatePathSafe(skill.name, "skill directory")
-      const destDir = path.join(paths.skillsDir, skill.name)
+      const destDir = path.join(paths.skillsDir, sanitizePathName(skill.name))
 
       // Validate destination doesn't escape skills directory
       const resolvedDest = path.resolve(destDir)
@@ -50,7 +51,10 @@ export async function writeKiroBundle(outputRoot: string, bundle: KiroBundle): P
         continue
       }
 
-      await copyDir(skill.sourceDir, destDir)
+      const knownAgentNames = bundle.agents.map((a) => a.name)
+      await copySkillDir(skill.sourceDir, destDir, (content) =>
+        transformContentForKiro(content, knownAgentNames),
+      )
     }
   }
 
@@ -59,7 +63,7 @@ export async function writeKiroBundle(outputRoot: string, bundle: KiroBundle): P
     for (const file of bundle.steeringFiles) {
       validatePathSafe(file.name, "steering file")
       await writeText(
-        path.join(paths.steeringDir, `${file.name}.md`),
+        path.join(paths.steeringDir, `${sanitizePathName(file.name)}.md`),
         file.content + "\n",
       )
     }

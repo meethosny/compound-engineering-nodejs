@@ -54,7 +54,7 @@ describe("writeKiroBundle", () => {
         },
       ],
       steeringFiles: [
-        { name: "compound-engineering", content: "# Steering content\n\nFollow these guidelines." },
+        { name: "js-compound-engineering", content: "# Steering content\n\nFollow these guidelines." },
       ],
       mcpServers: {
         playwright: { command: "npx", args: ["-y", "@anthropic/mcp-playwright"] },
@@ -87,7 +87,7 @@ describe("writeKiroBundle", () => {
     expect(await exists(path.join(tempRoot, ".kiro", "skills", "skill-one", "SKILL.md"))).toBe(true)
 
     // Steering file
-    const steeringPath = path.join(tempRoot, ".kiro", "steering", "compound-engineering.md")
+    const steeringPath = path.join(tempRoot, ".kiro", "steering", "js-compound-engineering.md")
     expect(await exists(steeringPath)).toBe(true)
     const steeringContent = await fs.readFile(steeringPath, "utf8")
     expect(steeringContent).toContain("Follow these guidelines.")
@@ -97,6 +97,43 @@ describe("writeKiroBundle", () => {
     expect(await exists(mcpPath)).toBe(true)
     const mcpContent = JSON.parse(await fs.readFile(mcpPath, "utf8"))
     expect(mcpContent.mcpServers.playwright.command).toBe("npx")
+  })
+
+  test("transforms Task calls in copied SKILL.md files", async () => {
+    const tempRoot = await fs.mkdtemp(path.join(os.tmpdir(), "kiro-skill-transform-"))
+    const sourceSkillDir = path.join(tempRoot, "source-skill")
+    await fs.mkdir(sourceSkillDir, { recursive: true })
+    await fs.writeFile(
+      path.join(sourceSkillDir, "SKILL.md"),
+      `---
+name: ce:plan
+description: Planning workflow
+---
+
+Run these research agents:
+
+- Task js-compound-engineering:research:repo-research-analyst(feature_description)
+- Task js-compound-engineering:research:learnings-researcher(feature_description)
+- Task js-compound-engineering:review:code-simplicity-reviewer()
+`,
+    )
+
+    const bundle: KiroBundle = {
+      ...emptyBundle,
+      skillDirs: [{ name: "js-ce:plan", sourceDir: sourceSkillDir }],
+    }
+
+    await writeKiroBundle(tempRoot, bundle)
+
+    const installedSkill = await fs.readFile(
+      path.join(tempRoot, ".kiro", "skills", "js-ce-plan", "SKILL.md"),
+      "utf8",
+    )
+
+    expect(installedSkill).toContain("Use the use_subagent tool to delegate to the repo-research-analyst agent: feature_description")
+    expect(installedSkill).toContain("Use the use_subagent tool to delegate to the learnings-researcher agent: feature_description")
+    expect(installedSkill).toContain("Use the use_subagent tool to delegate to the code-simplicity-reviewer agent")
+    expect(installedSkill).not.toContain("Task js-compound-engineering:")
   })
 
   test("does not double-nest when output root is .kiro", async () => {

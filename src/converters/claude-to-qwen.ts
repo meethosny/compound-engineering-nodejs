@@ -1,5 +1,6 @@
 import { formatFrontmatter } from "../utils/frontmatter"
-import type { ClaudeAgent, ClaudeCommand, ClaudeMcpServer, ClaudePlugin } from "../types/claude"
+import { normalizeModelWithProvider } from "../utils/model"
+import { type ClaudeAgent, type ClaudeCommand, type ClaudeMcpServer, type ClaudePlugin, filterSkillsByPlatform } from "../types/claude"
 import type {
   QwenAgentFile,
   QwenBundle,
@@ -15,6 +16,7 @@ export type ClaudeToQwenOptions = {
 }
 
 export function convertClaudeToQwen(plugin: ClaudePlugin, options: ClaudeToQwenOptions): QwenBundle {
+  const platformSkills = filterSkillsByPlatform(plugin.skills, "qwen")
   const agentFiles = plugin.agents.map((agent) => convertAgent(agent, options))
   const cmdFiles = convertCommands(plugin.commands)
   const mcp = plugin.mcpServers ? convertMcp(plugin.mcpServers) : undefined
@@ -42,7 +44,7 @@ export function convertClaudeToQwen(plugin: ClaudePlugin, options: ClaudeToQwenO
     config,
     agents: agentFiles,
     commandFiles: cmdFiles,
-    skillDirs: plugin.skills.map((skill) => ({ sourceDir: skill.sourceDir, name: skill.name })),
+    skillDirs: platformSkills.map((skill) => ({ sourceDir: skill.sourceDir, name: skill.name })),
     contextFile,
   }
 }
@@ -54,7 +56,7 @@ function convertAgent(agent: ClaudeAgent, options: ClaudeToQwenOptions): QwenAge
   }
 
   if (agent.model && agent.model !== "inherit") {
-    frontmatter.model = normalizeModel(agent.model)
+    frontmatter.model = normalizeModelWithProvider(agent.model)
   }
 
   if (options.inferTemperature) {
@@ -83,7 +85,7 @@ function convertCommands(commands: ClaudeCommand[]): QwenCommandFile[] {
       description: command.description,
     }
     if (command.model && command.model !== "inherit") {
-      frontmatter.model = normalizeModel(command.model)
+      frontmatter.model = normalizeModelWithProvider(command.model)
     }
     if (command.allowedTools && command.allowedTools.length > 0) {
       frontmatter.allowedTools = command.allowedTools
@@ -180,10 +182,11 @@ function generateContextFile(plugin: ClaudePlugin): string {
   }
 
   // Skills section
-  if (plugin.skills.length > 0) {
+  const qwenSkills = filterSkillsByPlatform(plugin.skills, "qwen")
+  if (qwenSkills.length > 0) {
     sections.push("## Skills")
     sections.push("")
-    for (const skill of plugin.skills) {
+    for (const skill of qwenSkills) {
       sections.push(`- ${skill.name}`)
     }
     sections.push("")
@@ -196,28 +199,6 @@ function rewriteQwenPaths(body: string): string {
   return body
     .replace(/(?<=^|\s|["'`])~\/\.claude\//gm, "~/.qwen/")
     .replace(/(?<=^|\s|["'`])\.claude\//gm, ".qwen/")
-}
-
-const CLAUDE_FAMILY_ALIASES: Record<string, string> = {
-  haiku: "claude-haiku",
-  sonnet: "claude-sonnet",
-  opus: "claude-opus",
-}
-
-function normalizeModel(model: string): string {
-  if (model.includes("/")) return model
-  if (CLAUDE_FAMILY_ALIASES[model]) {
-    const resolved = `anthropic/${CLAUDE_FAMILY_ALIASES[model]}`
-    console.warn(
-      `Warning: bare model alias "${model}" mapped to "${resolved}".`,
-    )
-    return resolved
-  }
-  if (/^claude-/.test(model)) return `anthropic/${model}`
-  if (/^(gpt-|o1-|o3-)/.test(model)) return `openai/${model}`
-  if (/^gemini-/.test(model)) return `google/${model}`
-  if (/^qwen-/.test(model)) return `qwen/${model}`
-  return `anthropic/${model}`
 }
 
 function inferTemperature(agent: ClaudeAgent): number | undefined {

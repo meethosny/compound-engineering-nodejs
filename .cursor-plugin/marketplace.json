@@ -1,0 +1,25 @@
+{
+  "name": "js-compound-engineering",
+  "owner": {
+    "name": "Hosni Mohamed",
+    "email": "hosni@meethosny.com",
+    "url": "https://github.com/meethosny"
+  },
+  "metadata": {
+    "description": "Cursor plugin marketplace for Node.js edition plugins",
+    "version": "1.0.1",
+    "pluginRoot": "plugins"
+  },
+  "plugins": [
+    {
+      "name": "js-compound-engineering",
+      "source": "js-compound-engineering",
+      "description": "AI-powered development tools that get smarter with every use. Make each unit of engineering work easier than the last."
+    },
+    {
+      "name": "js-coding-tutor",
+      "source": "js-coding-tutor",
+      "description": "Personalized coding tutorials with spaced repetition quizzes using your real codebase."
+    }
+  ]
+}

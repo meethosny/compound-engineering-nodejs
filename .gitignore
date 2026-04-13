@@ -2,3 +2,6 @@
 *.log
 node_modules/
 compound-engineering-plugin-main/
+.firecrawl/
+.opencode/
+promptkit-verified-final.txt

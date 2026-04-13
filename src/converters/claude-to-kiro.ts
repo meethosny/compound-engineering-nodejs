@@ -1,7 +1,7 @@
 import { readFileSync, existsSync } from "fs"
 import path from "path"
 import { formatFrontmatter } from "../utils/frontmatter"
-import type { ClaudeAgent, ClaudeCommand, ClaudeMcpServer, ClaudePlugin } from "../types/claude"
+import { type ClaudeAgent, type ClaudeCommand, type ClaudeMcpServer, type ClaudePlugin, filterSkillsByPlatform } from "../types/claude"
 import type {
   KiroAgent,
   KiroAgentConfig,
@@ -36,7 +36,7 @@ export function convertClaudeToKiro(
   const usedSkillNames = new Set<string>()
 
   // Pass-through skills are processed first — they're the source of truth
-  const skillDirs = plugin.skills.map((skill) => ({
+  const skillDirs = filterSkillsByPlatform(plugin.skills, "kiro").map((skill) => ({
     name: skill.name,
     sourceDir: skill.sourceDir,
   }))
@@ -53,10 +53,10 @@ export function convertClaudeToKiro(
     convertCommandToSkill(command, usedSkillNames, agentNames),
   )
 
-  // Convert MCP servers (stdio only)
+  // Convert MCP servers (stdio and remote)
   const mcpServers = convertMcpServers(plugin.mcpServers)
 
-  // Build steering files from CLAUDE.md
+  // Build steering files from repo instruction files, preferring AGENTS.md.
   const steeringFiles = buildSteeringFiles(plugin, agentNames)
 
   // Warn about hooks
@@ -135,10 +135,15 @@ function convertCommandToSkill(
 export function transformContentForKiro(body: string, knownAgentNames: string[] = []): string {
   let result = body
 
-  // 1. Transform Task agent calls
-  const taskPattern = /^(\s*-?\s*)Task\s+([a-z][a-z0-9-]*)\(([^)]+)\)/gm
+  // 1. Transform Task agent calls (supports namespaced names like js-compound-engineering:research:agent-name)
+  const taskPattern = /^(\s*-?\s*)Task\s+([a-z][a-z0-9:-]*)\(([^)]*)\)/gm
   result = result.replace(taskPattern, (_match, prefix: string, agentName: string, args: string) => {
-    return `${prefix}Use the use_subagent tool to delegate to the ${normalizeName(agentName)} agent: ${args.trim()}`
+    const finalSegment = agentName.includes(":") ? agentName.split(":").pop()! : agentName
+    const agentRef = normalizeName(finalSegment)
+    const trimmedArgs = args.trim()
+    return trimmedArgs
+      ? `${prefix}Use the use_subagent tool to delegate to the ${agentRef} agent: ${trimmedArgs}`
+      : `${prefix}Use the use_subagent tool to delegate to the ${agentRef} agent`
   })
 
   // 2. Rewrite .claude/ paths to .kiro/ (with word-boundary-like lookbehind)
@@ -177,30 +182,31 @@ function convertMcpServers(
 
   const result: Record<string, KiroMcpServer> = {}
   for (const [name, server] of Object.entries(servers)) {
-    if (!server.command) {
+    if (server.command) {
+      const entry: KiroMcpServer = { command: server.command }
+      if (server.args && server.args.length > 0) entry.args = server.args
+      if (server.env && Object.keys(server.env).length > 0) entry.env = server.env
+      result[name] = entry
+    } else if (server.url) {
+      const entry: KiroMcpServer = { url: server.url }
+      if (server.headers && Object.keys(server.headers).length > 0) entry.headers = server.headers
+      result[name] = entry
+    } else {
       console.warn(
-        `Warning: MCP server "${name}" has no command (HTTP/SSE transport). Kiro only supports stdio. Skipping.`,
+        `Warning: MCP server "${name}" has no command or url. Skipping.`,
       )
-      continue
     }
-
-    const entry: KiroMcpServer = { command: server.command }
-    if (server.args && server.args.length > 0) entry.args = server.args
-    if (server.env && Object.keys(server.env).length > 0) entry.env = server.env
-
-    console.log(`MCP server "${name}" will execute: ${server.command}${server.args ? " " + server.args.join(" ") : ""}`)
-    result[name] = entry
   }
   return result
 }
 
 function buildSteeringFiles(plugin: ClaudePlugin, knownAgentNames: string[]): KiroSteeringFile[] {
-  const claudeMdPath = path.join(plugin.root, "CLAUDE.md")
-  if (!existsSync(claudeMdPath)) return []
+  const instructionPath = resolveInstructionPath(plugin.root)
+  if (!instructionPath) return []
 
   let content: string
   try {
-    content = readFileSync(claudeMdPath, "utf8")
+    content = readFileSync(instructionPath, "utf8")
   } catch {
     return []
   }
@@ -208,8 +214,17 @@ function buildSteeringFiles(plugin: ClaudePlugin, knownAgentNames: string[]): Ki
   if (!content || content.trim().length === 0) return []
 
   const transformed = transformContentForKiro(content, knownAgentNames)
-  const steeringName = plugin.manifest.name || "js-compound-engineering"
-  return [{ name: steeringName, content: transformed }]
+  return [{ name: "js-compound-engineering", content: transformed }]
+}
+
+function resolveInstructionPath(root: string): string | null {
+  const agentsPath = path.join(root, "AGENTS.md")
+  if (existsSync(agentsPath)) return agentsPath
+
+  const claudePath = path.join(root, "CLAUDE.md")
+  if (existsSync(claudePath)) return claudePath
+
+  return null
 }
 
 function normalizeName(value: string): string {

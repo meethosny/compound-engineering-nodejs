@@ -1,96 +1,71 @@
 # Sindre Sorhus Resources
 
-Links to Sindre's repositories, guides, and articles.
+## Primary Documentation
 
-## Sindre Sorhus
+- **Pure ESM Package Guide**: https://gist.github.com/sindresorhus/a39789f98801d908bbc7ff3ecc99d99c
+  - Essential reading for modern Node.js package authoring
+  - Covers ESM migration, TypeScript definitions, testing
 
-- **GitHub**: https://github.com/sindresorhus
-- **npm**: https://www.npmjs.com/~sindresorhus
-- **Website**: https://sindresorhus.com
-- **Twitter/X**: https://twitter.com/sindresorhus
+## Top npm Packages by Downloads
 
-## Essential Reading
+### HTTP & Networking
 
-### ESM Migration
-- **ESM Package Guide**: https://gist.github.com/sindresorhus/a39789f98801d908bbc7ff3ecc99d99c
-- **Pure ESM Package**: https://gist.github.com/sindresorhus/a39789f98801d908bbc7ff3ecc99d99c
+| Package | Weekly Downloads | Description | Source |
+|---------|-----------------|-------------|--------|
+| **got** | 20M+ | Human-friendly HTTP requests | https://github.com/sindresorhus/got |
+| **ky** | 5M+ | Tiny HTTP client for browsers | https://github.com/sindresorhus/ky |
+| **p-limit** | 100M+ | Run promises with concurrency | https://github.com/sindresorhus/p-limit |
 
-### Package Writing
-- **Awesome Node.js**: https://github.com/sindresorhus/awesome-nodejs
-- **Awesome npm**: https://github.com/sindresorhus/awesome-npm
-- **np (Better npm publish)**: https://github.com/sindresorhus/np
+### File System & CLI
 
-## Exemplary Packages
+| Package | Weekly Downloads | Description | Source |
+|---------|-----------------|-------------|--------|
+| **execa** | 80M+ | Better child_process | https://github.com/sindresorhus/execa |
+| **globby** | 50M+ | User-friendly globbing | https://github.com/sindresorhus/globby |
+| **del** | 20M+ | Delete files and directories | https://github.com/sindresorhus/del |
+| **ora** | 20M+ | Elegant terminal spinners | https://github.com/sindresorhus/ora |
 
-Study these for patterns:
+### Types & Utilities
 
-### Simple Utility
-- **slugify**: https://github.com/sindresorhus/slugify
-- **camelcase**: https://github.com/sindresorhus/camelcase
-- **p-limit**: https://github.com/sindresorhus/p-limit
+| Package | Weekly Downloads | Description | Source |
+|---------|-----------------|-------------|--------|
+| **type-fest** | 50M+ | Essential TypeScript types | https://github.com/sindresorhus/type-fest |
+| **camelcase** | 100M+ | Convert to camelCase | https://github.com/sindresorhus/camelcase |
+| **open** | 50M+ | Open URLs/files/executables | https://github.com/sindresorhus/open |
 
-### Promise Utilities
-- **p-map**: https://github.com/sindresorhus/p-map
-- **p-retry**: https://github.com/sindresorhus/p-retry
-- **p-queue**: https://github.com/sindresorhus/p-queue
+## Key Source Files to Study
 
-### CLI Tools
-- **np**: https://github.com/sindresorhus/np
-- **trash-cli**: https://github.com/sindresorhus/trash-cli
-- **fkill-cli**: https://github.com/sindresorhus/fkill-cli
+### Entry Point Patterns
+- https://github.com/sindresorhus/execa/blob/main/index.js
+- https://github.com/sindresorhus/p-limit/blob/main/index.js
+- https://github.com/sindresorhus/ora/blob/main/index.js
 
-### TypeScript
-- **type-fest**: https://github.com/sindresorhus/type-fest
-- **ts-extras**: https://github.com/sindresorhus/ts-extras
+### TypeScript Definitions
+- https://github.com/sindresorhus/p-limit/blob/main/index.d.ts
+- https://github.com/sindresorhus/del/blob/main/index.d.ts
+- https://github.com/sindresorhus/type-fest/tree/main/source
 
-## Package Templates
+### Test Setups
+- https://github.com/sindresorhus/execa/tree/main/test
+- https://github.com/sindresorhus/p-limit/blob/main/test.js
 
-### Minimal package.json
+## GitHub Profile
 
-```json
-{
-  "name": "package-name",
-  "version": "1.0.0",
-  "description": "One thing well",
-  "license": "MIT",
-  "repository": "username/package-name",
-  "type": "module",
-  "exports": "./index.js",
-  "types": "./index.d.ts",
-  "engines": { "node": ">=18" },
-  "scripts": { "test": "node --test" },
-  "files": ["index.js", "index.d.ts"]
-}
-```
+- **Profile**: https://github.com/sindresorhus
+- **npm Profile**: https://www.npmjs.com/~sindresorhus
+- **Website**: https://sindresorhus.com/
 
-### .gitignore
+## Design Philosophy Summary
 
-```
-node_modules
-coverage
-*.log
-.DS_Store
-```
+From studying 1000+ packages, Sindre's consistent principles:
 
-### .npmignore
-
-```
-test.js
-.github
-.gitignore
-```
-
-## Publishing Tools
-
-- **np**: https://github.com/sindresorhus/np - Better `npm publish`
-- **semantic-release**: https://github.com/semantic-release/semantic-release - Automated versioning
-
-## Style Guides
-
-- **XO**: https://github.com/xojs/xo - Sindre's linting config
-- **Prettier**: https://prettier.io - Code formatting
-
-## Community
-
-- **Node.js Package Maintenance WG**: https://github.com/nodejs/package-maintenance
-- **OpenJS Foundation**: https://openjsf.org
+1. **One thing well** - Each package does exactly one thing
+2. **Zero dependencies when possible** - Minimize attack surface and bloat
+3. **ES Modules only** - No CJS compatibility layer
+4. **TypeScript definitions always** - First-class type support via `.d.ts`
+5. **Node.js built-in test runner** - No external test frameworks
+6. **Options objects** - Single config parameter with smart defaults
+7. **Fail fast** - Validate input immediately with TypeError
+8. **Clear README** - Install, usage example, API docs, related packages
+9. **Semantic versioning** - Strict semver, breaking changes documented
+10. **Minimal documentation** - Code is self-documenting, README is examples

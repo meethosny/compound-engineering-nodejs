@@ -1,226 +1,193 @@
 ---
 name: js-modern-nodejs-style
-description: Write Node.js code following modern, pragmatic patterns. Use this skill when writing Node.js applications, Express/Fastify/Hono APIs, creating modules, or any JavaScript/TypeScript server-side code. MVP-focused, minimal dependencies, async-first design. Triggers on Node.js code generation, API development, middleware patterns, or when user wants modern server-side JavaScript.
+description: Write Node.js code following modern, pragmatic patterns inspired by TJ Holowaychuk, Matteo Collina, and Sindre Sorhus. Use when writing Node.js applications, Express/Fastify/Hono APIs, creating modules, or any JavaScript/TypeScript server-side code. Triggers on Node.js code generation, refactoring requests, code review, or when the user wants clean, minimal, production-ready server-side JavaScript/TypeScript.
 ---
 
-# Modern Node.js Style Guide
+<objective>
+Apply modern Node.js conventions to JavaScript and TypeScript code. This skill provides comprehensive domain expertise extracted from analyzing production-grade Node.js projects and the coding patterns of influential engineers like TJ Holowaychuk, Matteo Collina, and Sindre Sorhus.
+</objective>
 
-Write Node.js code following pragmatic, MVP-focused patterns: **minimalism**, **composability**, **async-first design**, and **ship fast**.
+<essential_principles>
+## Core Philosophy
 
-## Quick Reference
+"Simple modules, composed together. The best code is the code you don't write."
 
-### Middleware Patterns (Express/Fastify/Hono)
-- **Single responsibility**: One middleware, one task
-- **Composition over configuration**: Chain small middlewares
-- **Early returns**: Exit conditions first
-- **Error handling**: Centralized error middleware
+**Vanilla Node.js is plenty:**
+- Pure functions and modules over class hierarchies
+- Route handlers over controller abstractions
+- Middleware for cross-cutting concerns
+- Schema validation over manual parsing
+- Built-in Node.js APIs over heavy frameworks
+- Build solutions before reaching for packages
+
+**What to deliberately avoid:**
+- express-validator (use Zod/AJV directly)
+- passport (write ~50 lines of auth middleware)
+- sequelize (use Prisma, Drizzle, or raw SQL)
+- moment.js (use native Date, Temporal, or date-fns)
+- lodash (use native Array/Object methods)
+- class-based service layers (use plain functions)
+- GraphQL for simple APIs (REST is sufficient)
+- jest for new projects (use Vitest or node:test)
+
+**Development Philosophy:**
+- Ship, Validate, Refine -- prototype-quality code to production to learn
+- Fix root causes, not symptoms
+- Async-first, streaming when possible
+- Dependency-free when reasonable
+</essential_principles>
+
+<intake>
+What are you working on?
+
+1. **Routes & Handlers** - REST mapping, middleware, request/response patterns
+2. **Data & Models** - Database patterns, Prisma/Drizzle, validation, schemas
+3. **Frontend Integration** - Server-rendered HTML, htmx, API responses
+4. **Architecture** - Project structure, auth, background jobs, caching
+5. **Testing** - Vitest, node:test, integration tests
+6. **Dependencies** - What to use vs avoid
+7. **Code Review** - Review code against modern Node.js style
+8. **General Guidance** - Philosophy and conventions
+
+**Specify a number or describe your task.**
+</intake>
+
+<routing>
+
+| Response | Reference to Read |
+|----------|-------------------|
+| 1, route, handler, middleware, API | `references/routes.md` |
+| 2, model, database, prisma, drizzle, schema | `references/models.md` |
+| 3, frontend, template, htmx, SSR | `references/frontend.md` |
+| 4, architecture, auth, job, cache, structure | `references/architecture.md` |
+| 5, test, testing, vitest | `references/testing.md` |
+| 6, dependency, package, library | `references/dependencies.md` |
+| 7, review | Read all references, then review code |
+| 8, general task | Read relevant references based on context |
+
+**After reading relevant references, apply patterns to the user's code.**
+</routing>
+
+<quick_reference>
+## Naming Conventions
+
+**Functions:** `createUser`, `validateEmail`, `sendNotification` (verb + noun)
+
+**Middleware:** `authenticate`, `rateLimit`, `validateBody` (verb describing what it does)
+
+**Modules:** `user.service.js`, `auth.middleware.js`, `order.routes.js` (noun + role)
+
+**Constants:** `MAX_RETRIES`, `DEFAULT_TIMEOUT`, `CACHE_TTL`
+
+## REST Mapping
+
+Standard RESTful routes with Express/Fastify/Hono:
+
+```
+GET    /users          -> list
+GET    /users/:id      -> get
+POST   /users          -> create
+PUT    /users/:id      -> update
+DELETE /users/:id      -> remove
+```
+
+Instead of custom actions, create new resources:
+
+```
+POST /users/:id/suspend   -> POST /users/:id/suspension
+DELETE /users/:id/suspend  -> DELETE /users/:id/suspension
+```
+
+## JavaScript/TypeScript Syntax Preferences
 
 ```javascript
-// Good: Single-purpose middleware
-const authenticate = async (req, res, next) => {
-  const token = req.headers.authorization?.split(' ')[1];
-  if (!token) return res.status(401).json({ error: 'Unauthorized' });
-  
-  try {
-    req.user = await verifyToken(token);
-    next();
-  } catch {
-    res.status(401).json({ error: 'Invalid token' });
-  }
-};
+// Destructuring with defaults
+const {timeout = 5000, retries = 3} = options;
 
-// Good: Compose middlewares
-app.use('/api', authenticate, rateLimit, validateInput);
+// Early returns over nested if/else
+if (!user) return reply.code(404).send({error: 'Not found'});
+
+// Async/await over callbacks or .then()
+const user = await db.user.findUnique({where: {id}});
+
+// Template literals over concatenation
+const message = `User ${user.name} created successfully`;
+
+// Optional chaining
+const email = user?.profile?.email;
+
+// Nullish coalescing
+const port = process.env.PORT ?? 3000;
 ```
 
-### Route Handler Design
-- Short, focused handlers (5-15 lines)
-- Extract business logic to modules
-- Use async/await with proper error handling
-- Return early for error conditions
+## Key Patterns
 
+**Validation with Zod:**
 ```javascript
-// Good: Clean, focused handler
-const createUser = async (req, res, next) => {
-  try {
-    const user = await userService.create(req.body);
-    res.status(201).json(user);
-  } catch (error) {
-    next(error);
-  }
-};
+import {z} from 'zod';
 
-// Good: Early return pattern
-const getUser = async (req, res, next) => {
-  const user = await userService.findById(req.params.id);
-  if (!user) return res.status(404).json({ error: 'Not found' });
-  res.json(user);
-};
-```
-
-### Module Design (MVP-Focused)
-- Named exports over default exports
-- Factory functions for configuration
-- Explicit dependencies (no globals)
-- Pure functions when possible
-- Zero external deps when feasible
-
-```javascript
-// Good: Named exports, factory pattern
-export const createUserService = (db) => ({
-  async create(data) {
-    return db.users.insert(data);
-  },
-  async findById(id) {
-    return db.users.findOne({ id });
-  }
-});
-
-// Good: Explicit dependencies
-export const userRoutes = (userService, authMiddleware) => {
-  const router = express.Router();
-  router.get('/:id', authMiddleware, async (req, res) => {
-    const user = await userService.findById(req.params.id);
-    res.json(user);
-  });
-  return router;
-};
-```
-
-### Error Handling
-- Centralized error handler
-- Custom error classes for business logic
-- Operational vs programmer errors
-- Never swallow errors silently
-
-```javascript
-// Custom errors
-class AppError extends Error {
-  constructor(message, statusCode = 500) {
-    super(message);
-    this.statusCode = statusCode;
-    this.isOperational = true;
-  }
-}
-
-class NotFoundError extends AppError {
-  constructor(resource = 'Resource') {
-    super(`${resource} not found`, 404);
-  }
-}
-
-// Centralized handler (last middleware)
-const errorHandler = (err, req, res, next) => {
-  const statusCode = err.statusCode || 500;
-  res.status(statusCode).json({
-    error: err.message,
-    ...(process.env.NODE_ENV === 'development' && { stack: err.stack })
-  });
-};
-```
-
-### Configuration Pattern
-- Environment variables via process.env
-- Config module with validation
-- Fail fast on missing required config
-
-```javascript
-// config.js
-const required = (name) => {
-  const value = process.env[name];
-  if (!value) throw new Error(`Missing required env: ${name}`);
-  return value;
-};
-
-export const config = {
-  port: process.env.PORT || 3000,
-  nodeEnv: process.env.NODE_ENV || 'development',
-  dbUrl: required('DATABASE_URL'),
-  jwtSecret: required('JWT_SECRET'),
-};
-```
-
-### Async Patterns
-- Always use async/await (no callbacks)
-- Promise.all for parallel operations
-- Avoid nested promises
-- Handle rejections properly
-
-```javascript
-// Good: Parallel operations
-const [users, posts] = await Promise.all([
-  userService.findAll(),
-  postService.findRecent()
-]);
-
-// Good: Sequential when needed
-const user = await userService.findById(id);
-const posts = await postService.findByUser(user.id);
-```
-
-### Project Structure (Minimal)
-
-```
-src/
-├── index.js          # Entry point
-├── app.js            # Express/Fastify/Hono app setup
-├── config.js         # Configuration
-├── routes/           # Route handlers
-│   └── users.js
-├── services/         # Business logic
-│   └── user.js
-├── middleware/       # Custom middleware
-│   └── auth.js
-└── utils/            # Shared utilities
-```
-
-### Testing (Node.js Test Runner)
-- Use built-in test runner (Node 20+)
-- Simple, focused tests
-- Test behavior, not implementation
-
-```javascript
-import { test, describe } from 'node:test';
-import assert from 'node:assert';
-
-describe('UserService', () => {
-  test('creates user with valid data', async () => {
-    const user = await userService.create({ name: 'Test' });
-    assert.strictEqual(user.name, 'Test');
-  });
+const createUserSchema = z.object({
+  email: z.string().email(),
+  name: z.string().min(1).max(100),
+  role: z.enum(['user', 'admin']).default('user'),
 });
 ```
 
-## Anti-Patterns to Avoid
+**Error Handling Middleware:**
+```javascript
+function errorHandler(error, request, response, next) {
+  const status = error.status ?? 500;
+  response.status(status).json({
+    error: error.message,
+    ...(process.env.NODE_ENV === 'development' && {stack: error.stack}),
+  });
+}
+```
 
-| Anti-Pattern | Why Bad | Do Instead |
-|--------------|---------|------------|
-| Callback hell | Unreadable, error-prone | async/await |
-| Global state | Hard to test, race conditions | Dependency injection |
-| Massive files | Hard to maintain | Small, focused modules |
-| Premature abstraction | Over-engineering | YAGNI - build when needed |
-| Deep nesting | Hard to follow | Early returns, flat code |
-| Sync file I/O | Blocks event loop | Use async versions |
-| console.log in prod | No structure, perf hit | Pino or similar logger |
+**Graceful Shutdown:**
+```javascript
+process.on('SIGTERM', async () => {
+  await server.close();
+  await db.$disconnect();
+  process.exit(0);
+});
+```
+</quick_reference>
 
-## Performance (Without Over-Optimization)
+<reference_index>
+## Domain Knowledge
 
-- Use streaming for large responses
-- Connection pooling for databases
-- Avoid blocking the event loop
-- Cache expensive operations when obvious
+All detailed patterns in `references/`:
 
-## Philosophy Summary
+| File | Topics |
+|------|--------|
+| `references/routes.md` | REST mapping, middleware, validation, API patterns |
+| `references/models.md` | Prisma/Drizzle patterns, schemas, migrations, validation |
+| `references/frontend.md` | Server-rendered HTML, htmx, Tailwind, API responses |
+| `references/architecture.md` | Project structure, auth, jobs, caching, database patterns |
+| `references/testing.md` | Vitest, node:test, integration tests, fixtures |
+| `references/dependencies.md` | What to use vs avoid, decision framework |
+</reference_index>
 
-1. **Minimalism**: Small modules, minimal dependencies
-2. **Composability**: Build from interchangeable parts
-3. **Async-first**: Never block the event loop
-4. **Ship fast**: MVP first, enhance based on feedback
-5. **Explicit over magic**: Clear code over clever code
-6. **Pragmatic**: Working code beats perfect code
+<success_criteria>
+Code follows modern Node.js style when:
+- Route handlers are thin, delegating to service functions
+- Validation uses schema libraries (Zod, AJV), not manual parsing
+- No unnecessary abstractions or service-object hierarchies
+- Database queries use Prisma/Drizzle or prepared SQL, not string concatenation
+- Middleware handles cross-cutting concerns (auth, logging, error handling)
+- Tests use Vitest or node:test with real database when possible
+- Native Node.js APIs preferred over heavy utility libraries
+- ES Modules throughout, no CommonJS
+- Environment config via `process.env` with validation at startup
+- Graceful shutdown and structured logging
+</success_criteria>
 
-## Detailed References
+<credits>
+Inspired by the pragmatic philosophies of:
+- **TJ Holowaychuk** (Express, Koa, co, debug, commander) -- small modules, middleware composition
+- **Matteo Collina** (Fastify, Pino, undici, Platformatic) -- performance-first, schema validation, plugin architecture
+- **Sindre Sorhus** (execa, got, ky, p-limit) -- one thing well, zero deps, ES Modules only
 
-For deeper patterns, see:
-- `references/patterns.md` - Complete code patterns with examples
-- `references/resources.md` - Links to influential repos and articles
+These are community-observed patterns, not endorsed style guides.
+</credits>

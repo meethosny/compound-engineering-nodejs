@@ -1,13 +1,15 @@
 import path from "path"
 import {
   backupFile,
-  copyDir,
+  copySkillDir,
   ensureDir,
   pathExists,
   readText,
+  sanitizePathName,
   writeJson,
   writeText,
 } from "../utils/files"
+import { transformContentForPi } from "../converters/claude-to-pi"
 import type { PiBundle } from "../types/pi"
 
 const PI_AGENTS_BLOCK_START = "<!-- BEGIN COMPOUND PI TOOL MAP -->"
@@ -33,15 +35,15 @@ export async function writePiBundle(outputRoot: string, bundle: PiBundle): Promi
   await ensureDir(paths.extensionsDir)
 
   for (const prompt of bundle.prompts) {
-    await writeText(path.join(paths.promptsDir, `${prompt.name}.md`), prompt.content + "\n")
+    await writeText(path.join(paths.promptsDir, `${sanitizePathName(prompt.name)}.md`), prompt.content + "\n")
   }
 
   for (const skill of bundle.skillDirs) {
-    await copyDir(skill.sourceDir, path.join(paths.skillsDir, skill.name))
+    await copySkillDir(skill.sourceDir, path.join(paths.skillsDir, sanitizePathName(skill.name)), transformContentForPi)
   }
 
   for (const skill of bundle.generatedSkills) {
-    await writeText(path.join(paths.skillsDir, skill.name, "SKILL.md"), skill.content + "\n")
+    await writeText(path.join(paths.skillsDir, sanitizePathName(skill.name), "SKILL.md"), skill.content + "\n")
   }
 
   for (const extension of bundle.extensions) {

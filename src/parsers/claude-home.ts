@@ -41,8 +41,18 @@ async function loadPersonalSkills(skillsDir: string): Promise<ClaudeSkill[]> {
         const sourceDir = entry.isSymbolicLink()
           ? await fs.realpath(entryPath)
           : entryPath
+        let data: Record<string, unknown> = {}
+        try {
+          const raw = await fs.readFile(skillPath, "utf8")
+          data = parseFrontmatter(raw, skillPath).data
+        } catch {
+          // Keep syncing the skill even if frontmatter is malformed.
+        }
         skills.push({
           name: entry.name,
+          description: data.description as string | undefined,
+          argumentHint: data["argument-hint"] as string | undefined,
+          disableModelInvocation: data["disable-model-invocation"] === true ? true : undefined,
           sourceDir,
           skillPath,
         })
@@ -77,7 +87,7 @@ async function loadPersonalCommands(commandsDir: string): Promise<ClaudeCommand[
     const commands: ClaudeCommand[] = []
     for (const file of files) {
       const raw = await fs.readFile(file, "utf8")
-      const { data, body } = parseFrontmatter(raw)
+      const { data, body } = parseFrontmatter(raw, file)
       commands.push({
         name: typeof data.name === "string" ? data.name : deriveCommandName(commandsDir, file),
         description: data.description as string | undefined,

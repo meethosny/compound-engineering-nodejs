@@ -33,7 +33,7 @@ describe("convertClaudeToPi", () => {
     expect(bundle.generatedSkills.some((skill) => skill.name === "repo-research-analyst")).toBe(true)
 
     // Pi compatibility extension is included (with subagent + MCPorter tools)
-    const compatExtension = bundle.extensions.find((extension) => extension.name === "compound-engineering-compat.ts")
+    const compatExtension = bundle.extensions.find((extension) => extension.name === "js-compound-engineering-compat.ts")
     expect(compatExtension).toBeDefined()
     expect(compatExtension!.content).toContain('name: "subagent"')
     expect(compatExtension!.content).toContain('name: "mcporter_call"')
@@ -57,7 +57,7 @@ describe("convertClaudeToPi", () => {
             "- Task repo-research-analyst(feature_description)",
             "- Task learnings-researcher(feature_description)",
             "Use AskUserQuestion tool for follow-up.",
-            "Then use /workflows:work and /prompts:deepen-plan.",
+            "Then use /workflows:work and /prompts:todo-resolve.",
             "Track progress with TodoWrite and TodoRead.",
           ].join("\n"),
           sourcePath: "/tmp/plugin/commands/plan.md",
@@ -81,8 +81,72 @@ describe("convertClaudeToPi", () => {
     expect(parsedPrompt.body).toContain("Run subagent with agent=\"learnings-researcher\" and task=\"feature_description\".")
     expect(parsedPrompt.body).toContain("ask_user_question")
     expect(parsedPrompt.body).toContain("/workflows-work")
-    expect(parsedPrompt.body).toContain("/deepen-plan")
-    expect(parsedPrompt.body).toContain("file-based todos (todos/ + /skill:file-todos)")
+    expect(parsedPrompt.body).toContain("/todo-resolve")
+    expect(parsedPrompt.body).toContain("file-based todos (todos/ + /skill:todo-create)")
+  })
+
+  test("transforms namespaced Task agent calls using final segment", () => {
+    const plugin: ClaudePlugin = {
+      root: "/tmp/plugin",
+      manifest: { name: "fixture", version: "1.0.0" },
+      agents: [],
+      commands: [
+        {
+          name: "plan",
+          description: "Planning with namespaced agents",
+          body: [
+            "Run agents:",
+            "- Task js-compound-engineering:research:repo-research-analyst(feature_description)",
+            "- Task js-compound-engineering:review:security-reviewer(code_diff)",
+          ].join("\n"),
+          sourcePath: "/tmp/plugin/commands/plan.md",
+        },
+      ],
+      skills: [],
+      hooks: undefined,
+      mcpServers: undefined,
+    }
+
+    const bundle = convertClaudeToPi(plugin, {
+      agentMode: "subagent",
+      inferTemperature: false,
+      permissions: "none",
+    })
+
+    const parsedPrompt = parseFrontmatter(bundle.prompts[0].content)
+    expect(parsedPrompt.body).toContain('Run subagent with agent="repo-research-analyst" and task="feature_description".')
+    expect(parsedPrompt.body).toContain('Run subagent with agent="security-reviewer" and task="code_diff".')
+    expect(parsedPrompt.body).not.toContain("js-compound-engineering:")
+  })
+
+  test("transforms zero-argument Task calls", () => {
+    const plugin: ClaudePlugin = {
+      root: "/tmp/plugin",
+      manifest: { name: "fixture", version: "1.0.0" },
+      agents: [],
+      commands: [
+        {
+          name: "review",
+          description: "Review code",
+          body: "- Task js-compound-engineering:review:code-simplicity-reviewer()",
+          sourcePath: "/tmp/plugin/commands/review.md",
+        },
+      ],
+      skills: [],
+      hooks: undefined,
+      mcpServers: undefined,
+    }
+
+    const bundle = convertClaudeToPi(plugin, {
+      agentMode: "subagent",
+      inferTemperature: false,
+      permissions: "none",
+    })
+
+    const parsedPrompt = parseFrontmatter(bundle.prompts[0].content)
+    expect(parsedPrompt.body).toContain('Run subagent with agent="code-simplicity-reviewer".')
+    expect(parsedPrompt.body).not.toContain("js-compound-engineering:")
+    expect(parsedPrompt.body).not.toContain("()")
   })
 
   test("appends MCPorter compatibility note when command references MCP", () => {
