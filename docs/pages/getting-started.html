@@ -80,7 +80,7 @@
       <article class="docs-article">
         <h1>Getting Started with Compounding Engineering</h1>
         <p class="lead">
-          Five minutes from now, you'll run a single command that spins up 10 AI agents—each with a different specialty—to review your pull request in parallel. Security, performance, architecture, accessibility, all happening at once. That's the plugin. Let's get you set up.
+          Five minutes from now, you'll run a single command that spins up a tiered set of AI review agents—each with a different specialty—to review your pull request in parallel. Security, performance, architecture, correctness, all happening at once. That's the plugin: 51 specialized agents, 47 skills, and 1 MCP server. Let's get you set up.
         </p>
 
         <!-- Installation Section -->
@@ -97,13 +97,13 @@
           <h3>Step 1: Add the Marketplace</h3>
           <p>Think of the marketplace as an app store. You're adding it to Claude Code's list of places to look for plugins:</p>
           <div class="card-code-block">
-            <pre><code>claude /plugin marketplace add https://github.com/EveryInc/every-marketplace</code></pre>
+            <pre><code>claude /plugin marketplace add https://github.com/meethosny/compound-engineering-nodejs</code></pre>
           </div>
 
           <h3>Step 2: Install the Plugin</h3>
           <p>Now grab the plugin itself:</p>
           <div class="card-code-block">
-            <pre><code>claude /plugin install compound-engineering</code></pre>
+            <pre><code>claude /plugin install js-compound-engineering</code></pre>
           </div>
 
           <h3>Step 3: Verify Installation</h3>
@@ -111,7 +111,7 @@
           <div class="card-code-block">
             <pre><code>claude /plugin list</code></pre>
           </div>
-          <p>You'll see <code>compound-engineering</code> in the list. If you do, you're ready.</p>
+          <p>You'll see <code>js-compound-engineering</code> in the list. If you do, you're ready. Then run <code>/js-ce-setup</code> to check your environment and install recommended tools.</p>
 
           <div class="callout callout-info">
             <div class="callout-icon"><i class="fa-solid fa-circle-info"></i></div>
@@ -131,42 +131,42 @@
           <p>Let's see what this thing can actually do. I'll show you three workflows you'll use constantly:</p>
 
           <h3>Run a Code Review</h3>
-          <p>This is the big one. Type <code>/review</code> and watch it spawn 10+ specialized reviewers:</p>
+          <p>This is the big one. Type <code>/js-ce:review</code> and watch the pipeline spawn its always-on and conditional reviewers:</p>
           <div class="card-code-block">
             <pre><code># Review a PR by number
-/review 123
+/js-ce:review 123
 
 # Review the current branch
-/review
+/js-ce:review
 
 # Review a specific branch
-/review feature/my-feature</code></pre>
+/js-ce:review feature/my-feature</code></pre>
           </div>
 
           <h3>Use a Specialized Agent</h3>
-          <p>Sometimes you just need one expert. Call them directly:</p>
+          <p>Sometimes you just need one expert. Call them directly with the bare <code>js-ce-</code> name:</p>
           <div class="card-code-block">
             <pre><code># Node.js code review with strict conventions
-claude agent js-modern-nodejs-reviewer "Review the UserController"
+claude agent js-ce-kieran-nodejs-reviewer "Review the UserController"
 
-# Security audit
-claude agent js-security-sentinel "Audit authentication flow"
+# Security review
+claude agent js-ce-security-reviewer "Audit authentication flow"
 
 # Research best practices
-claude agent js-best-practices-researcher "Find pagination patterns for Express"</code></pre>
+claude agent js-ce-best-practices-researcher "Find pagination patterns for Express"</code></pre>
           </div>
 
           <h3>Invoke a Skill</h3>
-          <p>Skills are like loading a reference book into Claude's brain. When you need deep knowledge in a specific domain:</p>
+          <p>Skills package the plugin's workflows and domain knowledge. When you need deep knowledge in a specific domain:</p>
           <div class="card-code-block">
             <pre><code># Generate images with Gemini
-skill: js-gemini-imagegen
+skill: js-ce-gemini-imagegen
 
 # Write Node.js in modern style
-skill: js-modern-nodejs-style
+skill: js-ce-modern-nodejs-style
 
-# Create a new Claude Code skill
-skill: js-create-agent-skills</code></pre>
+# Plan a multi-step task
+/js-ce:plan "Add OAuth integration"</code></pre>
           </div>
         </section>
 
@@ -202,8 +202,13 @@ skill: js-create-agent-skills</code></pre>
             <tbody>
               <tr>
                 <td><code>GEMINI_API_KEY</code></td>
-                <td>gemini-imagegen</td>
+                <td>js-ce-gemini-imagegen</td>
                 <td>Google Gemini API key for image generation</td>
+              </tr>
+              <tr>
+                <td><code>CONTEXT7_API_KEY</code></td>
+                <td>context7 MCP</td>
+                <td>Optional: avoids anonymous rate limits on documentation lookups</td>
               </tr>
             </tbody>
           </table>
@@ -261,13 +266,13 @@ skill: js-create-agent-skills</code></pre>
 
           <h3>Invoking Agents</h3>
           <div class="card-code-block">
-            <pre><code># Basic syntax
-claude agent [agent-name] "[optional message]"
+            <pre><code># Basic syntax -- always the bare js-ce- name
+claude agent js-ce-&lt;agent-name&gt; "[optional message]"
 
 # Examples
-claude agent js-modern-nodejs-reviewer
-claude agent js-security-sentinel "Audit the payment flow"
-claude agent js-git-history-analyzer "Show changes to user model"</code></pre>
+claude agent js-ce-correctness-reviewer
+claude agent js-ce-security-reviewer "Audit the payment flow"
+claude agent js-ce-git-history-analyzer "Show changes to user model"</code></pre>
           </div>
 
           <h3>Agent Categories</h3>
@@ -282,27 +287,32 @@ claude agent js-git-history-analyzer "Show changes to user model"</code></pre>
             <tbody>
               <tr>
                 <td>Review</td>
-                <td>10</td>
-                <td>Code review, security audits, performance analysis</td>
+                <td>29</td>
+                <td>Code review, security, performance, correctness, conditional personas</td>
               </tr>
               <tr>
                 <td>Research</td>
-                <td>four</td>
-                <td>Best practices, documentation, git history</td>
+                <td>9</td>
+                <td>Best practices, docs, git history, issues, sessions, Slack, web</td>
+              </tr>
+              <tr>
+                <td>Document Review</td>
+                <td>7</td>
+                <td>Plan and requirements review lenses</td>
               </tr>
               <tr>
                 <td>Design</td>
-                <td>three</td>
+                <td>3</td>
                 <td>UI iteration, Figma sync, design review</td>
               </tr>
               <tr>
                 <td>Workflow</td>
-                <td>five</td>
-                <td>Bug reproduction, PR resolution, linting</td>
+                <td>2</td>
+                <td>PR feedback resolution, spec flow analysis</td>
               </tr>
               <tr>
                 <td>Docs</td>
-                <td>one</td>
+                <td>1</td>
                 <td>README generation</td>
               </tr>
             </tbody>
@@ -323,34 +333,41 @@ claude agent js-git-history-analyzer "Show changes to user model"</code></pre>
             Commands are macros that run entire workflows for you. One command can spin up a dozen agents, coordinate their work, collect results, and hand you a summary. It's automation all the way down.
           </p>
 
+          <div class="callout callout-info">
+            <div class="callout-icon"><i class="fa-solid fa-circle-info"></i></div>
+            <div class="callout-content">
+              <p>Commands are skills now. Every former <code>/command</code> was migrated into a skill and works identically as a slash command. See the <a href="commands.html">commands note</a> for the mapping.</p>
+            </div>
+          </div>
+
           <h3>Running Commands</h3>
           <div class="card-code-block">
-            <pre><code># Workflow commands
-/plan
-/review 123
-/work
-/compound
+            <pre><code># Core workflow (colon-namespaced slash commands)
+/js-ce:plan
+/js-ce:review 123
+/js-ce:work
+/js-ce:compound
 
-# Utility commands
-/changelog
-/triage
-/reproduce-bug</code></pre>
+# Other skills (hyphenated names)
+/js-ce-changelog
+/js-ce-todo-triage
+/js-ce-debug</code></pre>
           </div>
 
           <h3>The Review Workflow</h3>
-          <p>Let me show you what happens when you run <code>/review</code>. Here's the sequence:</p>
+          <p>Let me show you what happens when you run <code>/js-ce:review</code>. Here's the sequence:</p>
           <ol>
             <li><strong>Detection</strong> - Figures out what you want reviewed (PR number, branch name, or current changes)</li>
-            <li><strong>Isolation</strong> - Spins up a git worktree so the review doesn't mess with your working directory</li>
-            <li><strong>Parallel execution</strong> - Launches 10+ agents simultaneously (security, performance, architecture, accessibility...)</li>
+            <li><strong>Persona selection</strong> - Runs always-on reviewers (correctness, maintainability, testing, project standards) plus conditional personas chosen by what the diff touches</li>
+            <li><strong>Parallel execution</strong> - Launches the selected agents simultaneously</li>
+            <li><strong>Merge &amp; dedup</strong> - Combines findings, removes duplicates, and confidence-gates them</li>
             <li><strong>Synthesis</strong> - Sorts findings by severity (P1 = blocks merge, P2 = should fix, P3 = nice-to-have)</li>
-            <li><strong>Persistence</strong> - Creates todo files so you don't lose track of issues</li>
             <li><strong>Summary</strong> - Hands you a readable report with action items</li>
           </ol>
 
           <p>
-            <a href="commands.html" class="button secondary">
-              <i class="fa-solid fa-arrow-right"></i> View All Commands
+            <a href="skills.html" class="button secondary">
+              <i class="fa-solid fa-arrow-right"></i> View All Skills
             </a>
           </p>
         </section>
@@ -365,11 +382,11 @@ claude agent js-git-history-analyzer "Show changes to user model"</code></pre>
 
           <h3>Invoking Skills</h3>
           <div class="card-code-block">
-            <pre><code># In your prompt, reference the skill
-skill: js-gemini-imagegen
+            <pre><code># In your prompt, reference the skill by its hyphenated name
+skill: js-ce-gemini-imagegen
 
 # Or ask Claude to use it
-"Use the modern-nodejs-style skill to refactor this code"</code></pre>
+"Use the js-ce-modern-nodejs-style skill to refactor this code"</code></pre>
           </div>
 
           <h3>Skill Structure</h3>
@@ -421,10 +438,10 @@ skill: js-gemini-imagegen
 ls todos/*-pending-*.md
 
 # Triage findings
-/triage
+/js-ce-todo-triage
 
 # Resolve todos in parallel
-/resolve_todo_parallel</code></pre>
+/js-ce-todo-resolve</code></pre>
           </div>
         </section>
 
@@ -466,9 +483,9 @@ You are [role description].
           <div class="callout callout-tip">
             <div class="callout-icon"><i class="fa-solid fa-lightbulb"></i></div>
             <div class="callout-content">
-              <h4>The Easy Way</h4>
+              <h4>Heads up</h4>
               <p>
-                Don't write the YAML by hand. Just run <code>/create-agent-skill</code> and answer a few questions. The command generates the file, validates the format, and puts it in the right place.
+                When you remove a component, update the cleanup registry so stale artifacts get backed up on the next install -- the <code>cleanup</code> CLI subcommand reads it. Keeping it current is part of removing any agent or skill.
               </p>
             </div>
           </div>
@@ -523,7 +540,7 @@ Use templates from the `templates/` directory.</code></pre>
             <div class="callout-content">
               <h4>Get Help Building Skills</h4>
               <p>
-                Type <code>skill: js-create-agent-skills</code> and Claude loads expert guidance on skill architecture, best practices, file organization, and validation. It's like having a senior engineer walk you through it.
+                Use the <code>skill-creator</code> skill (or your platform's skill-authoring helper) to scaffold a new SKILL.md, then follow the plugin's skill compliance checklist for frontmatter and reference conventions.
               </p>
             </div>
           </div>

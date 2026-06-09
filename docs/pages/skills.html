@@ -4,7 +4,7 @@
 <head>
   <meta charset="utf-8" />
   <title>Skill Reference - Compounding Engineering</title>
-  <meta content="Complete reference for all 19 intelligent skills in the Compounding Engineering plugin." name="description" />
+  <meta content="Complete reference for all 47 skills in the js-compound-engineering plugin." name="description" />
   <meta content="width=device-width, initial-scale=1" name="viewport" />
 
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
@@ -33,9 +33,8 @@
         <div class="nav-section">
           <h3>Reference</h3>
           <ul>
-            <li><a href="agents.html">Agents (29)</a></li>
-            <li><a href="commands.html">Commands (25)</a></li>
-            <li><a href="skills.html" class="active">Skills (19)</a></li>
+            <li><a href="agents.html">Agents (51)</a></li>
+            <li><a href="skills.html" class="active">Skills (47)</a></li>
             <li><a href="mcp-servers.html">MCP Servers (1)</a></li>
           </ul>
         </div>
@@ -48,13 +47,15 @@
         <div class="nav-section">
           <h3>On This Page</h3>
           <ul>
-            <li><a href="#architecture-design">Architecture & Design (2)</a></li>
-            <li><a href="#development-tools">Development Tools (7)</a></li>
-            <li><a href="#content-workflow">Content & Workflow (6)</a></li>
-            <li><a href="#multi-agent-orchestration">Multi-Agent Orchestration (1)</a></li>
-            <li><a href="#browser-automation">Browser Automation (1)</a></li>
-            <li><a href="#cloud-file-transfer">Cloud & File Transfer (1)</a></li>
-            <li><a href="#image-generation">Image Generation (1)</a></li>
+            <li><a href="#core-workflow">Core Workflow (14)</a></li>
+            <li><a href="#research-context">Research & Context (3)</a></li>
+            <li><a href="#git-workflow">Git Workflow (4)</a></li>
+            <li><a href="#review-quality">Review & Quality (3)</a></li>
+            <li><a href="#todos">Todos & Tracking (4)</a></li>
+            <li><a href="#dev-frameworks">Development & Design (4)</a></li>
+            <li><a href="#testing">Testing (2)</a></li>
+            <li><a href="#product-content">Product & Content (8)</a></li>
+            <li><a href="#project-ops">Project & Plugin Ops (5)</a></li>
           </ul>
         </div>
       </nav>
@@ -77,766 +78,697 @@
       <article class="docs-article">
         <h1><i class="fa-solid fa-wand-magic-sparkles color-accent"></i> Skill Reference</h1>
         <p class="lead">
-          Think of skills as reference manuals that Claude Code can read mid-conversation. When you're writing Node.js code and want a modern style, or building an npm package like Sindre Sorhus would, you don't need to paste documentation—just invoke the skill. Claude reads it, absorbs the patterns, and writes code that way.
+          47 skills package the plugin's workflows and domain knowledge. The core workflow skills double as
+          slash commands -- type <code>/js-ce:plan</code> or <code>/js-ce:review</code> to run them. The rest are
+          invoked by name (<code>skill: js-ce-&lt;name&gt;</code>) or triggered automatically by Claude when relevant.
         </p>
 
         <div class="usage-box">
           <h3>How to Use Skills</h3>
           <div class="card-code-block">
-            <pre><code># In your prompt, reference the skill
-skill: js-[skill-name]
+            <pre><code># Workflow skills run as colon-namespaced slash commands
+/js-ce:plan "Add user authentication"
+/js-ce:review 123
 
-# Examples
-skill: js-modern-nodejs-style
-skill: js-gemini-imagegen
-skill: js-create-agent-skills</code></pre>
+# Other skills are referenced by their hyphenated name
+skill: js-ce-modern-nodejs-style
+skill: js-ce-gemini-imagegen</code></pre>
           </div>
         </div>
 
         <div class="callout callout-info">
           <div class="callout-icon"><i class="fa-solid fa-circle-info"></i></div>
           <div class="callout-content">
-            <h4>Skills vs Agents</h4>
+            <h4>Commands are skills now</h4>
             <p>
-              <strong>Agents</strong> are personas—they <em>do</em> things. <strong>Skills</strong> are knowledge—they teach Claude <em>how</em> to do things. Use <code>claude agent js-[name]</code> when you want someone to review your code. Use <code>skill: js-[name]</code> when you want to write code in a particular style yourself.
+              There is no separate "commands" list. The workflow commands you may remember -- <code>/js-ce:plan</code>,
+              <code>/js-ce:review</code>, <code>/js-ce:work</code>, <code>/js-ce:compound</code>, and the rest -- were
+              migrated to skills. They live under <code>skills/&lt;name&gt;/SKILL.md</code> and work identically as
+              slash commands in Claude Code.
             </p>
           </div>
         </div>
 
-        <!-- Architecture & Design -->
-        <section id="architecture-design">
-          <h2><i class="fa-solid fa-compass-drafting"></i> Architecture & Design (2)</h2>
-          <p>High-level thinking skills. Use these before writing code—when you need to decide what to build, how to structure it, or whether to use a prompt-native approach instead of traditional code.</p>
+        <section id="core-workflow">
+          <h2><i class="fa-solid fa-arrows-spin"></i> Core Workflow (14)</h2>
+          <p>The primary entry points for engineering work. The eight workflow skills below are invoked as colon-namespaced slash commands (e.g. <code>/js-ce:plan</code>); the rest are invoked by their hyphenated name.</p>
 
-          <div class="skill-detail" id="js-agent-native-architecture">
+          <div class="skill-detail" id="js-ce-ideate">
             <div class="skill-detail-header">
-              <h3>js-agent-native-architecture</h3>
-              <span class="skill-badge">Architecture</span>
+              <h3>js-ce-ideate</h3>
+              <span class="skill-badge highlight">slash command</span>
             </div>
             <p class="skill-detail-description">
-              Build AI agents using prompt-native architecture where features are defined in prompts, not code. Instead of writing workflow functions for an agent to call, you define outcomes in natural language and give the agent primitive tools to figure out the how. This skill covers the full philosophy: features as prompts, tools as primitives, and optional self-modification.
+              Generate and critically evaluate grounded ideas about a topic. Use when asking what to improve, requesting idea generation, exploring surprising directions, or wanting the AI to proactively suggest strong options before brainstorming one in depth. Triggers on phrases like 'what should I improve', 'give me ideas', 'ideate on X', 'surprise me', 'what would you change', or any request for AI-generated suggestions rather than refining the user's own idea.
             </p>
-            <h4>Capabilities</h4>
-            <ul>
-              <li>Prompt-native architecture design and planning</li>
-              <li>MCP primitive tool design (read, write, store, call)</li>
-              <li>System prompt authoring for agent behavior</li>
-              <li>Self-modification with approval gates and rollback</li>
-              <li>Refactoring existing code to prompt-native patterns</li>
-            </ul>
-            <h4>Key Principle</h4>
-            <p>Whatever the user can do, the agent can do. Features are prompts that define outcomes. Tools provide capability, not behavior.</p>
             <div class="card-code-block">
-              <pre><code>skill: js-agent-native-architecture</code></pre>
+              <pre><code>/js-ce:ideate</code></pre>
             </div>
           </div>
 
-          <div class="skill-detail" id="js-brainstorming">
+          <div class="skill-detail" id="js-ce-brainstorm">
             <div class="skill-detail-header">
-              <h3>js-brainstorming</h3>
-              <span class="skill-badge">Planning</span>
+              <h3>js-ce-brainstorm</h3>
+              <span class="skill-badge highlight">slash command</span>
             </div>
             <p class="skill-detail-description">
-              Guide for exploring user intent, approaches, and design decisions before planning. Use this before implementing features or making changes when requirements are unclear. It walks through four phases: assess clarity, understand the idea, explore approaches, and capture the design—all with a YAGNI mindset.
+              Explore requirements and approaches through collaborative dialogue, then write a right-sized requirements document. Use when the user says "let's brainstorm", "what should we build", or "help me think through X", presents a vague or ambitious feature request, or seems unsure about scope or direction -- even without explicitly asking to brainstorm.
             </p>
-            <h4>Four Phases</h4>
-            <ol>
-              <li><strong>Assess Clarity</strong> - Determine if brainstorming is even needed</li>
-              <li><strong>Understand the Idea</strong> - Ask questions one at a time to clarify intent</li>
-              <li><strong>Explore Approaches</strong> - Propose 2-3 concrete approaches with trade-offs</li>
-              <li><strong>Capture the Design</strong> - Summarize key decisions in a structured doc</li>
-            </ol>
-            <h4>Integration</h4>
-            <ul>
-              <li>Outputs to <code>docs/brainstorms/</code> directory</li>
-              <li>Hands off to <code>/js-ce:plan</code> for implementation details</li>
-            </ul>
             <div class="card-code-block">
-              <pre><code>skill: js-brainstorming</code></pre>
-            </div>
-          </div>
-        </section>
-
-        <!-- Development Tools -->
-        <section id="development-tools">
-          <h2><i class="fa-solid fa-code"></i> Development Tools (7)</h2>
-          <p>These skills teach Claude specific coding styles and architectural patterns. Use them when you want code that follows a particular philosophy—not just any working code, but code that looks like it was written by a specific person or framework.</p>
-
-          <div class="skill-detail" id="js-sindre-sorhus-package-writer">
-            <div class="skill-detail-header">
-              <h3>js-sindre-sorhus-package-writer</h3>
-              <span class="skill-badge">npm</span>
-            </div>
-            <p class="skill-detail-description">
-              Write npm packages following Sindre Sorhus's proven patterns from 1000+ packages with billions of downloads. Every package follows the same structure: ESM-first, zero runtime dependencies, TypeScript definitions always included, and clear README with examples. When you're building an npm package and want it to feel production-ready from day one, this is how you do it.
-            </p>
-            <h4>Philosophy</h4>
-            <ul>
-              <li>Do one thing well (single-purpose packages)</li>
-              <li>Zero or minimal dependencies</li>
-              <li>ES Modules first, always include .d.ts</li>
-              <li>Smart defaults, simple configuration</li>
-            </ul>
-            <h4>Key Patterns</h4>
-            <ul>
-              <li>Named exports over default exports</li>
-              <li>Input validation with fast-fail TypeError</li>
-              <li>Node.js built-in test runner (no frameworks)</li>
-              <li>CLI pattern with minimal argument parsing</li>
-              <li>Semantic versioning, strict semver</li>
-            </ul>
-            <h4>Reference Files</h4>
-            <ul>
-              <li><code>references/module-organization.md</code></li>
-              <li><code>references/testing-patterns.md</code></li>
-              <li><code>references/resources.md</code></li>
-            </ul>
-            <div class="card-code-block">
-              <pre><code>skill: js-sindre-sorhus-package-writer</code></pre>
+              <pre><code>/js-ce:brainstorm</code></pre>
             </div>
           </div>
 
-          <div class="skill-detail" id="js-compound-docs">
+          <div class="skill-detail" id="js-ce-plan">
             <div class="skill-detail-header">
-              <h3>js-compound-docs</h3>
-              <span class="skill-badge">Docs</span>
+              <h3>js-ce-plan</h3>
+              <span class="skill-badge highlight">slash command</span>
             </div>
             <p class="skill-detail-description">
-              You just fixed a weird build error after an hour of debugging. Tomorrow you'll forget how you fixed it. This skill automatically detects when you solve something (phrases like "that worked" or "it's fixed") and documents it with YAML frontmatter so you can find it again. Each documented solution compounds your team's knowledge.
+              Create structured plans for any multi-step task -- software features, research workflows, events, study plans, or any goal that benefits from structured breakdown. Also deepen existing plans with interactive review of sub-agent findings. Use for plan creation when the user says 'plan this', 'create a plan', 'write a tech plan', 'plan the implementation', 'how should we build', 'what's the approach for', 'break this down', 'plan a trip', 'create a study plan', or when a brainstorm/requirements document is ready for planning. Use for plan deepening when the user says 'deepen the plan', 'deepen my plan', 'deepening pass', or uses 'deepen' in reference to a plan. For exploratory or ambiguous requests where the user is unsure what to do, prefer js-ce:brainstorm first.
             </p>
-            <h4>Auto-Triggers</h4>
-            <p>Phrases: "that worked", "it's fixed", "working now", "problem solved"</p>
-            <h4>7-Step Process</h4>
-            <ol>
-              <li>Detect confirmation phrase</li>
-              <li>Gather context (module, symptom, investigation, root cause)</li>
-              <li>Check existing docs for similar issues</li>
-              <li>Generate filename</li>
-              <li>Validate YAML frontmatter</li>
-              <li>Create documentation in category directory</li>
-              <li>Cross-reference related issues</li>
-            </ol>
-            <h4>Categories</h4>
-            <ul>
-              <li><code>build-errors/</code></li>
-              <li><code>test-failures/</code></li>
-              <li><code>runtime-errors/</code></li>
-              <li><code>performance-issues/</code></li>
-              <li><code>database-issues/</code></li>
-              <li><code>security-issues/</code></li>
-            </ul>
             <div class="card-code-block">
-              <pre><code>skill: js-compound-docs</code></pre>
+              <pre><code>/js-ce:plan</code></pre>
             </div>
           </div>
 
-          <div class="skill-detail" id="js-create-agent-skills">
+          <div class="skill-detail" id="js-ce-review">
             <div class="skill-detail-header">
-              <h3>js-create-agent-skills</h3>
-              <span class="skill-badge">Meta</span>
+              <h3>js-ce-review</h3>
+              <span class="skill-badge highlight">slash command</span>
             </div>
             <p class="skill-detail-description">
-              Expert guidance for creating, writing, building, and refining Claude Code Skills. Not sure if you're structuring the SKILL.md file correctly? Should the examples go before the theory? How do you organize workflows vs. references? This skill is the master template for building skills themselves.
+              Structured code review using tiered persona agents, confidence-gated findings, and a merge/dedup pipeline. In interactive mode it applies safe, verified fixes and commits them when the working tree is clean (it never pushes); in mode:agent it reports only and the caller applies. Use when reviewing code changes before creating a PR.
             </p>
-            <h4>Capabilities</h4>
-            <ul>
-              <li>Skill architecture and best practices</li>
-              <li>Router pattern for complex multi-step skills</li>
-              <li>Progressive disclosure design principles</li>
-              <li>SKILL.md structure guidance with pure XML</li>
-              <li>Asset management (workflows, references, templates, scripts)</li>
-            </ul>
-            <h4>Workflows Included</h4>
-            <ul>
-              <li><code>create-new-skill</code> - Start from scratch</li>
-              <li><code>add-reference</code> - Add reference documentation</li>
-              <li><code>add-template</code> - Add code templates</li>
-              <li><code>add-workflow</code> - Add step-by-step procedures</li>
-              <li><code>add-script</code> - Add executable scripts</li>
-              <li><code>audit-skill</code> - Validate skill structure</li>
-              <li><code>verify-skill</code> - Test skill functionality</li>
-            </ul>
             <div class="card-code-block">
-              <pre><code>skill: js-create-agent-skills</code></pre>
+              <pre><code>/js-ce:review</code></pre>
             </div>
           </div>
 
-          <div class="skill-detail" id="js-dspy-python">
+          <div class="skill-detail" id="js-ce-work">
             <div class="skill-detail-header">
-              <h3>js-dspy-python</h3>
-              <span class="skill-badge">AI</span>
+              <h3>js-ce-work</h3>
+              <span class="skill-badge highlight">slash command</span>
             </div>
             <p class="skill-detail-description">
-              Build type-safe, composable LLM applications with Stanford's DSPy Python framework. Instead of brittle prompt strings scattered everywhere, DSPy gives you type-safe signatures, composable predictors, and tool-using agents. This skill covers everything from basic inference to ReAct agents that iterate until they get the answer right.
+              Execute work efficiently while maintaining quality and finishing features
             </p>
-            <h4>Predictor Types</h4>
-            <ul>
-              <li><strong>Predict</strong> - Basic inference</li>
-              <li><strong>ChainOfThought</strong> - Reasoning with explanations</li>
-              <li><strong>ReAct</strong> - Tool-using agents with iteration</li>
-              <li><strong>CodeAct</strong> - Dynamic code generation</li>
-            </ul>
-            <h4>Supported Providers</h4>
-            <ul>
-              <li>OpenAI (GPT-4, GPT-4o-mini)</li>
-              <li>Anthropic Claude</li>
-              <li>Google Gemini</li>
-              <li>Ollama (free, local)</li>
-              <li>OpenRouter</li>
-            </ul>
-            <h4>Requirements</h4>
-            <table class="docs-table">
-              <tr>
-                <td><code>OPENAI_API_KEY</code></td>
-                <td>For OpenAI provider</td>
-              </tr>
-              <tr>
-                <td><code>ANTHROPIC_API_KEY</code></td>
-                <td>For Anthropic provider</td>
-              </tr>
-              <tr>
-                <td><code>GOOGLE_API_KEY</code></td>
-                <td>For Gemini provider</td>
-              </tr>
-            </table>
             <div class="card-code-block">
-              <pre><code>skill: js-dspy-python</code></pre>
+              <pre><code>/js-ce:work</code></pre>
             </div>
           </div>
 
-          <div class="skill-detail" id="js-frontend-design">
+          <div class="skill-detail" id="js-ce-work-beta">
             <div class="skill-detail-header">
-              <h3>js-frontend-design</h3>
-              <span class="skill-badge">Design</span>
+              <h3>js-ce-work-beta</h3>
+              <span class="skill-badge highlight">slash command</span>
             </div>
             <p class="skill-detail-description">
-              Create distinctive, production-grade frontend interfaces with high design quality. You've seen what AI usually generates: Inter font, purple gradients, rounded corners on everything. This skill teaches Claude to design interfaces that don't look like every other AI-generated site. It's about purposeful typography, unexpected color palettes, and interfaces with personality.
+              [BETA] Execute work with external delegate support. Same as js-ce:work but includes experimental Codex delegation mode for token-conserving code implementation.
             </p>
-            <h4>Design Thinking</h4>
-            <ul>
-              <li><strong>Purpose</strong> - What is the interface for?</li>
-              <li><strong>Tone</strong> - What feeling should it evoke?</li>
-              <li><strong>Constraints</strong> - Technical and brand limitations</li>
-              <li><strong>Differentiation</strong> - How to stand out</li>
-            </ul>
-            <h4>Focus Areas</h4>
-            <ul>
-              <li>Typography with distinctive font choices</li>
-              <li>Color & theme coherence with CSS variables</li>
-              <li>Motion and animation patterns</li>
-              <li>Spatial composition with asymmetry</li>
-              <li>Backgrounds (gradients, textures, patterns)</li>
-            </ul>
-            <div class="callout callout-tip">
-              <div class="callout-icon"><i class="fa-solid fa-lightbulb"></i></div>
-              <div class="callout-content">
-                <p>Avoids generic AI aesthetics like Inter fonts, purple gradients, and rounded corners everywhere.</p>
-              </div>
-            </div>
             <div class="card-code-block">
-              <pre><code>skill: js-frontend-design</code></pre>
+              <pre><code>/js-ce:work-beta</code></pre>
             </div>
           </div>
 
-          <div class="skill-detail" id="js-modern-nodejs-style">
+          <div class="skill-detail" id="js-ce-debug">
             <div class="skill-detail-header">
-              <h3>js-modern-nodejs-style</h3>
-              <span class="skill-badge">Node.js</span>
+              <h3>js-ce-debug</h3>
+              
             </div>
             <p class="skill-detail-description">
-              Write Node.js code following modern, pragmatic patterns inspired by TJ Holowaychuk (minimalism), Matteo Collina (performance), and Sindre Sorhus (package authoring). Express routes that are simple and predictable. Middleware that does one thing well. Async-first, MVP-focused, minimal dependencies.
+              Systematically find root causes and fix bugs. Use when debugging errors, investigating test failures, reproducing bugs from issue trackers (GitHub, Linear, Jira), or when stuck on a problem after failed fix attempts. Also use when the user says 'debug this', 'why is this failing', 'fix this bug', 'trace this error', or pastes stack traces, error messages, or issue references.
             </p>
-            <h4>Key Patterns</h4>
-            <ul>
-              <li><strong>Single-responsibility middleware</strong> - One middleware, one task</li>
-              <li><strong>Short route handlers</strong> - 5-15 lines, extract business logic to modules</li>
-              <li><strong>Factory functions</strong> - Named exports, explicit dependencies</li>
-              <li><strong>Centralized error handling</strong> - Custom error classes, single handler</li>
-              <li><strong>Async/await everywhere</strong> - No callbacks, Promise.all for parallel ops</li>
-            </ul>
-            <h4>Philosophy</h4>
-            <ul>
-              <li>Minimalism: small modules, minimal dependencies</li>
-              <li>Composability: build from interchangeable parts</li>
-              <li>Async-first: never block the event loop</li>
-              <li>Ship fast: MVP first, enhance based on feedback</li>
-              <li>Explicit over magic: clear code over clever code</li>
-            </ul>
             <div class="card-code-block">
-              <pre><code>skill: js-modern-nodejs-style</code></pre>
+              <pre><code>skill: js-ce-debug</code></pre>
             </div>
           </div>
 
-          <div class="skill-detail" id="js-skill-creator">
+          <div class="skill-detail" id="js-ce-compound">
             <div class="skill-detail-header">
-              <h3>js-skill-creator</h3>
-              <span class="skill-badge">Meta</span>
+              <h3>js-ce-compound</h3>
+              <span class="skill-badge highlight">slash command</span>
             </div>
             <p class="skill-detail-description">
-              The simpler, step-by-step version of <code>js-create-agent-skills</code>. When you just want a checklist to follow from blank file to packaged skill, use this. It's less about theory, more about "do step 1, then step 2."
+              Document a recently solved problem to compound your team's knowledge or CONCEPTS.md, the project's shared domain vocabulary.
             </p>
-            <h4>6-Step Process</h4>
-            <ol>
-              <li>Understand skill usage patterns with examples</li>
-              <li>Plan reusable skill contents</li>
-              <li>Initialize skill using template</li>
-              <li>Edit skill with clear instructions</li>
-              <li>Package skill into distributable zip</li>
-              <li>Iterate based on testing feedback</li>
-            </ol>
             <div class="card-code-block">
-              <pre><code>skill: js-skill-creator</code></pre>
+              <pre><code>/js-ce:compound</code></pre>
+            </div>
+          </div>
+
+          <div class="skill-detail" id="js-ce-compound-refresh">
+            <div class="skill-detail-header">
+              <h3>js-ce-compound-refresh</h3>
+              <span class="skill-badge highlight">slash command</span>
+            </div>
+            <p class="skill-detail-description">
+              Refresh stale learning and pattern docs under docs/solutions/ by reviewing them against the current codebase, then updating, consolidating, or deleting drifted ones, and reconcile the project's shared vocabulary in CONCEPTS.md. Use when the user asks to "refresh my learnings", "audit docs/solutions/", "clean up stale learnings", "consolidate overlapping docs", "create a CONCEPTS.md", or when js-ce:compound flags an older doc as superseded. Do not trigger for general refactor, debugging, or code-review work unless the user has explicitly pointed at docs/solutions/.
+            </p>
+            <div class="card-code-block">
+              <pre><code>/js-ce:compound-refresh</code></pre>
+            </div>
+          </div>
+
+          <div class="skill-detail" id="js-ce-optimize">
+            <div class="skill-detail-header">
+              <h3>js-ce-optimize</h3>
+              
+            </div>
+            <p class="skill-detail-description">
+              Run metric-driven iterative optimization loops. Define a measurable goal, build measurement scaffolding, then run parallel experiments that try many approaches, measure each against hard gates and/or LLM-as-judge quality scores, keep improvements, and converge toward the best solution. Use when optimizing clustering quality, search relevance, build performance, prompt quality, or any measurable outcome that benefits from systematic experimentation. Inspired by Karpathy's autoresearch, generalized for multi-file code changes and non-ML domains.
+            </p>
+            <div class="card-code-block">
+              <pre><code>skill: js-ce-optimize</code></pre>
+            </div>
+          </div>
+
+          <div class="skill-detail" id="js-ce-simplify-code">
+            <div class="skill-detail-header">
+              <h3>js-ce-simplify-code</h3>
+              
+            </div>
+            <p class="skill-detail-description">
+              Simplify and refine recently changed code for clarity, reuse, quality, and efficiency while preserving behavior.
+            </p>
+            <div class="card-code-block">
+              <pre><code>skill: js-ce-simplify-code</code></pre>
+            </div>
+          </div>
+
+          <div class="skill-detail" id="js-ce-lfg">
+            <div class="skill-detail-header">
+              <h3>js-ce-lfg</h3>
+              
+            </div>
+            <p class="skill-detail-description">
+              Full autonomous engineering workflow
+            </p>
+            <div class="card-code-block">
+              <pre><code>skill: js-ce-lfg</code></pre>
+            </div>
+          </div>
+
+          <div class="skill-detail" id="js-ce-dogfood-beta">
+            <div class="skill-detail-header">
+              <h3>js-ce-dogfood-beta</h3>
+              
+            </div>
+            <p class="skill-detail-description">
+              [BETA] Dogfood the active branch end-to-end as a QA engineer. Diffs the branch against main, builds an exhaustive browser test matrix of every change (full user journeys, not just features), drives the app with agent-browser, then auto-fixes issues, adds regression tests, and commits each fix until the matrix is green. Use when you want a hands-off 'test everything we just built and make it actually work' pass before shipping.
+            </p>
+            <div class="card-code-block">
+              <pre><code>skill: js-ce-dogfood-beta</code></pre>
+            </div>
+          </div>
+
+          <div class="skill-detail" id="js-ce-polish">
+            <div class="skill-detail-header">
+              <h3>js-ce-polish</h3>
+              
+            </div>
+            <p class="skill-detail-description">
+              Start the dev server, open the feature in a browser, and iterate on improvements together. Manual invocation only — type /js-ce-polish to run it.
+            </p>
+            <div class="card-code-block">
+              <pre><code>skill: js-ce-polish</code></pre>
             </div>
           </div>
         </section>
 
-        <!-- Content & Workflow -->
-        <section id="content-workflow">
-          <h2><i class="fa-solid fa-pen-fancy"></i> Content & Workflow (6)</h2>
-          <p>Writing, editing, reviewing, and organizing work. These skills handle everything from style guide compliance to git worktree management and PR comment resolution—the meta-work that makes the real work easier.</p>
+        <section id="research-context">
+          <h2><i class="fa-solid fa-magnifying-glass"></i> Research & Context (3)</h2>
+          <p>Pull in organizational and historical context before and during work.</p>
 
-          <div class="skill-detail" id="js-document-review">
+          <div class="skill-detail" id="js-ce-sessions">
             <div class="skill-detail-header">
-              <h3>js-document-review</h3>
-              <span class="skill-badge">Review</span>
+              <h3>js-ce-sessions</h3>
+              
             </div>
             <p class="skill-detail-description">
-              Structured self-review for brainstorm and plan documents. Assesses five dimensions—clarity, completeness, specificity, YAGNI compliance, and consistency—then auto-fixes minor issues (typos, formatting) and asks approval for substantive changes. Use as a quality gate before starting implementation.
+              Search and ask questions about your coding agent session history. Use when asking what you worked on, what was tried before, how a problem was investigated across sessions, what happened recently, or any question about past agent sessions. Also use when the user references prior sessions, previous attempts, or past investigations — even without saying 'sessions' explicitly.
             </p>
-            <h4>Review Dimensions</h4>
-            <ul>
-              <li><strong>Clarity</strong> - Understandable without additional context</li>
-              <li><strong>Completeness</strong> - All necessary sections and edge cases</li>
-              <li><strong>Specificity</strong> - Measurable criteria, concrete details</li>
-              <li><strong>YAGNI</strong> - No unnecessary features or abstractions</li>
-              <li><strong>Consistency</strong> - Formatting, frontmatter, references</li>
-            </ul>
-            <h4>Grading System</h4>
-            <ul>
-              <li><code>PASS</code> - Meets standard, no changes needed</li>
-              <li><code>MINOR</code> - Small issues, auto-fixable</li>
-              <li><code>NEEDS WORK</code> - Substantive gaps, requires user input</li>
-            </ul>
             <div class="card-code-block">
-              <pre><code>skill: js-document-review</code></pre>
+              <pre><code>skill: js-ce-sessions</code></pre>
             </div>
           </div>
 
-          <div class="skill-detail" id="js-every-style-editor">
+          <div class="skill-detail" id="js-ce-slack-research">
             <div class="skill-detail-header">
-              <h3>js-every-style-editor</h3>
-              <span class="skill-badge">Content</span>
+              <h3>js-ce-slack-research</h3>
+              
             </div>
             <p class="skill-detail-description">
-              Review copy for Every's style guide compliance. Does a four-phase line-by-line review: context assessment, detailed line edits, mechanical checks, and actionable recommendations. It's like having a copy editor who never gets tired—checking grammar, punctuation, capitalization, and formatting consistency.
+              Search Slack for interpreted organizational context -- decisions, constraints, and discussion arcs that shape the current task. Produces a research digest with cross-cutting analysis and research-value assessment, not raw message lists. Use when searching Slack for context during planning, brainstorming, or any task where organizational knowledge matters. Trigger phrases: 'search slack for', 'what did we discuss about', 'slack context for', 'organizational context about', 'what does the team think about', 'any slack discussions on'. Differs from slack:find-discussions which returns individual message results without synthesis.
             </p>
-            <h4>Four-Phase Review</h4>
-            <ol>
-              <li><strong>Initial Assessment</strong> - Context, type, audience, tone</li>
-              <li><strong>Detailed Line Edit</strong> - Sentence structure, punctuation, capitalization</li>
-              <li><strong>Mechanical Review</strong> - Spacing, formatting, consistency</li>
-              <li><strong>Recommendations</strong> - Actionable improvement suggestions</li>
-            </ol>
-            <h4>Style Checks</h4>
-            <ul>
-              <li>Grammar and punctuation</li>
-              <li>Style guide compliance</li>
-              <li>Capitalization rules</li>
-              <li>Word choice optimization</li>
-              <li>Formatting consistency</li>
-            </ul>
             <div class="card-code-block">
-              <pre><code>skill: js-every-style-editor</code></pre>
+              <pre><code>skill: js-ce-slack-research</code></pre>
             </div>
           </div>
 
-          <div class="skill-detail" id="js-file-todos">
+          <div class="skill-detail" id="js-ce-strategy">
             <div class="skill-detail-header">
-              <h3>js-file-todos</h3>
-              <span class="skill-badge">Workflow</span>
+              <h3>js-ce-strategy</h3>
+              
             </div>
             <p class="skill-detail-description">
-              File-based todo tracking system in a <code>todos/</code> directory with status, priority, and dependencies. Each filename encodes the metadata. No database, no UI, just markdown files with YAML frontmatter. When you need to track work without setting up Jira, this is the system.
+              Create or maintain STRATEGY.md - the product's target problem, approach, users, key metrics, and tracks of work. Use when starting a new product, updating direction, or when prompts like 'write our strategy', 'update the roadmap', 'what are we working on', or 'set up the strategy doc' come up. Also triggers when js-ce-ideate, js-ce-brainstorm, or js-ce-plan need upstream grounding and no strategy doc exists yet.
             </p>
-            <h4>File Format</h4>
             <div class="card-code-block">
-              <pre><code># Naming convention
-{issue_id}-{status}-{priority}-{description}.md
-
-# Examples
-001-pending-p1-security-vulnerability.md
-002-ready-p2-performance-optimization.md
-003-complete-p3-code-cleanup.md</code></pre>
-            </div>
-            <h4>Status Values</h4>
-            <ul>
-              <li><code>pending</code> - Needs triage</li>
-              <li><code>ready</code> - Approved for work</li>
-              <li><code>complete</code> - Done</li>
-            </ul>
-            <h4>Priority Values</h4>
-            <ul>
-              <li><code>p1</code> - Critical</li>
-              <li><code>p2</code> - Important</li>
-              <li><code>p3</code> - Nice-to-have</li>
-            </ul>
-            <div class="card-code-block">
-              <pre><code>skill: js-file-todos</code></pre>
-            </div>
-          </div>
-
-          <div class="skill-detail" id="js-git-worktree">
-            <div class="skill-detail-header">
-              <h3>js-git-worktree</h3>
-              <span class="skill-badge">Git</span>
-            </div>
-            <p class="skill-detail-description">
-              Manage Git worktrees for isolated parallel development with a KISS interface. You're working on a feature branch, but you need to review a PR without losing your current work. Git worktrees let you have multiple branches checked out simultaneously in separate directories. This skill manages them—create, switch, cleanup—so you can context-switch without stashing.
-            </p>
-            <h4>Commands</h4>
-            <div class="card-code-block">
-              <pre><code># Create new worktree
-bash scripts/worktree-manager.sh create feature-login
-
-# List worktrees
-bash scripts/worktree-manager.sh list
-
-# Switch to worktree
-bash scripts/worktree-manager.sh switch feature-login
-
-# Clean up completed worktrees
-bash scripts/worktree-manager.sh cleanup</code></pre>
-            </div>
-            <h4>Integration</h4>
-            <ul>
-              <li>Works with <code>/js-ce:review</code> for isolated PR analysis</li>
-              <li>Works with <code>/js-ce:work</code> for parallel feature development</li>
-            </ul>
-            <h4>Requirements</h4>
-            <ul>
-              <li>Git 2.8+ (for worktree support)</li>
-              <li>Worktrees stored in <code>.worktrees/</code> directory</li>
-            </ul>
-            <div class="card-code-block">
-              <pre><code>skill: js-git-worktree</code></pre>
-            </div>
-          </div>
-
-          <div class="skill-detail" id="js-resolve-pr-parallel">
-            <div class="skill-detail-header">
-              <h3>js-resolve-pr-parallel</h3>
-              <span class="skill-badge">PR</span>
-            </div>
-            <p class="skill-detail-description">
-              Resolve all PR review comments in parallel using multiple js-pr-comment-resolver agents. After receiving code review feedback, this skill analyzes unresolved comments, groups them by type (code changes, questions, suggestions), then spawns a parallel agent for each comment thread for maximum speed.
-            </p>
-            <h4>Workflow</h4>
-            <ol>
-              <li><strong>Analyze</strong> - Get all unresolved comments via <code>gh pr view</code></li>
-              <li><strong>Plan</strong> - Group by type: code changes, questions, suggestions</li>
-              <li><strong>Implement</strong> - Spawn js-pr-comment-resolver agents in parallel</li>
-              <li><strong>Commit & Resolve</strong> - Stage, commit, push, and verify all addressed</li>
-            </ol>
-            <h4>When to Use</h4>
-            <ul>
-              <li>After receiving code review feedback on a PR</li>
-              <li>When there are multiple unresolved comment threads</li>
-              <li>To efficiently address all review comments at once</li>
-            </ul>
-            <div class="card-code-block">
-              <pre><code>skill: js-resolve-pr-parallel</code></pre>
-            </div>
-          </div>
-
-          <div class="skill-detail" id="js-setup">
-            <div class="skill-detail-header">
-              <h3>js-setup</h3>
-              <span class="skill-badge">Config</span>
-            </div>
-            <p class="skill-detail-description">
-              Configure which review agents run during <code>/js-ce:review</code> and <code>/js-ce:work</code>. Auto-detects the project stack (TypeScript, Node.js, Python, frontend frameworks) and proposes appropriate review agents, then writes a <code>js-compound-engineering.local.md</code> settings file.
-            </p>
-            <h4>Auto-Detection</h4>
-            <table class="docs-table">
-              <thead>
-                <tr>
-                  <th>Stack Detected</th>
-                  <th>Default Agents</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr>
-                  <td>TypeScript</td>
-                  <td>js-kieran-typescript-reviewer, js-code-simplicity-reviewer, js-security-sentinel, js-performance-oracle</td>
-                </tr>
-                <tr>
-                  <td>Node.js</td>
-                  <td>js-kieran-nodejs-reviewer, js-modern-nodejs-reviewer, js-code-simplicity-reviewer, js-security-sentinel, js-performance-oracle</td>
-                </tr>
-                <tr>
-                  <td>Python</td>
-                  <td>js-kieran-python-reviewer, js-code-simplicity-reviewer, js-security-sentinel, js-performance-oracle</td>
-                </tr>
-              </tbody>
-            </table>
-            <h4>Configuration Options</h4>
-            <ul>
-              <li><strong>Accept defaults</strong> - Use the detected configuration</li>
-              <li><strong>Customize</strong> - Choose which agents to include</li>
-              <li><strong>Minimal</strong> - Only code-simplicity + security (fastest reviews)</li>
-            </ul>
-            <div class="card-code-block">
-              <pre><code>skill: js-setup</code></pre>
+              <pre><code>skill: js-ce-strategy</code></pre>
             </div>
           </div>
         </section>
 
-        <!-- Multi-Agent Orchestration -->
-        <section id="multi-agent-orchestration">
-          <h2><i class="fa-solid fa-sitemap"></i> Multi-Agent Orchestration (1)</h2>
-          <p>Coordinate multiple AI agents working together. When a single agent isn't enough, orchestrate a swarm of specialists that communicate, share tasks, and self-organize.</p>
+        <section id="git-workflow">
+          <h2><i class="fa-solid fa-code-branch"></i> Git Workflow (4)</h2>
+          <p>Commit, branch, and PR hygiene.</p>
 
-          <div class="skill-detail featured" id="js-orchestrating-swarms">
+          <div class="skill-detail" id="js-ce-git-commit">
             <div class="skill-detail-header">
-              <h3>js-orchestrating-swarms</h3>
-              <span class="skill-badge highlight">Swarms</span>
+              <h3>js-ce-git-commit</h3>
+              
             </div>
             <p class="skill-detail-description">
-              Orchestrate multi-agent swarms using Claude Code's TeammateTool and Task system. This comprehensive skill covers everything from spawning parallel specialist reviewers to building sequential pipelines with dependencies to self-organizing task pools. A leader creates a team, spawns teammates, coordinates via inbox messages, and manages graceful shutdown.
+              Create a git commit with a clear, value-communicating message. Use when the user says "commit", "commit this", "save my changes", "create a commit", or wants to commit staged or unstaged work. Produces well-structured commit messages that follow repo conventions when they exist, and defaults to conventional commit format otherwise.
             </p>
-            <h4>Orchestration Patterns</h4>
-            <ul>
-              <li><strong>Parallel Specialists</strong> - Multiple reviewers analyze code simultaneously</li>
-              <li><strong>Pipeline</strong> - Sequential stages with auto-unblocking dependencies</li>
-              <li><strong>Swarm</strong> - Self-organizing workers that race to claim tasks</li>
-              <li><strong>Research + Implementation</strong> - Synchronous research, then guided implementation</li>
-              <li><strong>Plan Approval</strong> - Require leader approval before execution</li>
-              <li><strong>Coordinated Refactoring</strong> - Multi-file changes with dependency tracking</li>
-            </ul>
-            <h4>Core Primitives</h4>
-            <ul>
-              <li><strong>Team</strong> - Named group of agents with leader and teammates</li>
-              <li><strong>Task</strong> - Work items with status, owner, and dependencies</li>
-              <li><strong>Inbox</strong> - JSON-based inter-agent messaging</li>
-              <li><strong>Backends</strong> - in-process, tmux, or iTerm2 spawn modes</li>
-            </ul>
-            <h4>TeammateTool Operations</h4>
-            <ul>
-              <li><code>spawnTeam</code>, <code>discoverTeams</code>, <code>requestJoin</code></li>
-              <li><code>write</code> (message one), <code>broadcast</code> (message all)</li>
-              <li><code>requestShutdown</code>, <code>approveShutdown</code>, <code>cleanup</code></li>
-              <li><code>approvePlan</code>, <code>rejectPlan</code></li>
-            </ul>
             <div class="card-code-block">
-              <pre><code>skill: js-orchestrating-swarms</code></pre>
+              <pre><code>skill: js-ce-git-commit</code></pre>
+            </div>
+          </div>
+
+          <div class="skill-detail" id="js-ce-git-commit-push-pr">
+            <div class="skill-detail-header">
+              <h3>js-ce-git-commit-push-pr</h3>
+              
+            </div>
+            <p class="skill-detail-description">
+              Commit, push, and open a PR with an adaptive, value-first description. Use when the user says "commit and PR", "push and open a PR", "ship this", "create a PR", "open a pull request", "commit push PR", or wants to go from working changes to an open pull request in one step. Also use when the user says "update the PR description", "refresh the PR description", "freshen the PR", or wants to rewrite an existing PR description. Produces PR descriptions that scale in depth with the complexity of the change, avoiding cookie-cutter templates.
+            </p>
+            <div class="card-code-block">
+              <pre><code>skill: js-ce-git-commit-push-pr</code></pre>
+            </div>
+          </div>
+
+          <div class="skill-detail" id="js-ce-git-worktree">
+            <div class="skill-detail-header">
+              <h3>js-ce-git-worktree</h3>
+              
+            </div>
+            <p class="skill-detail-description">
+              This skill manages Git worktrees for isolated parallel development. It handles creating, listing, switching, and cleaning up worktrees with a simple interactive interface, following KISS principles.
+            </p>
+            <div class="card-code-block">
+              <pre><code>skill: js-ce-git-worktree</code></pre>
+            </div>
+          </div>
+
+          <div class="skill-detail" id="js-ce-git-clean-gone-branches">
+            <div class="skill-detail-header">
+              <h3>js-ce-git-clean-gone-branches</h3>
+              
+            </div>
+            <p class="skill-detail-description">
+              Clean up local branches whose remote tracking branch is gone. Use when the user says "clean up branches", "delete gone branches", "prune local branches", "clean gone", or wants to remove stale local branches that no longer exist on the remote. Also handles removing associated worktrees for branches that have them.
+            </p>
+            <div class="card-code-block">
+              <pre><code>skill: js-ce-git-clean-gone-branches</code></pre>
             </div>
           </div>
         </section>
 
-        <!-- Browser Automation -->
-        <section id="browser-automation">
-          <h2><i class="fa-solid fa-globe"></i> Browser Automation (1)</h2>
-          <p>Automate web browsers for testing, scraping, and form interaction—all through CLI commands.</p>
+        <section id="review-quality">
+          <h2><i class="fa-solid fa-clipboard-check"></i> Review & Quality (3)</h2>
+          <p>Document review and agent-native auditing.</p>
 
-          <div class="skill-detail" id="js-agent-browser">
+          <div class="skill-detail" id="js-ce-document-review">
             <div class="skill-detail-header">
-              <h3>js-agent-browser</h3>
-              <span class="skill-badge">Browser</span>
+              <h3>js-ce-document-review</h3>
+              
             </div>
             <p class="skill-detail-description">
-              Browser automation using Vercel's agent-browser CLI for web interaction, forms, screenshots, and scraping. Uses ref-based element selection (@e1, @e2) from accessibility snapshots. Navigate to a page, take a snapshot to get interactive elements with refs, then interact using those refs—all through Bash commands.
+              Review requirements or plan documents using parallel persona agents that surface role-specific issues. Use when a requirements document or plan document exists and the user wants to improve it.
             </p>
-            <h4>Core Workflow</h4>
-            <ol>
-              <li><strong>Navigate</strong> - <code>agent-browser open &lt;url&gt;</code></li>
-              <li><strong>Snapshot</strong> - <code>agent-browser snapshot -i</code> to get refs</li>
-              <li><strong>Interact</strong> - <code>agent-browser click @e1</code> / <code>fill @e2 "text"</code></li>
-              <li><strong>Re-snapshot</strong> - After navigation or DOM changes</li>
-            </ol>
-            <h4>Capabilities</h4>
-            <div class="skill-features">
-              <div class="feature-item"><i class="fa-solid fa-check"></i> Navigate, click, fill, select, scroll</div>
-              <div class="feature-item"><i class="fa-solid fa-check"></i> Screenshots and PDF export</div>
-              <div class="feature-item"><i class="fa-solid fa-check"></i> Semantic locators (role, text, label)</div>
-              <div class="feature-item"><i class="fa-solid fa-check"></i> Parallel sessions for multiple browsers</div>
-              <div class="feature-item"><i class="fa-solid fa-check"></i> JSON output for structured parsing</div>
-            </div>
-            <h4>Requirements</h4>
-            <ul>
-              <li><code>npm install -g agent-browser</code></li>
-              <li><code>agent-browser install</code> (downloads Chromium)</li>
-            </ul>
             <div class="card-code-block">
-              <pre><code>skill: js-agent-browser</code></pre>
+              <pre><code>skill: js-ce-document-review</code></pre>
+            </div>
+          </div>
+
+          <div class="skill-detail" id="js-ce-agent-native-audit">
+            <div class="skill-detail-header">
+              <h3>js-ce-agent-native-audit</h3>
+              
+            </div>
+            <p class="skill-detail-description">
+              Run comprehensive agent-native architecture review with scored principles
+            </p>
+            <div class="card-code-block">
+              <pre><code>skill: js-ce-agent-native-audit</code></pre>
+            </div>
+          </div>
+
+          <div class="skill-detail" id="js-ce-agent-native-architecture">
+            <div class="skill-detail-header">
+              <h3>js-ce-agent-native-architecture</h3>
+              
+            </div>
+            <p class="skill-detail-description">
+              Build applications where agents are first-class citizens. Use this skill when designing autonomous agents, creating MCP tools, implementing self-modifying systems, or building apps where features are outcomes achieved by agents operating in a loop.
+            </p>
+            <div class="card-code-block">
+              <pre><code>skill: js-ce-agent-native-architecture</code></pre>
             </div>
           </div>
         </section>
 
-        <!-- Cloud & File Transfer -->
-        <section id="cloud-file-transfer">
-          <h2><i class="fa-solid fa-cloud-arrow-up"></i> Cloud & File Transfer (1)</h2>
-          <p>Move files to and from cloud storage providers without writing custom upload code.</p>
+        <section id="todos">
+          <h2><i class="fa-solid fa-list-check"></i> Todos & Tracking (4)</h2>
+          <p>File-based todo lifecycle: create, triage, resolve.</p>
 
-          <div class="skill-detail" id="js-rclone">
+          <div class="skill-detail" id="js-ce-todo-create">
             <div class="skill-detail-header">
-              <h3>js-rclone</h3>
-              <span class="skill-badge">Cloud</span>
+              <h3>js-ce-todo-create</h3>
+              
             </div>
             <p class="skill-detail-description">
-              Upload, sync, and manage files across cloud storage providers using rclone. Supports S3, Cloudflare R2, Backblaze B2, Google Drive, Dropbox, DigitalOcean Spaces, and any S3-compatible storage. Handles setup checks, provider configuration, single file uploads, directory syncing, and large file chunked transfers.
+              Use when creating durable work items, managing todo lifecycle, or tracking findings across sessions in the file-based todo system
             </p>
-            <h4>Supported Providers</h4>
-            <table class="docs-table">
-              <thead>
-                <tr>
-                  <th>Provider</th>
-                  <th>Type</th>
-                  <th>Auth</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr>
-                  <td>AWS S3</td>
-                  <td><code>s3</code></td>
-                  <td>Access key + secret</td>
-                </tr>
-                <tr>
-                  <td>Cloudflare R2</td>
-                  <td><code>s3</code></td>
-                  <td>Access key + endpoint</td>
-                </tr>
-                <tr>
-                  <td>Backblaze B2</td>
-                  <td><code>b2</code></td>
-                  <td>Account + app key</td>
-                </tr>
-                <tr>
-                  <td>Google Drive</td>
-                  <td><code>drive</code></td>
-                  <td>OAuth flow</td>
-                </tr>
-                <tr>
-                  <td>Dropbox</td>
-                  <td><code>dropbox</code></td>
-                  <td>OAuth flow</td>
-                </tr>
-              </tbody>
-            </table>
-            <h4>Key Operations</h4>
-            <ul>
-              <li><code>rclone copy</code> - Upload files/directories</li>
-              <li><code>rclone sync</code> - Mirror with deletions</li>
-              <li><code>rclone ls</code> / <code>lsd</code> - List contents</li>
-              <li><code>rclone check</code> - Verify uploads</li>
-              <li>Large file chunked uploads with <code>--s3-chunk-size</code></li>
-            </ul>
             <div class="card-code-block">
-              <pre><code>skill: js-rclone</code></pre>
+              <pre><code>skill: js-ce-todo-create</code></pre>
+            </div>
+          </div>
+
+          <div class="skill-detail" id="js-ce-todo-triage">
+            <div class="skill-detail-header">
+              <h3>js-ce-todo-triage</h3>
+              
+            </div>
+            <p class="skill-detail-description">
+              Use when reviewing pending todos for approval, prioritizing code review findings, or interactively categorizing work items
+            </p>
+            <div class="card-code-block">
+              <pre><code>skill: js-ce-todo-triage</code></pre>
+            </div>
+          </div>
+
+          <div class="skill-detail" id="js-ce-todo-resolve">
+            <div class="skill-detail-header">
+              <h3>js-ce-todo-resolve</h3>
+              
+            </div>
+            <p class="skill-detail-description">
+              Use when batch-resolving approved todos, especially after code review or triage sessions
+            </p>
+            <div class="card-code-block">
+              <pre><code>skill: js-ce-todo-resolve</code></pre>
+            </div>
+          </div>
+
+          <div class="skill-detail" id="js-ce-resolve-pr-feedback">
+            <div class="skill-detail-header">
+              <h3>js-ce-resolve-pr-feedback</h3>
+              
+            </div>
+            <p class="skill-detail-description">
+              Resolve PR review feedback by evaluating validity and fixing issues in parallel. Use when addressing PR review comments, resolving review threads, or fixing code review feedback.
+            </p>
+            <div class="card-code-block">
+              <pre><code>skill: js-ce-resolve-pr-feedback</code></pre>
             </div>
           </div>
         </section>
 
-        <!-- Image Generation -->
-        <section id="image-generation">
-          <h2><i class="fa-solid fa-image"></i> Image Generation (1)</h2>
-          <p>Generate images with AI. Not stock photos you found on Unsplash—images you describe and the model creates.</p>
+        <section id="dev-frameworks">
+          <h2><i class="fa-solid fa-code"></i> Development & Design (4)</h2>
+          <p>Coding-style and design skills that teach Claude a particular philosophy.</p>
 
-          <div class="skill-detail featured" id="js-gemini-imagegen">
+          <div class="skill-detail" id="js-ce-modern-nodejs-style">
             <div class="skill-detail-header">
-              <h3>js-gemini-imagegen</h3>
-              <span class="skill-badge highlight">AI Images</span>
+              <h3>js-ce-modern-nodejs-style</h3>
+              
             </div>
             <p class="skill-detail-description">
-              Generate and edit images using Google's Gemini API. Need a logo with specific text? A product mockup on a marble surface? An illustration in a kawaii style? You describe what you want, it generates it. Supports text-to-image, image editing, multi-turn refinement, style transfers, and composition from multiple reference images.
+              Write Node.js code following modern, pragmatic patterns inspired by TJ Holowaychuk, Matteo Collina, and Sindre Sorhus. Use when writing Node.js applications, Express/Fastify/Hono APIs, creating modules, or any JavaScript/TypeScript server-side code. Triggers on Node.js code generation, refactoring requests, code review, or when the user wants clean, minimal, production-ready server-side JavaScript/TypeScript.
             </p>
-
-            <h4>Features</h4>
-            <div class="skill-features">
-              <div class="feature-item"><i class="fa-solid fa-check"></i> Text-to-image generation</div>
-              <div class="feature-item"><i class="fa-solid fa-check"></i> Image editing & manipulation</div>
-              <div class="feature-item"><i class="fa-solid fa-check"></i> Multi-turn iterative refinement</div>
-              <div class="feature-item"><i class="fa-solid fa-check"></i> Multiple reference images (up to 14)</div>
-              <div class="feature-item"><i class="fa-solid fa-check"></i> Google Search grounding (Pro)</div>
-            </div>
-
-            <h4>Default Model</h4>
-            <table class="docs-table">
-              <thead>
-                <tr>
-                  <th>Model</th>
-                  <th>Resolution</th>
-                  <th>Best For</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr>
-                  <td><code>gemini-3-pro-image-preview</code></td>
-                  <td>1K-4K</td>
-                  <td>All image generation (default)</td>
-                </tr>
-              </tbody>
-            </table>
-
-            <h4>Available Settings</h4>
-            <ul>
-              <li><strong>Resolutions:</strong> 1K (default), 2K, 4K</li>
-              <li><strong>Aspect Ratios:</strong> 1:1, 2:3, 3:2, 3:4, 4:3, 4:5, 5:4, 9:16, 16:9, 21:9</li>
-            </ul>
-
-            <h4>Quick Start</h4>
             <div class="card-code-block">
-              <pre><code># Text-to-image
-python scripts/generate_image.py "A cat wearing a wizard hat" output.png
-
-# Edit existing image
-python scripts/edit_image.py input.png "Add a rainbow in the background" output.png
-
-# Multi-turn chat
-python scripts/multi_turn_chat.py</code></pre>
+              <pre><code>skill: js-ce-modern-nodejs-style</code></pre>
             </div>
+          </div>
 
-            <h4>Prompting Best Practices</h4>
-            <ul>
-              <li><strong>Photorealistic</strong> - Include camera details: lens type, lighting, angle, mood</li>
-              <li><strong>Stylized Art</strong> - Specify style explicitly: kawaii, cel-shading, bold outlines</li>
-              <li><strong>Text in Images</strong> - Be explicit about font style and placement (use Pro model)</li>
-              <li><strong>Product Mockups</strong> - Describe lighting setup and surface</li>
-            </ul>
-
-            <h4>Requirements</h4>
-            <table class="docs-table">
-              <tr>
-                <td><code>GEMINI_API_KEY</code></td>
-                <td>Required environment variable</td>
-              </tr>
-              <tr>
-                <td><code>google-genai</code></td>
-                <td>Python package</td>
-              </tr>
-              <tr>
-                <td><code>pillow</code></td>
-                <td>Python package for image handling</td>
-              </tr>
-            </table>
-
-            <div class="callout callout-info">
-              <div class="callout-icon"><i class="fa-solid fa-circle-info"></i></div>
-              <div class="callout-content">
-                <p>All generated images include SynthID watermarks. Image-only mode won't work with Google Search grounding.</p>
-              </div>
+          <div class="skill-detail" id="js-ce-sindre-sorhus-package-writer">
+            <div class="skill-detail-header">
+              <h3>js-ce-sindre-sorhus-package-writer</h3>
+              
             </div>
-
+            <p class="skill-detail-description">
+              Write npm packages following Sindre Sorhus's proven patterns and philosophy. Use when creating new npm packages, Node.js libraries, CLI tools, or when the user wants clean, minimal, production-ready JavaScript/TypeScript library code. Triggers on requests like "create a package", "write an npm library", "design a module API", or mentions of Sindre Sorhus's style.
+            </p>
             <div class="card-code-block">
-              <pre><code>skill: js-gemini-imagegen</code></pre>
+              <pre><code>skill: js-ce-sindre-sorhus-package-writer</code></pre>
+            </div>
+          </div>
+
+          <div class="skill-detail" id="js-ce-frontend-design">
+            <div class="skill-detail-header">
+              <h3>js-ce-frontend-design</h3>
+              
+            </div>
+            <p class="skill-detail-description">
+              Build web interfaces with genuine design quality, not AI slop. Use for any frontend work - landing pages, web apps, dashboards, admin panels, components, interactive experiences. Activates for both greenfield builds and modifications to existing applications. Detects existing design systems and respects them. Covers composition, typography, color, motion, and copy. Verifies results via screenshots before declaring done.
+            </p>
+            <div class="card-code-block">
+              <pre><code>skill: js-ce-frontend-design</code></pre>
+            </div>
+          </div>
+
+          <div class="skill-detail" id="js-ce-gemini-imagegen">
+            <div class="skill-detail-header">
+              <h3>js-ce-gemini-imagegen</h3>
+              
+            </div>
+            <p class="skill-detail-description">
+              This skill should be used when generating and editing images using the Gemini API (Nano Banana Pro). It applies when creating images from text prompts, editing existing images, applying style transfers, generating logos with text, creating stickers, product mockups, or any image generation/manipulation task. Supports text-to-image, image editing, multi-turn refinement, and composition from multiple reference images.
+            </p>
+            <div class="card-code-block">
+              <pre><code>skill: js-ce-gemini-imagegen</code></pre>
             </div>
           </div>
         </section>
 
-        <!-- Navigation -->
+        <section id="testing">
+          <h2><i class="fa-solid fa-vial"></i> Testing (2)</h2>
+          <p>Verify changes in a browser or on an iOS simulator.</p>
+
+          <div class="skill-detail" id="js-ce-test-browser">
+            <div class="skill-detail-header">
+              <h3>js-ce-test-browser</h3>
+              
+            </div>
+            <p class="skill-detail-description">
+              Run browser tests on pages affected by current PR or branch
+            </p>
+            <div class="card-code-block">
+              <pre><code>skill: js-ce-test-browser</code></pre>
+            </div>
+          </div>
+
+          <div class="skill-detail" id="js-ce-test-xcode">
+            <div class="skill-detail-header">
+              <h3>js-ce-test-xcode</h3>
+              
+            </div>
+            <p class="skill-detail-description">
+              Build and test iOS apps on simulator using XcodeBuildMCP. Use after making iOS code changes, before creating a PR, or when verifying app behavior and checking for crashes on simulator.
+            </p>
+            <div class="card-code-block">
+              <pre><code>skill: js-ce-test-xcode</code></pre>
+            </div>
+          </div>
+        </section>
+
+        <section id="product-content">
+          <h2><i class="fa-solid fa-bullhorn"></i> Product & Content (8)</h2>
+          <p>Ship-and-tell: announcements, release notes, pulse reports, feedback analysis, and copy editing.</p>
+
+          <div class="skill-detail" id="js-ce-promote">
+            <div class="skill-detail-header">
+              <h3>js-ce-promote</h3>
+              
+            </div>
+            <p class="skill-detail-description">
+              Draft user-facing announcement and marketing copy for a feature that just shipped — an X post or thread, a changelog blurb, a LinkedIn post, an email, a blog intro, or a short demo script. Works standalone by default; voice-matched via an optional brand-voice CLI when one is installed and authed. Use when the user says 'promote this', 'draft the announcement', 'write the launch copy', 'market this feature', 'announce this feature', 'write the release tweet', or 'js-ce-promote'.
+            </p>
+            <div class="card-code-block">
+              <pre><code>skill: js-ce-promote</code></pre>
+            </div>
+          </div>
+
+          <div class="skill-detail" id="js-ce-release-notes">
+            <div class="skill-detail-header">
+              <h3>js-ce-release-notes</h3>
+              
+            </div>
+            <p class="skill-detail-description">
+              Summarize recent js-compound-engineering plugin releases, or answer a specific question about a past release with a version citation. Use when the user types `/js-ce-release-notes` or asks "what changed in js-compound-engineering recently?" or "what happened to `&lt;skill-name&gt;`?".
+            </p>
+            <div class="card-code-block">
+              <pre><code>skill: js-ce-release-notes</code></pre>
+            </div>
+          </div>
+
+          <div class="skill-detail" id="js-ce-changelog">
+            <div class="skill-detail-header">
+              <h3>js-ce-changelog</h3>
+              
+            </div>
+            <p class="skill-detail-description">
+              Create engaging changelogs for recent merges to main branch
+            </p>
+            <div class="card-code-block">
+              <pre><code>skill: js-ce-changelog</code></pre>
+            </div>
+          </div>
+
+          <div class="skill-detail" id="js-ce-demo-reel">
+            <div class="skill-detail-header">
+              <h3>js-ce-demo-reel</h3>
+              
+            </div>
+            <p class="skill-detail-description">
+              Capture a visual demo reel (GIF, terminal recording, screenshots) for PR descriptions. Use when shipping UI changes, CLI features, or any work with observable behavior that benefits from visual proof. Also use when asked to add a demo, record a GIF, screenshot a feature, show what changed visually, create a demo reel, capture evidence, add proof to a PR, or create a before/after comparison.
+            </p>
+            <div class="card-code-block">
+              <pre><code>skill: js-ce-demo-reel</code></pre>
+            </div>
+          </div>
+
+          <div class="skill-detail" id="js-ce-product-pulse">
+            <div class="skill-detail-header">
+              <h3>js-ce-product-pulse</h3>
+              
+            </div>
+            <p class="skill-detail-description">
+              Generate a time-windowed pulse report on what users experienced and how the product performed - usage, quality, errors, signals worth investigating. Use when the user says 'run a pulse', 'show me the pulse', 'how are we doing', 'weekly recap', 'launch-day check', or passes a time window like '24h' or '7d'. Configures via .js-compound-engineering/config.local.yaml and saves reports to docs/pulse-reports/.
+            </p>
+            <div class="card-code-block">
+              <pre><code>skill: js-ce-product-pulse</code></pre>
+            </div>
+          </div>
+
+          <div class="skill-detail" id="js-ce-riffrec-feedback-analysis">
+            <div class="skill-detail-header">
+              <h3>js-ce-riffrec-feedback-analysis</h3>
+              
+            </div>
+            <p class="skill-detail-description">
+              Product-feedback capture workflow. ALWAYS load when the user posts a session-bundle `.zip` (a recorder bundle with `session.json` + `events.json` + `recording.webm` + `voice.webm`), a video/audio recording for product feedback, or asks how to capture and share recorded feedback sessions. Routes between setup, quick bug report, and extensive analysis.
+            </p>
+            <div class="card-code-block">
+              <pre><code>skill: js-ce-riffrec-feedback-analysis</code></pre>
+            </div>
+          </div>
+
+          <div class="skill-detail" id="js-ce-every-style-editor">
+            <div class="skill-detail-header">
+              <h3>js-ce-every-style-editor</h3>
+              
+            </div>
+            <p class="skill-detail-description">
+              This skill should be used when reviewing or editing copy to ensure adherence to Every's style guide. It provides a systematic line-by-line review process for grammar, punctuation, mechanics, and style guide compliance.
+            </p>
+            <div class="card-code-block">
+              <pre><code>skill: js-ce-every-style-editor</code></pre>
+            </div>
+          </div>
+
+          <div class="skill-detail" id="js-ce-proof">
+            <div class="skill-detail-header">
+              <h3>js-ce-proof</h3>
+              
+            </div>
+            <p class="skill-detail-description">
+              Create, edit, comment on, and share markdown documents via Proof's web API and local bridge. Use when asked to "proof", "share a doc", "create a proof doc", "comment on a document", "suggest edits", "review in proof", or when given a proofeditor.ai URL.
+            </p>
+            <div class="card-code-block">
+              <pre><code>skill: js-ce-proof</code></pre>
+            </div>
+          </div>
+        </section>
+
+        <section id="project-ops">
+          <h2><i class="fa-solid fa-screwdriver-wrench"></i> Project & Plugin Ops (5)</h2>
+          <p>Set up, onboard, document, and maintain the plugin and your project.</p>
+
+          <div class="skill-detail" id="js-ce-setup">
+            <div class="skill-detail-header">
+              <h3>js-ce-setup</h3>
+              
+            </div>
+            <p class="skill-detail-description">
+              Diagnose and configure compound-engineering environment. Checks CLI dependencies, plugin version, and repo-local config. Offers guided installation for missing tools. Use when troubleshooting missing tools, verifying setup, or before onboarding.
+            </p>
+            <div class="card-code-block">
+              <pre><code>skill: js-ce-setup</code></pre>
+            </div>
+          </div>
+
+          <div class="skill-detail" id="js-ce-onboarding">
+            <div class="skill-detail-header">
+              <h3>js-ce-onboarding</h3>
+              
+            </div>
+            <p class="skill-detail-description">
+              Generate or regenerate ONBOARDING.md to help new contributors understand a codebase. Use when the user asks to 'create onboarding docs', 'generate ONBOARDING.md', 'document this project for new developers', 'write onboarding documentation', 'vonboard', 'vonboarding', 'prepare this repo for a new contributor', 'refresh the onboarding doc', or 'update ONBOARDING.md'. Also use when someone needs to onboard a new team member and wants a written artifact, or when a codebase lacks onboarding documentation and the user wants to generate one.
+            </p>
+            <div class="card-code-block">
+              <pre><code>skill: js-ce-onboarding</code></pre>
+            </div>
+          </div>
+
+          <div class="skill-detail" id="js-ce-update">
+            <div class="skill-detail-header">
+              <h3>js-ce-update</h3>
+              
+            </div>
+            <p class="skill-detail-description">
+              Check if the compound-engineering plugin is up to date and fix stale cache if not. Use when the user says "update compound engineering", "check compound engineering version", "ce update", "is compound engineering up to date", "update ce plugin", or reports issues that might stem from a stale compound-engineering plugin version. This skill only works in Claude Code — it relies on the plugin harness cache layout.
+            </p>
+            <div class="card-code-block">
+              <pre><code>skill: js-ce-update</code></pre>
+            </div>
+          </div>
+
+          <div class="skill-detail" id="js-ce-deploy-docs">
+            <div class="skill-detail-header">
+              <h3>js-ce-deploy-docs</h3>
+              
+            </div>
+            <p class="skill-detail-description">
+              Validate and prepare documentation for GitHub Pages deployment
+            </p>
+            <div class="card-code-block">
+              <pre><code>skill: js-ce-deploy-docs</code></pre>
+            </div>
+          </div>
+
+          <div class="skill-detail" id="js-ce-report-bug">
+            <div class="skill-detail-header">
+              <h3>js-ce-report-bug</h3>
+              
+            </div>
+            <p class="skill-detail-description">
+              Report a bug in the js-compound-engineering plugin
+            </p>
+            <div class="card-code-block">
+              <pre><code>skill: js-ce-report-bug</code></pre>
+            </div>
+          </div>
+        </section>
+
         <nav class="docs-nav-footer">
-          <a href="commands.html" class="nav-prev">
+          <a href="agents.html" class="nav-prev">
             <span class="nav-label">Previous</span>
-            <span class="nav-title"><i class="fa-solid fa-arrow-left"></i> Commands</span>
+            <span class="nav-title"><i class="fa-solid fa-arrow-left"></i> Agents</span>
           </a>
           <a href="mcp-servers.html" class="nav-next">
             <span class="nav-label">Next</span>

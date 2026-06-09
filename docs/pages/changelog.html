@@ -33,9 +33,8 @@
         <div class="nav-section">
           <h3>Reference</h3>
           <ul>
-            <li><a href="agents.html">Agents (29)</a></li>
-            <li><a href="commands.html">Commands (25)</a></li>
-            <li><a href="skills.html">Skills (19)</a></li>
+            <li><a href="agents.html">Agents (51)</a></li>
+            <li><a href="skills.html">Skills (47)</a></li>
             <li><a href="mcp-servers.html">MCP Servers (1)</a></li>
           </ul>
         </div>
@@ -48,6 +47,7 @@
         <div class="nav-section">
           <h3>On This Page</h3>
           <ul>
+            <li><a href="#v3-11-2">v3.11.2</a></li>
             <li><a href="#v3-4-0">v3.4.0</a></li>
             <li><a href="#v3-3-0">v3.3.0</a></li>
             <li><a href="#v3-2-0">v3.2.0</a></li>
@@ -111,6 +111,98 @@
           <a href="https://semver.org/">Semantic Versioning</a> and
           <a href="https://keepachangelog.com/">Keep a Changelog</a> conventions.
         </p>
+
+        <!-- Version 3.11.2 -->
+        <section id="v3-11-2" class="version-section">
+          <div class="version-header">
+            <h2>v3.11.2</h2>
+            <span class="version-date">2026-06-09</span>
+          </div>
+
+          <p class="version-description">
+            Sync to upstream compound-engineering v3.11.2. Brings the Node.js fork to full content parity with the
+            original plugin, normalizes every component to the <code>js-ce-*</code> prefix, and overhauls the CLI
+            converter's target set.
+          </p>
+
+          <div class="changelog-category added">
+            <h3><i class="fa-solid fa-plus"></i> Added</h3>
+            <ul>
+              <li>
+                <strong><code>agents</code> CLI target</strong> - A tool-neutral target that writes skills plus an
+                <code>AGENTS.md</code> to the shared Agent Skills open-standard location
+                (<code>.agents/skills/</code> for a project, <code>~/.agents/skills/</code> globally). This shared
+                directory is read by Codex, opencode, Gemini, Antigravity, Cursor, and VS Code Copilot.
+              </li>
+              <li>
+                <strong><code>cursor</code> and <code>antigravity</code> CLI targets</strong> - New converter targets,
+                bringing the total to 10 supported targets.
+              </li>
+              <li>
+                <strong><code>cleanup</code> CLI subcommand</strong> - Backs up stale pre-rename artifacts left behind
+                by earlier installs before the <code>js-ce-*</code> normalization.
+              </li>
+              <li>
+                Many new agents and skills from upstream parity, including reviewer personas
+                (<code>js-ce-swift-ios-reviewer</code> and others), the <code>js-ce-web-researcher</code> research
+                agent, and skills such as <code>js-ce-strategy</code>, <code>js-ce-promote</code>,
+                <code>js-ce-product-pulse</code>, <code>js-ce-release-notes</code>, <code>js-ce-simplify-code</code>,
+                and <code>js-ce-dogfood-beta</code>.
+              </li>
+            </ul>
+          </div>
+
+          <div class="changelog-category changed">
+            <h3><i class="fa-solid fa-arrows-rotate"></i> Changed</h3>
+            <ul>
+              <li>
+                <strong><code>js-ce-*</code> prefix normalization</strong> - All plugin components (skill directories
+                and agent files) now use the <code>js-ce-*</code> prefix. The eight core workflow skills keep the colon
+                <code>name:</code> form (<code>js-ce:plan</code>, <code>js-ce:brainstorm</code>,
+                <code>js-ce:compound</code>, <code>js-ce:compound-refresh</code>, <code>js-ce:ideate</code>,
+                <code>js-ce:review</code>, <code>js-ce:work</code>, <code>js-ce:work-beta</code>); the rest use
+                hyphenated names matching their directories. Agent references use the bare
+                <code>js-ce-&lt;agent-name&gt;</code> form.
+              </li>
+              <li>
+                <strong>Commands are skills</strong> - The former <code>/command</code> set was fully migrated to
+                skills; there is no separate commands count. The workflow commands <em>are</em> skills.
+              </li>
+            </ul>
+          </div>
+
+          <div class="changelog-category removed">
+            <h3><i class="fa-solid fa-minus"></i> Removed</h3>
+            <ul>
+              <li>
+                <strong>Skills</strong> - <code>js-dspy-python</code> and
+                <code>js-claude-permissions-optimizer</code> no longer exist.
+              </li>
+              <li>
+                <strong>CLI targets</strong> - <code>windsurf</code>, <code>openclaw</code>, and <code>qwen</code> were
+                dropped from the converter.
+              </li>
+            </ul>
+          </div>
+
+          <div class="version-summary">
+            <h4>Component Summary</h4>
+            <table>
+              <thead>
+                <tr>
+                  <th>Component</th>
+                  <th>Count</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr><td>Agents</td><td>51</td></tr>
+                <tr><td>Skills</td><td>47</td></tr>
+                <tr><td>MCP Servers</td><td>1</td></tr>
+                <tr><td>CLI Targets</td><td>10</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
 
         <!-- Version 3.4.0 -->
         <section id="v3-4-0" class="version-section">

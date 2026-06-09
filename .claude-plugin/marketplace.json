@@ -11,8 +11,8 @@
   "plugins": [
     {
       "name": "js-compound-engineering",
-      "description": "AI-powered development tools that get smarter with every use. Make each unit of engineering work easier than the last. Includes 49 agents, 41 skills, 1 MCP server.",
-      "version": "2.65.0",
+      "description": "AI-powered development tools that get smarter with every use. Make each unit of engineering work easier than the last.",
+      "version": "3.11.2",
       "author": {
         "name": "Hosni Mohamed",
         "url": "https://github.com/meethosny",
@@ -33,7 +33,7 @@
     {
       "name": "js-coding-tutor",
       "description": "Personalized coding tutorials that use your actual codebase for examples with spaced repetition quizzes",
-      "version": "1.2.1",
+      "version": "1.3.0",
       "author": {
         "name": "Hosni Mohamed",
         "url": "https://github.com/meethosny"

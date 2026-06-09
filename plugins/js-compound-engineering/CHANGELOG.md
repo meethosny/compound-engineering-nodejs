@@ -5,6 +5,41 @@ All notable changes to the js-compound-engineering plugin will be documented in 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [3.11.2] - 2026-06-09
+
+### Sync with Original Plugin v3.11.2
+
+Sync bringing the Node.js fork to full content parity with the original compound-engineering plugin v3.11.2, with a `js-ce-*` prefix normalization and a CLI converter target overhaul.
+
+### Added
+
+- New agents from upstream parity, including `js-ce-swift-ios-reviewer` (SwiftUI/UIKit, Swift concurrency, Core Data, iOS accessibility) and `js-ce-web-researcher` (iterative web research for planning/ideation).
+- New skills, including `js-ce-strategy`, `js-ce-promote`, `js-ce-release-notes`, `js-ce-product-pulse`, `js-ce-riffrec-feedback-analysis`, `js-ce-simplify-code`, `js-ce-polish`, and `js-ce-dogfood-beta`.
+- **CLI converter `agents` target** - Tool-neutral target that writes skills plus an `AGENTS.md` to the shared Agent Skills open-standard location (`.agents/skills/` for a project, `~/.agents/skills/` globally), read by Codex, opencode, Gemini, Antigravity, Cursor, and VS Code Copilot.
+- **CLI converter `cursor` and `antigravity` targets** - Bringing the supported target set to 10.
+- **`cleanup` CLI subcommand** - Backs up stale pre-rename artifacts from older installs.
+
+### Changed
+
+- **`js-ce-*` prefix normalization** - All components (skill directories and agent files) use the `js-ce-*` prefix. The eight core workflow skills keep the colon `name:` form (`js-ce:plan`, `js-ce:brainstorm`, `js-ce:compound`, `js-ce:compound-refresh`, `js-ce:ideate`, `js-ce:review`, `js-ce:work`, `js-ce:work-beta`); the rest use hyphenated names matching their directories. Agent references use the bare `js-ce-<agent-name>` form.
+- Commands remain fully migrated to skills -- there is no separate commands count; the workflow commands are skills.
+
+### Removed
+
+- Skills `js-dspy-python` and `js-claude-permissions-optimizer`.
+- CLI converter targets `windsurf`, `openclaw`, and `qwen`.
+
+### Component Summary
+
+| Component | Previous | v3.11.2 | Change |
+|-----------|----------|---------|--------|
+| Agents | 49 | 51 | +2 |
+| Skills | 41 | 47 | +6 (net) |
+| MCP Servers | 1 | 1 | - |
+| CLI Targets | 10 | 10 | swap: -windsurf/openclaw/qwen, +cursor/antigravity/agents |
+
+---
+
 ## [2.65.0] - 2026-04-13
 
 ### Sync with Original Plugin v2.65.0

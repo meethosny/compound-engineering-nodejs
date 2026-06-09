@@ -12,8 +12,8 @@ After installing, run `/js-ce-setup` in any project. It diagnoses your environme
 
 | Component | Count |
 |-----------|-------|
-| Agents | 49 |
-| Skills | 41 |
+| Agents | 51 |
+| Skills | 47 |
 | MCP Servers | 1 |
 
 ## Skills
@@ -30,6 +30,7 @@ The primary entry points for engineering work, invoked as slash commands:
 | `/js-ce:review` | Structured code review with tiered persona agents, confidence gating, and dedup pipeline |
 | `/js-ce:work` | Execute work items systematically |
 | `/js-ce-debug` | Systematically find root causes and fix bugs -- traces causal chains, forms testable hypotheses, and implements test-first fixes |
+| `/js-ce-simplify-code` | Simplify and refine recently changed code for clarity, reuse, quality, and efficiency while preserving behavior |
 | `/js-ce:compound` | Document solved problems to compound team knowledge |
 | `/js-ce:compound-refresh` | Refresh stale or drifting learnings and decide whether to keep, update, replace, or archive them |
 | `/js-ce-optimize` | Run iterative optimization loops with parallel experiments, measurement gates, and LLM-as-judge quality scoring |
@@ -42,6 +43,7 @@ For `/js-ce-optimize`, see [`skills/js-ce-optimize/README.md`](./skills/js-ce-op
 |-------|-------------|
 | `/js-ce-sessions` | Ask questions about session history across Claude Code, Codex, and Cursor |
 | `/js-ce-slack-research` | Search Slack for interpreted organizational context -- decisions, constraints, and discussion arcs |
+| `js-ce-strategy` | Create or maintain `STRATEGY.md` -- the product's target problem, approach, users, key metrics, and tracks of work |
 
 ### Git Workflow
 
@@ -75,14 +77,12 @@ For `/js-ce-optimize`, see [`skills/js-ce-optimize/README.md`](./skills/js-ce-op
 | `js-ce-agent-native-architecture` | Build AI agents using prompt-native architecture |
 | `js-ce-sindre-sorhus-package-writer` | Write npm packages following Sindre Sorhus's patterns |
 | `js-ce-modern-nodejs-style` | Write Node.js code with modern, pragmatic patterns |
-| `js-dspy-python` | Build type-safe LLM applications with DSPy Python |
 | `js-ce-frontend-design` | Create production-grade frontend interfaces |
 
 ### Review & Quality
 
 | Skill | Description |
 |-------|-------------|
-| `js-claude-permissions-optimizer` | Optimize Claude Code permissions from session history |
 | `js-ce-document-review` | Review documents using parallel persona agents for role-specific feedback |
 | `js-ce-agent-native-audit` | Run comprehensive agent-native architecture review with scored principles |
 
@@ -93,6 +93,10 @@ For `/js-ce-optimize`, see [`skills/js-ce-optimize/README.md`](./skills/js-ce-op
 | `js-ce-every-style-editor` | Review copy for Every's style guide compliance |
 | `js-ce-proof` | Create, edit, and share documents via Proof collaborative editor |
 | `js-ce-todo-create` | File-based todo tracking system |
+| `js-ce-promote` | Draft user-facing announcement and marketing copy for a feature that just shipped |
+| `js-ce-release-notes` | Summarize recent js-compound-engineering releases, or answer a question about a past release with a version citation |
+| `js-ce-product-pulse` | Generate a time-windowed pulse report on usage, quality, errors, and signals worth investigating |
+| `js-ce-riffrec-feedback-analysis` | Product-feedback capture workflow for recorded session bundles |
 
 ### Automation & Tools
 
@@ -107,6 +111,8 @@ For `/js-ce-optimize`, see [`skills/js-ce-optimize/README.md`](./skills/js-ce-op
 |-------|-------------|
 | `/js-ce-lfg` | Full autonomous engineering workflow |
 | `js-ce-work-beta` | Beta Codex delegation mode for ce:work |
+| `js-ce-dogfood-beta` | [BETA] Dogfood the active branch end-to-end as a QA engineer, then auto-fix issues and add regression tests |
+| `js-ce-polish` | Start the dev server, open the feature in a browser, and iterate on improvements together (manual invocation only) |
 
 ## Agents
 
@@ -141,6 +147,7 @@ Agents are specialized subagents invoked by skills -- you typically don't call t
 | `js-ce-schema-drift-detector` | Detect unrelated schema changes in PRs |
 | `js-ce-security-reviewer` | Exploitable vulnerabilities with confidence calibration |
 | `js-ce-security-sentinel` | Security audits and vulnerability assessments |
+| `js-ce-swift-ios-reviewer` | SwiftUI/UIKit correctness, Swift concurrency, Core Data threading, and iOS accessibility |
 | `js-ce-testing-reviewer` | Test coverage gaps, weak assertions |
 | `js-ce-project-standards-reviewer` | CLAUDE.md and AGENTS.md compliance |
 | `js-ce-adversarial-reviewer` | Construct failure scenarios to break implementations across component boundaries |
@@ -169,6 +176,7 @@ Agents are specialized subagents invoked by skills -- you typically don't call t
 | `js-ce-repo-research-analyst` | Research repository structure and conventions |
 | `js-ce-session-historian` | Search prior Claude Code, Codex, and Cursor sessions for related investigation context |
 | `js-ce-slack-researcher` | Search Slack for organizational context relevant to the current task |
+| `js-ce-web-researcher` | Perform iterative web research and return structured external grounding for planning and ideation |
 
 ### Design
 
@@ -210,6 +218,18 @@ claude /plugin install js-compound-engineering
 ```
 
 Then run `/js-ce-setup` to check your environment and install recommended tools.
+
+## Using Outside Claude Code
+
+The repository ships a CLI converter that ports this plugin's skills and agents to other AI coding tools. It supports **10 targets**:
+
+`codex`, `copilot`, `droid`, `gemini`, `kiro`, `opencode`, `pi`, `cursor`, `antigravity`, and `agents`.
+
+The tool-neutral `agents` target writes the skills plus an `AGENTS.md` to the shared **Agent Skills** open-standard location -- `.agents/skills/` for a project, or `~/.agents/skills/` globally. That shared directory is read by Codex, opencode, Gemini, Antigravity, Cursor, and VS Code Copilot, so a single conversion covers multiple tools at once.
+
+The `cleanup` subcommand backs up stale pre-rename artifacts left behind by older installs (from before the `js-ce-*` normalization) so they don't shadow the current components.
+
+> When you remove an agent or skill, update the cleanup registry so the stale artifact is backed up on the next install -- keeping that registry current is part of removing any component.
 
 ## Version History
 
