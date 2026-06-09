@@ -22,8 +22,8 @@ compound-engineering-nodejs/
     ├── js-compound-engineering/  # The main plugin
     │   ├── .claude-plugin/
     │   │   └── plugin.json       # Plugin metadata
-    │   ├── agents/               # 28 specialized AI agents (all prefixed with js-)
-    │   ├── skills/               # 40 skills (all prefixed with js-)
+    │   ├── agents/               # 51 specialized AI agents (all prefixed with js-ce-)
+    │   ├── skills/               # 47 skills (all prefixed with js-ce-; commands migrated to skills)
     │   ├── README.md             # Plugin documentation
     │   └── CHANGELOG.md          # Version history
     └── js-coding-tutor/          # Coding tutor plugin
@@ -209,10 +209,10 @@ docs/
 │   └── main.js          # Interactivity (theme toggle, mobile nav)
 └── pages/
     ├── getting-started.html  # Installation and quick start
-    ├── agents.html           # All 29 agents reference
-    ├── commands.html         # All 25 commands reference
-    ├── skills.html           # All 19 skills reference
-    ├── mcp-servers.html      # MCP servers reference
+    ├── agents.html           # All 51 agents reference
+    ├── commands.html         # Commands-are-now-skills note (commands migrated to skills)
+    ├── skills.html           # All 47 skills reference
+    ├── mcp-servers.html      # MCP server reference (context7)
     └── changelog.html        # Version history
 ```
 
@@ -238,8 +238,8 @@ If you need to update docs manually:
 
 1. **Landing page stats** - Update the numbers in `docs/index.html`:
    ```html
-   <span class="stat-number">28</span>  <!-- agents -->
-   <span class="stat-number">24</span>  <!-- commands -->
+   <span class="stat-number">51</span>  <!-- agents -->
+   <span class="stat-number">47</span>  <!-- skills (commands are skills now) -->
    ```
 
 2. **Reference pages** - Each page in `docs/pages/` documents all components in that category

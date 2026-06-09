@@ -6,9 +6,9 @@ import { convertClaudeToPi } from "../converters/claude-to-pi"
 import { convertClaudeToCopilot } from "../converters/claude-to-copilot"
 import { convertClaudeToGemini } from "../converters/claude-to-gemini"
 import { convertClaudeToKiro } from "../converters/claude-to-kiro"
-import { convertClaudeToWindsurf } from "../converters/claude-to-windsurf"
-import { convertClaudeToOpenClaw } from "../converters/claude-to-openclaw"
-import { convertClaudeToQwen } from "../converters/claude-to-qwen"
+import { convertClaudeToCursor } from "../converters/claude-to-cursor"
+import { convertClaudeToAntigravity } from "../converters/claude-to-antigravity"
+import { convertClaudeToAgents } from "../converters/claude-to-agents"
 import { writeOpenCodeBundle } from "./opencode"
 import { writeCodexBundle } from "./codex"
 import { writeDroidBundle } from "./droid"
@@ -16,9 +16,9 @@ import { writePiBundle } from "./pi"
 import { writeCopilotBundle } from "./copilot"
 import { writeGeminiBundle } from "./gemini"
 import { writeKiroBundle } from "./kiro"
-import { writeWindsurfBundle } from "./windsurf"
-import { writeOpenClawBundle } from "./openclaw"
-import { writeQwenBundle } from "./qwen"
+import { writeCursorBundle } from "./cursor"
+import { writeAntigravityBundle } from "./antigravity"
+import { writeAgentsBundle } from "./agents"
 
 export type TargetScope = "global" | "workspace"
 
@@ -100,24 +100,31 @@ export const targets: Record<string, TargetHandler> = {
     convert: convertClaudeToKiro as TargetHandler["convert"],
     write: writeKiroBundle as TargetHandler["write"],
   },
-  windsurf: {
-    name: "windsurf",
+  cursor: {
+    name: "cursor",
     implemented: true,
-    defaultScope: "global",
+    defaultScope: "workspace",
     supportedScopes: ["global", "workspace"],
-    convert: convertClaudeToWindsurf as TargetHandler["convert"],
-    write: writeWindsurfBundle as TargetHandler["write"],
+    convert: convertClaudeToCursor as TargetHandler["convert"],
+    write: writeCursorBundle as TargetHandler["write"],
   },
-  openclaw: {
-    name: "openclaw",
+  antigravity: {
+    name: "antigravity",
     implemented: true,
-    convert: convertClaudeToOpenClaw as TargetHandler["convert"],
-    write: writeOpenClawBundle as TargetHandler["write"],
+    defaultScope: "workspace",
+    supportedScopes: ["global", "workspace"],
+    convert: convertClaudeToAntigravity as TargetHandler["convert"],
+    write: writeAntigravityBundle as TargetHandler["write"],
   },
-  qwen: {
-    name: "qwen",
+  // Tool-neutral Agent Skills open standard: writes skills + AGENTS.md once to
+  // .agents/skills (project) or ~/.agents/skills (global), read directly by
+  // codex, opencode, gemini, antigravity, cursor, and VS Code Copilot.
+  agents: {
+    name: "agents",
     implemented: true,
-    convert: convertClaudeToQwen as TargetHandler["convert"],
-    write: writeQwenBundle as TargetHandler["write"],
+    defaultScope: "workspace",
+    supportedScopes: ["global", "workspace"],
+    convert: convertClaudeToAgents as TargetHandler["convert"],
+    write: writeAgentsBundle as TargetHandler["write"],
   },
 }

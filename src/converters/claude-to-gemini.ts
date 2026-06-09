@@ -163,7 +163,9 @@ function formatTomlString(value: string): string {
   return JSON.stringify(value)
 }
 
-function normalizeName(value: string): string {
+// Exported so sibling Gemini-family converters (e.g. Antigravity) can reuse
+// the same name/description normalization without duplicating it.
+export function normalizeName(value: string): string {
   const trimmed = value.trim()
   if (!trimmed) return "item"
   const normalized = trimmed
@@ -176,14 +178,14 @@ function normalizeName(value: string): string {
   return normalized || "item"
 }
 
-function sanitizeDescription(value: string, maxLength = GEMINI_DESCRIPTION_MAX_LENGTH): string {
+export function sanitizeDescription(value: string, maxLength = GEMINI_DESCRIPTION_MAX_LENGTH): string {
   const normalized = value.replace(/\s+/g, " ").trim()
   if (normalized.length <= maxLength) return normalized
   const ellipsis = "..."
   return normalized.slice(0, Math.max(0, maxLength - ellipsis.length)).trimEnd() + ellipsis
 }
 
-function uniqueName(base: string, used: Set<string>): string {
+export function uniqueName(base: string, used: Set<string>): string {
   if (!used.has(base)) {
     used.add(base)
     return base

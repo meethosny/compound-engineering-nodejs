@@ -1,6 +1,6 @@
 import fs from "fs/promises"
 import path from "path"
-import { backupFile, copySkillDir, ensureDir, sanitizePathName, writeText, writeTextSecure } from "../utils/files"
+import { backupFile, copyDir, copySkillDir, ensureDir, sanitizePathName, writeText, writeTextSecure } from "../utils/files"
 import type { CodexBundle } from "../types/codex"
 import type { ClaudeMcpServer } from "../types/claude"
 import { transformContentForCodex } from "../utils/codex-content"
@@ -39,13 +39,26 @@ export async function writeCodexBundle(outputRoot: string, bundle: CodexBundle):
   if (bundle.generatedSkills.length > 0) {
     const skillsRoot = path.join(codexRoot, "skills")
     for (const skill of bundle.generatedSkills) {
-      await writeText(path.join(skillsRoot, sanitizePathName(skill.name), "SKILL.md"), skill.content + "\n")
+      const skillDir = path.join(skillsRoot, sanitizePathName(skill.name))
+      await writeText(path.join(skillDir, "SKILL.md"), skill.content + "\n")
+      // Copy any co-located sidecar directories (e.g. agent `scripts/`) so the
+      // generated skill can run its helper scripts. Mirrors upstream #563.
+      for (const sidecar of skill.sidecarDirs ?? []) {
+        await copyDir(sidecar.sourceDir, path.join(skillDir, sidecar.targetName))
+      }
     }
   }
 
   const configPath = path.join(codexRoot, "config.toml")
   const existingConfig = await readFileSafe(configPath)
-  const mcpToml = renderCodexConfig(bundle.mcpServers)
+  // Skip MCP servers the user already declares outside our managed block —
+  // emitting a duplicate [mcp_servers.<name>] table is invalid TOML and makes
+  // Codex reject the entire config (breaking unrelated settings).
+  const ownedMcpNames = userOwnedMcpServerNames(existingConfig)
+  const mcpServersToWrite = bundle.mcpServers
+    ? Object.fromEntries(Object.entries(bundle.mcpServers).filter(([name]) => !ownedMcpNames.has(name)))
+    : bundle.mcpServers
+  const mcpToml = renderCodexConfig(mcpServersToWrite)
   const merged = mergeCodexConfig(existingConfig, mcpToml)
   if (merged !== null) {
     const backupPath = await backupFile(configPath)
@@ -53,6 +66,34 @@ export async function writeCodexBundle(outputRoot: string, bundle: CodexBundle):
       console.log(`Backed up existing config to ${backupPath}`)
     }
     await writeTextSecure(configPath, merged)
+  }
+
+  // Write hooks to .codex/hooks.json — Codex uses the same hooks format as
+  // Claude Code. Hooks are merged with any existing hooks file to avoid
+  // clobbering hooks from other plugins or manual configuration. Always run
+  // the merge (even with empty hooks) so previously installed managed entries
+  // are cleaned up on upgrade. Mirrors upstream #742.
+  const pluginName = bundle.pluginName ? sanitizePathName(bundle.pluginName).replace(/[\\/]/g, "-") : undefined
+  if (pluginName) {
+    const hooksPath = path.join(codexRoot, "hooks.json")
+    const existingHooks = await readJsonSafe(hooksPath)
+    const pluginHooks = (bundle.hooks?.hooks ?? {}) as Record<string, HookEntry[]>
+    const mergedHooks = mergeCodexHooks(existingHooks, pluginHooks, pluginName)
+    const mergedContent = JSON.stringify(mergedHooks, null, 2) + "\n"
+    const existingContent = existingHooks !== null
+      ? JSON.stringify(existingHooks, null, 2) + "\n"
+      : null
+    const hasHooks = Object.keys((mergedHooks.hooks as Record<string, unknown>) ?? {}).length > 0
+    // Only write when content actually changes (avoids backup churn on idempotent re-installs)
+    if ((hasHooks || existingHooks !== null) && mergedContent !== existingContent) {
+      if (existingHooks !== null) {
+        const backupPath = await backupFile(hooksPath)
+        if (backupPath) {
+          console.log(`Backed up existing hooks to ${backupPath}`)
+        }
+      }
+      await writeTextSecure(hooksPath, mergedContent)
+    }
   }
 }
 
@@ -109,15 +150,63 @@ async function readFileSafe(filePath: string): Promise<string> {
   }
 }
 
-export function mergeCodexConfig(existingContent: string, mcpToml: string | null): string | null {
-  // Strip current and previous managed blocks
-  let stripped = existingContent
+/**
+ * Top-level `mcp_servers` names a user has declared in their config.toml
+ * OUTSIDE the plugin's managed/legacy blocks. Used to avoid emitting a
+ * second `[mcp_servers.<name>]` table for a server the user already defines —
+ * duplicate TOML tables are invalid and make Codex reject the whole file.
+ *
+ * Mirrors `mergeCodexConfig`'s stripping so the plugin's OWN prior managed
+ * entries are not counted as user-owned (those get replaced, not deduped).
+ */
+export function userOwnedMcpServerNames(existingContent: string): Set<string> {
+  let cleaned = existingContent
   for (const [start, end] of [[MANAGED_START_MARKER, MANAGED_END_MARKER], [PREV_START_MARKER, PREV_END_MARKER]]) {
-    stripped = stripped.replace(
+    cleaned = cleaned.replace(
       new RegExp(`${escapeForRegex(start)}[\\s\\S]*?${escapeForRegex(end)}\\n?`, "g"),
       "",
     )
   }
+  for (const marker of [LEGACY_MARKER, UNMARKED_LEGACY_MARKER]) {
+    const idx = cleaned.indexOf(marker)
+    if (idx !== -1) cleaned = cleaned.slice(0, idx)
+  }
+  const names = new Set<string>()
+  // Match only top-level server tables (e.g. [mcp_servers.context7]); the
+  // `[A-Za-z0-9_-]+` class stops before a dot, so `[mcp_servers.foo.env]`
+  // sub-tables are correctly ignored.
+  for (const match of cleaned.matchAll(/^\[mcp_servers\.([A-Za-z0-9_-]+)\]\s*$/gm)) {
+    names.add(match[1])
+  }
+  return names
+}
+
+export function mergeCodexConfig(existingContent: string, mcpToml: string | null): string | null {
+  // Strip current and previous managed blocks
+  let stripped = existingContent
+  let removedManagedBlock = false
+  for (const [start, end] of [[MANAGED_START_MARKER, MANAGED_END_MARKER], [PREV_START_MARKER, PREV_END_MARKER]]) {
+    const next = stripped.replace(
+      new RegExp(`${escapeForRegex(start)}[\\s\\S]*?${escapeForRegex(end)}\\n?`, "g"),
+      "",
+    )
+    if (next !== stripped) removedManagedBlock = true
+    stripped = next
+  }
+
+  // No MCP servers to write — only remove bounded managed blocks. Do not strip
+  // unmarked legacy markers here: old Codex config files may contain user
+  // settings after "# Generated by compound-plugin", and there is no safe
+  // boundary for deleting only plugin-owned TOML.
+  if (!mcpToml) {
+    if (!existingContent) return null
+    const legacyMarkerIndex = stripped.indexOf(LEGACY_MARKER)
+    if (legacyMarkerIndex !== -1) {
+      return stripped.slice(0, legacyMarkerIndex).trimEnd()
+    }
+    return removedManagedBlock ? stripped.trimEnd() : existingContent
+  }
+
   stripped = stripped.trimEnd()
 
   // Strip from legacy markers to end of content (old formats wrote everything after the marker)
@@ -127,12 +216,6 @@ export function mergeCodexConfig(existingContent: string, mcpToml: string | null
     if (idx !== -1) {
       cleaned = cleaned.slice(0, idx).trimEnd()
     }
-  }
-
-  // No MCP servers to write — return cleaned content, or null only if there was never a file
-  if (!mcpToml) {
-    if (!existingContent) return null
-    return cleaned
   }
 
   const managedBlock = [
@@ -165,4 +248,104 @@ function formatTomlInlineTable(entries: Record<string, string>): string {
     ([key, value]) => `${formatTomlKey(key)} = ${formatTomlString(value)}`,
   )
   return `{ ${parts.join(", ")} }`
+}
+
+// ── Hooks ──────────────────────────────────────────────────
+
+async function readJsonSafe(filePath: string): Promise<Record<string, unknown> | null> {
+  try {
+    const content = await fs.readFile(filePath, "utf8")
+    return JSON.parse(content)
+  } catch {
+    return null
+  }
+}
+
+type HookEntry = { matcher?: string; hooks: Array<{ type: string; command?: string; prompt?: string; agent?: string; timeout?: number }> }
+
+/**
+ * Index tracking which hook entries are managed by which plugin.
+ * Stored as a sibling `_managed` block in hooks.json so hook entry
+ * objects stay schema-clean (no `_source` field injected into runtime data).
+ *
+ * Shape: `{ "<pluginName>": { "<event>": [<index>, ...] } }`
+ */
+type ManagedIndex = Record<string, Record<string, number[]>>
+
+/**
+ * Merge plugin hooks into an existing .codex/hooks.json, preserving hooks
+ * from other sources. Uses a `_managed` index block to track which entries
+ * belong to which plugin, so re-installs can replace them cleanly without
+ * injecting bookkeeping fields into hook entry objects.
+ */
+export function mergeCodexHooks(
+  existing: Record<string, unknown> | null,
+  pluginHooks: Record<string, HookEntry[]>,
+  pluginName: string,
+): Record<string, unknown> {
+  const result: Record<string, unknown[]> = {}
+  const managed: ManagedIndex = (existing?._managed as ManagedIndex) ?? {}
+
+  // Collect indices of entries managed by this plugin (to be removed)
+  const ownedIndices: Record<string, Set<number>> = {}
+  if (managed[pluginName]) {
+    for (const [event, indices] of Object.entries(managed[pluginName])) {
+      ownedIndices[event] = new Set(indices)
+    }
+  }
+
+  // Preserve existing hooks, filtering out this plugin's managed entries
+  const existingHooks = (existing?.hooks ?? {}) as Record<string, unknown[]>
+  for (const [event, matchers] of Object.entries(existingHooks)) {
+    if (!Array.isArray(matchers)) continue
+    const owned = ownedIndices[event]
+    result[event] = owned
+      ? matchers.filter((_, idx) => !owned.has(idx))
+      : [...matchers]
+  }
+
+  // Also filter out entries with legacy `_source` tag from this plugin
+  // (migration path from the previous `_source`-in-entry format)
+  for (const [event, matchers] of Object.entries(result)) {
+    result[event] = (matchers as Array<Record<string, unknown>>).filter((m) => {
+      if (typeof m === "object" && m !== null && "_source" in m) {
+        return m._source !== pluginName
+      }
+      return true
+    })
+  }
+
+  // Build new managed index for this plugin
+  const newManagedForPlugin: Record<string, number[]> = {}
+
+  // Add this plugin's hooks (clean entries, no _source field)
+  for (const [event, matchers] of Object.entries(pluginHooks)) {
+    if (!result[event]) result[event] = []
+    const indices: number[] = []
+    for (const matcher of matchers) {
+      indices.push(result[event].length)
+      result[event].push({ ...matcher })
+    }
+    if (indices.length > 0) {
+      newManagedForPlugin[event] = indices
+    }
+  }
+
+  // Remove empty event arrays
+  for (const event of Object.keys(result)) {
+    if (result[event].length === 0) delete result[event]
+  }
+
+  // Update managed index
+  if (Object.keys(newManagedForPlugin).length > 0) {
+    managed[pluginName] = newManagedForPlugin
+  } else {
+    delete managed[pluginName]
+  }
+
+  const output: Record<string, unknown> = { hooks: result }
+  if (Object.keys(managed).length > 0) {
+    output._managed = managed
+  }
+  return output
 }

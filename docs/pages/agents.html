@@ -4,7 +4,7 @@
 <head>
   <meta charset="utf-8" />
   <title>Agent Reference - Compounding Engineering</title>
-  <meta content="Complete reference for all 29 specialized AI agents in the Compounding Engineering plugin."
+  <meta content="Complete reference for all 51 specialized AI agents in the js-compound-engineering plugin."
     name="description" />
   <meta content="width=device-width, initial-scale=1" name="viewport" />
 
@@ -34,9 +34,8 @@
         <div class="nav-section">
           <h3>Reference</h3>
           <ul>
-            <li><a href="agents.html" class="active">Agents (29)</a></li>
-            <li><a href="commands.html">Commands (25)</a></li>
-            <li><a href="skills.html">Skills (19)</a></li>
+            <li><a href="agents.html" class="active">Agents (51)</a></li>
+            <li><a href="skills.html">Skills (47)</a></li>
             <li><a href="mcp-servers.html">MCP Servers (1)</a></li>
           </ul>
         </div>
@@ -49,11 +48,12 @@
         <div class="nav-section">
           <h3>On This Page</h3>
           <ul>
-            <li><a href="#review-agents">Review (15)</a></li>
-            <li><a href="#research-agents">Research (5)</a></li>
-            <li><a href="#workflow-agents">Workflow (5)</a></li>
+            <li><a href="#review-agents">Review (29)</a></li>
+            <li><a href="#document-review-agents">Document Review (7)</a></li>
+            <li><a href="#research-agents">Research (9)</a></li>
             <li><a href="#design-agents">Design (3)</a></li>
-            <li><a href="#docs-agents">Docs (1)</a></li>
+            <li><a href="#workflow-agents">Workflow (2)</a></li>
+            <li><a href="#docs-agents">Documentation (1)</a></li>
           </ul>
         </div>
       </nav>
@@ -76,777 +76,689 @@
       <article class="docs-article">
         <h1><i class="fa-solid fa-users-gear color-accent"></i> Agent Reference</h1>
         <p class="lead">
-          Think of agents as your expert teammates who never sleep. You've got 29 specialists here—each one obsessed
-          with a single domain. Call them individually when you need focused expertise, or orchestrate them together for
-          multi-angle analysis. They're opinionated, they're fast, and they remember your codebase better than you do.
+          51 specialized subagents, each obsessed with a single domain. Most are dispatched automatically by
+          workflow skills like <code>/js-ce:review</code> and <code>/js-ce:plan</code> -- the review pipeline selects
+          conditional personas based on what your diff touches. You can also invoke any of them directly with
+          <code>claude agent js-ce-&lt;agent-name&gt;</code>.
         </p>
 
         <div class="usage-box">
           <h3>How to Use Agents</h3>
           <div class="card-code-block">
-            <pre><code># Basic invocation
-claude agent [agent-name]
+            <pre><code># Basic invocation -- always use the bare js-ce- name
+claude agent js-ce-&lt;agent-name&gt;
 
 # With a specific message
-claude agent [agent-name] "Your message here"
+claude agent js-ce-&lt;agent-name&gt; "Your message here"
 
 # Examples
-claude agent js-modern-nodejs-reviewer
-claude agent js-security-sentinel "Audit the payment flow"</code></pre>
+claude agent js-ce-security-reviewer
+claude agent js-ce-correctness-reviewer "Audit the payment flow"</code></pre>
           </div>
         </div>
 
-        <!-- Review Agents -->
+        <div class="callout callout-info">
+          <div class="callout-icon"><i class="fa-solid fa-circle-info"></i></div>
+          <div class="callout-content">
+            <h4>You usually don't call these directly</h4>
+            <p>
+              Agents are building blocks for the workflow skills. Run <code>/js-ce:review</code> and the pipeline
+              spawns the relevant always-on and conditional reviewers for you, then merges and de-duplicates their
+              findings. Direct invocation is for when you want one focused opinion.
+            </p>
+          </div>
+        </div>
+
         <section id="review-agents">
-          <h2><i class="fa-solid fa-code-pull-request"></i> Review Agents (15)</h2>
-          <p>Your code review dream team. These agents catch what humans miss at 2am—security holes, performance cliffs,
-            architectural drift, and those "it works but I hate it" moments. They're picky. They disagree with each
-            other. That's the point.</p>
+          <h2><i class="fa-solid fa-code-pull-request"></i> Review Agents (29)</h2>
+          <p>Your code review dream team. Some run on every review (correctness, maintainability, testing, project standards); most are conditional personas the review pipeline selects based on what the diff touches -- auth, migrations, CLI, async UI, Swift, and more.</p>
 
-          <div class="agent-detail" id="js-modern-nodejs-reviewer">
+          <div class="agent-detail" id="js-ce-adversarial-reviewer">
             <div class="agent-detail-header">
-              <h3>js-modern-nodejs-reviewer</h3>
-              <span class="agent-badge">Node.js</span>
+              <h3>js-ce-adversarial-reviewer</h3>
             </div>
             <p class="agent-detail-description">
-              Modern Node.js review with a minimalist, pragmatic approach. Combines the philosophies of TJ Holowaychuk
-              (Express), Matteo Collina (Fastify), and Yusuke Wada (Hono). Obsessed with code that's simple, performant,
-              and maintainable.
+              Conditional code-review persona, selected when the diff is large (&gt;=50 changed lines) or touches high-risk domains like auth, payments, data mutations, or external APIs. Actively constructs failure scenarios to break the implementation rather than checking against known patterns.
             </p>
-            <h4>Key Principles</h4>
-            <ul>
-              <li><strong>Minimalism First</strong> - Every line of code is a liability. Remove what isn't essential.
-              </li>
-              <li><strong>Async Patterns</strong> - Proper error handling, avoid callback hell, use async/await
-                correctly.</li>
-              <li><strong>Performance</strong> - Event loop awareness, non-blocking operations, efficient memory usage.
-              </li>
-              <li><strong>Testing as Quality</strong> - Hard-to-test code = poor structure that needs refactoring.</li>
-              <li><strong>Naming (5-Second Rule)</strong> - Must understand what a function/module does in 5 seconds
-                from its name.</li>
-              <li><strong>Duplication > Complexity</strong> - Simple duplicated code is better than complex DRY
-                abstractions.</li>
-            </ul>
             <div class="card-code-block">
-              <pre><code>claude agent js-modern-nodejs-reviewer "Review the UserController"</code></pre>
+              <pre><code>claude agent js-ce-adversarial-reviewer</code></pre>
             </div>
           </div>
 
-          <div class="agent-detail" id="js-kieran-nodejs-reviewer">
+          <div class="agent-detail" id="js-ce-agent-native-reviewer">
             <div class="agent-detail-header">
-              <h3>js-kieran-nodejs-reviewer</h3>
-              <span class="agent-badge">Node.js</span>
+              <h3>js-ce-agent-native-reviewer</h3>
             </div>
             <p class="agent-detail-description">
-              Node.js code review with strict conventions. Focus on async patterns, error handling, and clean
-              architecture. Expects proper TypeScript types, consistent module structure, and no callback soup.
+              Reviews code to ensure agent-native parity -- any action a user can take, an agent can also take. Use after adding UI features, agent tools, or system prompts.
             </p>
-            <h4>Key Focus Areas</h4>
-            <ul>
-              <li>Identifies deviations from Node.js conventions</li>
-              <li>Spots blocking operations in async code</li>
-              <li>Tears apart unnecessary abstractions</li>
-              <li>Challenges overengineering and premature optimization</li>
-            </ul>
             <div class="card-code-block">
-              <pre><code>claude agent js-kieran-nodejs-reviewer</code></pre>
+              <pre><code>claude agent js-ce-agent-native-reviewer</code></pre>
             </div>
           </div>
 
-          <div class="agent-detail" id="js-kieran-python-reviewer">
+          <div class="agent-detail" id="js-ce-api-contract-reviewer">
             <div class="agent-detail-header">
-              <h3>js-kieran-python-reviewer</h3>
-              <span class="agent-badge">Python</span>
+              <h3>js-ce-api-contract-reviewer</h3>
             </div>
             <p class="agent-detail-description">
-              Your Pythonic perfectionist who believes type hints aren't optional and <code>dict.get()</code> beats
-              try/except KeyError. Expects modern Python 3.10+ patterns—no legacy syntax, no <code>typing.List</code>
-              when <code>list</code> works natively. If your code looks like Java translated to Python, prepare for
-              rewrites.
+              Conditional code-review persona, selected when the diff touches API routes, request/response types, serialization, versioning, or exported type signatures. Reviews code for breaking contract changes.
             </p>
-            <h4>Key Focus Areas</h4>
-            <ul>
-              <li>Type hints for all functions</li>
-              <li>Pythonic patterns and idioms</li>
-              <li>Modern Python syntax</li>
-              <li>Import organization</li>
-              <li>Module extraction signals</li>
-            </ul>
             <div class="card-code-block">
-              <pre><code>claude agent js-kieran-python-reviewer</code></pre>
+              <pre><code>claude agent js-ce-api-contract-reviewer</code></pre>
             </div>
           </div>
 
-          <div class="agent-detail" id="js-kieran-typescript-reviewer">
+          <div class="agent-detail" id="js-ce-architecture-strategist">
             <div class="agent-detail-header">
-              <h3>js-kieran-typescript-reviewer</h3>
-              <span class="agent-badge">TypeScript</span>
+              <h3>js-ce-architecture-strategist</h3>
             </div>
             <p class="agent-detail-description">
-              TypeScript's type system is a gift—don't throw it away with <code>any</code>. This reviewer treats
-              <code>any</code> like a code smell that needs justification. Expects proper types, clean imports, and code
-              that doesn't need comments because the types explain everything. You added TypeScript for safety; this
-              agent makes sure you actually get it.
+              Analyzes code changes from an architectural perspective for pattern compliance and design integrity. Use when reviewing PRs, adding services, or evaluating structural refactors.
             </p>
-            <h4>Key Focus Areas</h4>
-            <ul>
-              <li>No <code>any</code> without justification</li>
-              <li>Component/module extraction signals</li>
-              <li>Import organization</li>
-              <li>Modern TypeScript patterns</li>
-              <li>Testability assessment</li>
-            </ul>
             <div class="card-code-block">
-              <pre><code>claude agent js-kieran-typescript-reviewer</code></pre>
+              <pre><code>claude agent js-ce-architecture-strategist</code></pre>
             </div>
           </div>
 
-          <div class="agent-detail" id="js-security-sentinel">
+          <div class="agent-detail" id="js-ce-cli-agent-readiness-reviewer">
             <div class="agent-detail-header">
-              <h3>js-security-sentinel</h3>
-              <span class="agent-badge critical">Security</span>
+              <h3>js-ce-cli-agent-readiness-reviewer</h3>
             </div>
             <p class="agent-detail-description">
-              Security vulnerabilities hide in boring code—the "just grab the user ID from params" line that ships a
-              privilege escalation bug to production. This agent thinks like an attacker: SQL injection, XSS, auth
-              bypass, leaked secrets. Run it before touching authentication, payments, or anything with PII. Your users'
-              data depends on paranoia.
+              Reviews CLI source code, plans, or specs for AI agent readiness using a severity-based rubric focused on whether a CLI is merely usable by agents or genuinely optimized for them.
             </p>
-            <h4>Security Checks</h4>
-            <ul>
-              <li>Input validation analysis</li>
-              <li>SQL injection risk assessment</li>
-              <li>XSS vulnerability detection</li>
-              <li>Authentication/authorization audit</li>
-              <li>Sensitive data exposure scanning</li>
-              <li>OWASP Top 10 compliance</li>
-              <li>Hardcoded secrets search</li>
-            </ul>
             <div class="card-code-block">
-              <pre><code>claude agent js-security-sentinel "Audit the payment flow"</code></pre>
+              <pre><code>claude agent js-ce-cli-agent-readiness-reviewer</code></pre>
             </div>
           </div>
 
-          <div class="agent-detail" id="js-performance-oracle">
+          <div class="agent-detail" id="js-ce-cli-readiness-reviewer">
             <div class="agent-detail-header">
-              <h3>js-performance-oracle</h3>
-              <span class="agent-badge">Performance</span>
+              <h3>js-ce-cli-readiness-reviewer</h3>
             </div>
             <p class="agent-detail-description">
-              Your code works fine with 10 users. What happens at 10,000? This agent time-travels to your future scaling
-              problems—N+1 queries that murder your database, O(n²) algorithms hiding in loops, missing indexes, memory
-              leaks. It thinks in Big O notation and asks uncomfortable questions about what breaks first when traffic
-              spikes.
+              Conditional code-review persona, selected when the diff touches CLI command definitions, argument parsing, or command handler implementations. Reviews CLI code for agent readiness -- how well the CLI serves autonomous agents, not just human users.
             </p>
-            <h4>Analysis Areas</h4>
-            <ul>
-              <li>Algorithmic complexity (Big O notation)</li>
-              <li>N+1 query pattern detection</li>
-              <li>Proper index usage verification</li>
-              <li>Memory management review</li>
-              <li>Caching opportunity identification</li>
-              <li>Network usage optimization</li>
-              <li>Frontend bundle impact</li>
-            </ul>
             <div class="card-code-block">
-              <pre><code>claude agent js-performance-oracle</code></pre>
+              <pre><code>claude agent js-ce-cli-readiness-reviewer</code></pre>
             </div>
           </div>
 
-          <div class="agent-detail" id="js-architecture-strategist">
+          <div class="agent-detail" id="js-ce-code-simplicity-reviewer">
             <div class="agent-detail-header">
-              <h3>js-architecture-strategist</h3>
-              <span class="agent-badge">Architecture</span>
+              <h3>js-ce-code-simplicity-reviewer</h3>
             </div>
             <p class="agent-detail-description">
-              Every "small change" either reinforces your architecture or starts eroding it. This agent zooms out to see
-              if your fix actually fits the system's design—or if you're bolting duct tape onto a crumbling foundation.
-              It speaks SOLID principles, microservice boundaries, and API contracts. Call it when you're about to make
-              a change that "feels weird."
+              Final review pass to ensure code is as simple and minimal as possible. Use after implementation is complete to identify YAGNI violations and simplification opportunities.
             </p>
-            <h4>Analysis Areas</h4>
-            <ul>
-              <li>Overall system structure understanding</li>
-              <li>Change context within architecture</li>
-              <li>Architectural violation identification</li>
-              <li>SOLID principles compliance</li>
-              <li>Microservice boundary assessment</li>
-              <li>API contract evaluation</li>
-            </ul>
             <div class="card-code-block">
-              <pre><code>claude agent js-architecture-strategist</code></pre>
+              <pre><code>claude agent js-ce-code-simplicity-reviewer</code></pre>
             </div>
           </div>
 
-          <div class="agent-detail" id="js-data-integrity-guardian">
+          <div class="agent-detail" id="js-ce-correctness-reviewer">
             <div class="agent-detail-header">
-              <h3>js-data-integrity-guardian</h3>
-              <span class="agent-badge critical">Data</span>
+              <h3>js-ce-correctness-reviewer</h3>
             </div>
             <p class="agent-detail-description">
-              Migrations can't be rolled back once they're run on production. This agent is your last line of defense
-              before you accidentally drop a column with user data, create a race condition in transactions, or violate
-              GDPR. It obsesses over referential integrity, rollback safety, and data constraints. Your database is
-              forever; migrations should be paranoid.
+              Always-on code-review persona. Reviews code for logic errors, edge cases, state management bugs, error propagation failures, and intent-vs-implementation mismatches.
             </p>
-            <h4>Review Areas</h4>
-            <ul>
-              <li>Migration safety and reversibility</li>
-              <li>Data constraint validation</li>
-              <li>Transaction boundary review</li>
-              <li>Referential integrity preservation</li>
-              <li>Privacy compliance (GDPR, CCPA)</li>
-              <li>Data corruption scenario checking</li>
-            </ul>
             <div class="card-code-block">
-              <pre><code>claude agent js-data-integrity-guardian</code></pre>
+              <pre><code>claude agent js-ce-correctness-reviewer</code></pre>
             </div>
           </div>
 
-          <div class="agent-detail" id="js-pattern-recognition-specialist">
+          <div class="agent-detail" id="js-ce-data-integrity-guardian">
             <div class="agent-detail-header">
-              <h3>js-pattern-recognition-specialist</h3>
-              <span class="agent-badge">Patterns</span>
+              <h3>js-ce-data-integrity-guardian</h3>
             </div>
             <p class="agent-detail-description">
-              Patterns tell stories—Factory, Observer, God Object, Copy-Paste Programming. This agent reads your code
-              like an archaeologist reading artifacts. It spots the good patterns (intentional design), the
-              anti-patterns (accumulated tech debt), and the duplicated blocks you swore you'd refactor later. Runs
-              tools like jscpd because humans miss repetition that machines catch instantly.
+              Reviews database migrations, data models, and persistent data code for safety. Use when checking migration safety, data constraints, transaction boundaries, or privacy compliance.
             </p>
-            <h4>Detection Areas</h4>
-            <ul>
-              <li>Design patterns (Factory, Singleton, Observer, etc.)</li>
-              <li>Anti-patterns and code smells</li>
-              <li>TODO/FIXME comments</li>
-              <li>God objects and circular dependencies</li>
-              <li>Naming consistency</li>
-              <li>Code duplication</li>
-            </ul>
             <div class="card-code-block">
-              <pre><code>claude agent js-pattern-recognition-specialist</code></pre>
+              <pre><code>claude agent js-ce-data-integrity-guardian</code></pre>
             </div>
           </div>
 
-          <div class="agent-detail" id="js-code-simplicity-reviewer">
+          <div class="agent-detail" id="js-ce-data-migration-expert">
             <div class="agent-detail-header">
-              <h3>js-code-simplicity-reviewer</h3>
-              <span class="agent-badge">Quality</span>
+              <h3>js-ce-data-migration-expert</h3>
             </div>
             <p class="agent-detail-description">
-              Simplicity is violent discipline. This agent asks "do you actually need this?" about every line, every
-              abstraction, every dependency. YAGNI isn't a suggestion—it's the law. Your 200-line feature with three
-              layers of indirection? This agent will show you the 50-line version that does the same thing. Complexity
-              is a liability; simplicity compounds.
+              Validates data migrations, backfills, and production data transformations against reality. Use when PRs involve ID mappings, column renames, enum conversions, or schema changes.
             </p>
-            <h4>Simplification Checks</h4>
-            <ul>
-              <li>Analyze every line for necessity</li>
-              <li>Simplify complex logic</li>
-              <li>Remove redundancy and duplication</li>
-              <li>Challenge abstractions</li>
-              <li>Optimize for readability</li>
-              <li>Eliminate premature generalization</li>
-            </ul>
             <div class="card-code-block">
-              <pre><code>claude agent js-code-simplicity-reviewer</code></pre>
+              <pre><code>claude agent js-ce-data-migration-expert</code></pre>
             </div>
           </div>
 
-          <div class="agent-detail" id="js-agent-native-reviewer">
+          <div class="agent-detail" id="js-ce-data-migrations-reviewer">
             <div class="agent-detail-header">
-              <h3>js-agent-native-reviewer</h3>
-              <span class="agent-badge">Architecture</span>
+              <h3>js-ce-data-migrations-reviewer</h3>
             </div>
             <p class="agent-detail-description">
-              Verify features are agent-native -- that any action a user can take, an agent can also take, and anything
-              a user can see, an agent can see. This enforces the principle that agents should have parity with users in
-              capability and context. Catches UI-only workflows, hidden state, and missing API/tool equivalents.
+              Conditional code-review persona, selected when the diff touches migration files, schema changes, data transformations, or backfill scripts. Reviews code for data integrity and migration safety.
             </p>
-            <h4>Review Criteria</h4>
-            <ul>
-              <li><strong>Action Parity</strong> - Every UI action has an equivalent API/tool the agent can call</li>
-              <li><strong>Context Parity</strong> - Data visible to users is accessible to agents via API/tools</li>
-              <li><strong>Tool Design</strong> - Tools are primitives that provide capability, not behavior</li>
-              <li><strong>API Surface</strong> - New features exposed via API endpoints with consistent patterns</li>
-              <li>Flags UI-only features, hidden context, and workflow lock-in</li>
-            </ul>
             <div class="card-code-block">
-              <pre><code>claude agent js-agent-native-reviewer "Review the new email filtering feature"</code></pre>
+              <pre><code>claude agent js-ce-data-migrations-reviewer</code></pre>
             </div>
           </div>
 
-          <div class="agent-detail" id="js-data-migration-expert">
+          <div class="agent-detail" id="js-ce-deployment-verification-agent">
             <div class="agent-detail-header">
-              <h3>js-data-migration-expert</h3>
-              <span class="agent-badge critical">Data</span>
+              <h3>js-ce-deployment-verification-agent</h3>
             </div>
             <p class="agent-detail-description">
-              Validate ID mappings match production, check for swapped values, verify rollback safety. This agent
-              prevents data corruption by validating that migrations match production reality, not fixture or assumed
-              values. Essential for any migration that involves ID mappings, column renames, or data transformations.
+              Produces Go/No-Go deployment checklists with SQL verification queries, rollback procedures, and monitoring plans. Use when PRs touch production data, migrations, or risky data changes.
             </p>
-            <h4>Review Goals</h4>
-            <ul>
-              <li><strong>Verify mappings match production</strong> - Never trust fixtures or assumptions</li>
-              <li><strong>Check for swapped values</strong> - The most common and dangerous migration bug</li>
-              <li><strong>Ensure verification plans</strong> - SQL queries to prove correctness post-deploy</li>
-              <li><strong>Validate rollback safety</strong> - Feature flags, dual-writes, staged deploys</li>
-              <li>Catches orphaned eager loads, incomplete dual-writes, and missing error handling</li>
-            </ul>
             <div class="card-code-block">
-              <pre><code>claude agent js-data-migration-expert "Review the user status migration"</code></pre>
+              <pre><code>claude agent js-ce-deployment-verification-agent</code></pre>
             </div>
           </div>
 
-          <div class="agent-detail" id="js-deployment-verification-agent">
+          <div class="agent-detail" id="js-ce-julik-frontend-races-reviewer">
             <div class="agent-detail-header">
-              <h3>js-deployment-verification-agent</h3>
-              <span class="agent-badge critical">Deployment</span>
+              <h3>js-ce-julik-frontend-races-reviewer</h3>
             </div>
             <p class="agent-detail-description">
-              Create Go/No-Go deployment checklists with SQL verification queries for risky data changes. Produces
-              concrete pre/post-deploy checklists with rollback procedures and monitoring plans. Essential for any
-              deployment that touches production data, migrations, or behavior that could silently discard or duplicate
-              records.
+              Conditional code-review persona, selected when the diff touches async UI code, React/Vue/Svelte lifecycles, or DOM-timing-sensitive frontend behavior. Reviews code for race conditions and janky UI failure modes.
             </p>
-            <h4>Checklist Areas</h4>
-            <ul>
-              <li><strong>Data Invariants</strong> - Define what must remain true before/after deploy</li>
-              <li><strong>Pre-Deploy Audits</strong> - Read-only SQL queries to establish baselines</li>
-              <li><strong>Migration Steps</strong> - Command, runtime estimate, batching, rollback for each step</li>
-              <li><strong>Post-Deploy Verification</strong> - Queries to run within 5 minutes of deploy</li>
-              <li><strong>Rollback Plan</strong> - Concrete steps to restore data if needed</li>
-              <li><strong>Monitoring</strong> - Metrics, alerts, and dashboard checks for first 24 hours</li>
-            </ul>
             <div class="card-code-block">
-              <pre><code>claude agent js-deployment-verification-agent "Create checklist for the payments migration"</code></pre>
+              <pre><code>claude agent js-ce-julik-frontend-races-reviewer</code></pre>
             </div>
           </div>
 
-          <div class="agent-detail" id="js-schema-drift-detector">
+          <div class="agent-detail" id="js-ce-kieran-nodejs-reviewer">
             <div class="agent-detail-header">
-              <h3>js-schema-drift-detector</h3>
-              <span class="agent-badge">Database</span>
+              <h3>js-ce-kieran-nodejs-reviewer</h3>
             </div>
             <p class="agent-detail-description">
-              Detect unrelated migration and schema drift in PRs. When developers run migrations from other branches,
-              schema files accumulate unrelated changes that pollute PRs. This agent cross-references schema changes
-              against PR migrations to catch accidental inclusions. Supports Prisma, TypeORM, Knex, Sequelize, and
-              Drizzle ORMs, plus lock file drift detection.
+              Conditional code-review persona, selected when the diff touches Node.js application code. Reviews Node.js changes with Kieran's strict bar for clarity, conventions, and maintainability.
             </p>
-            <h4>Detection Areas</h4>
-            <ul>
-              <li><strong>Schema vs Migration Mismatch</strong> - Columns/tables in schema not created by PR migrations</li>
-              <li><strong>ORM Support</strong> - Prisma, TypeORM, Knex, Sequelize, Drizzle</li>
-              <li><strong>Lock File Drift</strong> - Unrelated dependency changes in package-lock.json/yarn.lock</li>
-              <li><strong>Entity Drift</strong> - TypeORM entity changes without corresponding migrations</li>
-              <li>Provides fix instructions per ORM to reset schema and re-run only PR migrations</li>
-            </ul>
             <div class="card-code-block">
-              <pre><code>claude agent js-schema-drift-detector "Check this PR for schema drift"</code></pre>
+              <pre><code>claude agent js-ce-kieran-nodejs-reviewer</code></pre>
             </div>
           </div>
 
-          <div class="agent-detail" id="js-julik-frontend-races-reviewer">
+          <div class="agent-detail" id="js-ce-kieran-python-reviewer">
             <div class="agent-detail-header">
-              <h3>js-julik-frontend-races-reviewer</h3>
-              <span class="agent-badge">Frontend</span>
+              <h3>js-ce-kieran-python-reviewer</h3>
             </div>
             <p class="agent-detail-description">
-              Review JavaScript/TypeScript frontend code for race conditions in UI components. Applies Julik's keen eye
-              for timing issues -- racing animations, stale timers, unhandled promise rejections, and conflicting async
-              operations. Covers React, Vue, Svelte, and Web Components with a focus on proper cleanup, state machines,
-              and cancelation patterns.
+              Conditional code-review persona, selected when the diff touches Python code. Reviews changes with Kieran's strict bar for Pythonic clarity, type hints, and maintainability.
             </p>
-            <h4>Review Areas</h4>
-            <ul>
-              <li><strong>SPA Framework Compatibility</strong> - Proper lifecycle cleanup in React/Vue/Svelte/Web Components</li>
-              <li><strong>Async/Await Races</strong> - AbortController patterns, Promise.allSettled, unhandled rejections</li>
-              <li><strong>Timer Safety</strong> - Cancelation tokens for setTimeout/setInterval/requestAnimationFrame</li>
-              <li><strong>Concurrent Operations</strong> - State machines to prevent conflicting interactions</li>
-              <li><strong>CSS Animations</strong> - Preventing animation restarts on DOM replacement</li>
-              <li>Event listener management and delegation patterns</li>
-            </ul>
             <div class="card-code-block">
-              <pre><code>claude agent js-julik-frontend-races-reviewer "Review the toast notification component"</code></pre>
+              <pre><code>claude agent js-ce-kieran-python-reviewer</code></pre>
+            </div>
+          </div>
+
+          <div class="agent-detail" id="js-ce-kieran-typescript-reviewer">
+            <div class="agent-detail-header">
+              <h3>js-ce-kieran-typescript-reviewer</h3>
+            </div>
+            <p class="agent-detail-description">
+              Conditional code-review persona, selected when the diff touches TypeScript code. Reviews changes with Kieran's strict bar for type safety, clarity, and maintainability.
+            </p>
+            <div class="card-code-block">
+              <pre><code>claude agent js-ce-kieran-typescript-reviewer</code></pre>
+            </div>
+          </div>
+
+          <div class="agent-detail" id="js-ce-maintainability-reviewer">
+            <div class="agent-detail-header">
+              <h3>js-ce-maintainability-reviewer</h3>
+            </div>
+            <p class="agent-detail-description">
+              Always-on code-review persona. Reviews code for premature abstraction, unnecessary indirection, dead code, coupling between unrelated modules, and naming that obscures intent.
+            </p>
+            <div class="card-code-block">
+              <pre><code>claude agent js-ce-maintainability-reviewer</code></pre>
+            </div>
+          </div>
+
+          <div class="agent-detail" id="js-ce-modern-nodejs-reviewer">
+            <div class="agent-detail-header">
+              <h3>js-ce-modern-nodejs-reviewer</h3>
+            </div>
+            <p class="agent-detail-description">
+              Conditional code-review persona, selected when Node.js diffs introduce architectural choices, abstractions, or frontend patterns that may fight the framework. Reviews code from an opinionated modern Node.js perspective.
+            </p>
+            <div class="card-code-block">
+              <pre><code>claude agent js-ce-modern-nodejs-reviewer</code></pre>
+            </div>
+          </div>
+
+          <div class="agent-detail" id="js-ce-pattern-recognition-specialist">
+            <div class="agent-detail-header">
+              <h3>js-ce-pattern-recognition-specialist</h3>
+            </div>
+            <p class="agent-detail-description">
+              Analyzes code for design patterns, anti-patterns, naming conventions, and duplication. Use when checking codebase consistency or verifying new code follows established patterns.
+            </p>
+            <div class="card-code-block">
+              <pre><code>claude agent js-ce-pattern-recognition-specialist</code></pre>
+            </div>
+          </div>
+
+          <div class="agent-detail" id="js-ce-performance-oracle">
+            <div class="agent-detail-header">
+              <h3>js-ce-performance-oracle</h3>
+            </div>
+            <p class="agent-detail-description">
+              Analyzes code for performance bottlenecks, algorithmic complexity, database queries, memory usage, and scalability. Use after implementing features or when performance concerns arise.
+            </p>
+            <div class="card-code-block">
+              <pre><code>claude agent js-ce-performance-oracle</code></pre>
+            </div>
+          </div>
+
+          <div class="agent-detail" id="js-ce-performance-reviewer">
+            <div class="agent-detail-header">
+              <h3>js-ce-performance-reviewer</h3>
+            </div>
+            <p class="agent-detail-description">
+              Conditional code-review persona, selected when the diff touches database queries, loop-heavy data transforms, caching layers, or I/O-intensive paths. Reviews code for runtime performance and scalability issues.
+            </p>
+            <div class="card-code-block">
+              <pre><code>claude agent js-ce-performance-reviewer</code></pre>
+            </div>
+          </div>
+
+          <div class="agent-detail" id="js-ce-previous-comments-reviewer">
+            <div class="agent-detail-header">
+              <h3>js-ce-previous-comments-reviewer</h3>
+            </div>
+            <p class="agent-detail-description">
+              Conditional code-review persona, selected when reviewing a PR that has existing review comments or review threads. Checks whether prior feedback has been addressed in the current diff.
+            </p>
+            <div class="card-code-block">
+              <pre><code>claude agent js-ce-previous-comments-reviewer</code></pre>
+            </div>
+          </div>
+
+          <div class="agent-detail" id="js-ce-project-standards-reviewer">
+            <div class="agent-detail-header">
+              <h3>js-ce-project-standards-reviewer</h3>
+            </div>
+            <p class="agent-detail-description">
+              Always-on code-review persona. Audits changes against the project's own CLAUDE.md and AGENTS.md standards -- frontmatter rules, reference inclusion, naming conventions, cross-platform portability, and tool selection policies.
+            </p>
+            <div class="card-code-block">
+              <pre><code>claude agent js-ce-project-standards-reviewer</code></pre>
+            </div>
+          </div>
+
+          <div class="agent-detail" id="js-ce-reliability-reviewer">
+            <div class="agent-detail-header">
+              <h3>js-ce-reliability-reviewer</h3>
+            </div>
+            <p class="agent-detail-description">
+              Conditional code-review persona, selected when the diff touches error handling, retries, circuit breakers, timeouts, health checks, background jobs, or async handlers. Reviews code for production reliability and failure modes.
+            </p>
+            <div class="card-code-block">
+              <pre><code>claude agent js-ce-reliability-reviewer</code></pre>
+            </div>
+          </div>
+
+          <div class="agent-detail" id="js-ce-schema-drift-detector">
+            <div class="agent-detail-header">
+              <h3>js-ce-schema-drift-detector</h3>
+            </div>
+            <p class="agent-detail-description">
+              Detects unrelated schema changes in PRs by cross-referencing against included migrations. Use when reviewing PRs with database schema changes.
+            </p>
+            <div class="card-code-block">
+              <pre><code>claude agent js-ce-schema-drift-detector</code></pre>
+            </div>
+          </div>
+
+          <div class="agent-detail" id="js-ce-security-reviewer">
+            <div class="agent-detail-header">
+              <h3>js-ce-security-reviewer</h3>
+            </div>
+            <p class="agent-detail-description">
+              Conditional code-review persona, selected when the diff touches auth middleware, public endpoints, user input handling, or permission checks. Reviews code for exploitable vulnerabilities.
+            </p>
+            <div class="card-code-block">
+              <pre><code>claude agent js-ce-security-reviewer</code></pre>
+            </div>
+          </div>
+
+          <div class="agent-detail" id="js-ce-security-sentinel">
+            <div class="agent-detail-header">
+              <h3>js-ce-security-sentinel</h3>
+            </div>
+            <p class="agent-detail-description">
+              Performs security audits for vulnerabilities, input validation, auth/authz, hardcoded secrets, and OWASP compliance. Use when reviewing code for security issues or before deployment.
+            </p>
+            <div class="card-code-block">
+              <pre><code>claude agent js-ce-security-sentinel</code></pre>
+            </div>
+          </div>
+
+          <div class="agent-detail" id="js-ce-swift-ios-reviewer">
+            <div class="agent-detail-header">
+              <h3>js-ce-swift-ios-reviewer</h3>
+            </div>
+            <p class="agent-detail-description">
+              Conditional code-review persona, selected when the diff touches Swift files, SwiftUI/UIKit views, iOS entitlements, privacy manifests, Core Data models, SPM manifests, storyboards/XIBs, or semantic .pbxproj changes. Reviews for SwiftUI correctness, state management, memory safety, Swift concurrency, Core Data threading, and accessibility.
+            </p>
+            <div class="card-code-block">
+              <pre><code>claude agent js-ce-swift-ios-reviewer</code></pre>
+            </div>
+          </div>
+
+          <div class="agent-detail" id="js-ce-testing-reviewer">
+            <div class="agent-detail-header">
+              <h3>js-ce-testing-reviewer</h3>
+            </div>
+            <p class="agent-detail-description">
+              Always-on code-review persona. Reviews code for test coverage gaps, weak assertions, brittle implementation-coupled tests, and missing edge case coverage.
+            </p>
+            <div class="card-code-block">
+              <pre><code>claude agent js-ce-testing-reviewer</code></pre>
             </div>
           </div>
         </section>
 
-        <!-- Research Agents -->
+        <section id="document-review-agents">
+          <h2><i class="fa-solid fa-file-circle-check"></i> Document Review Agents (7)</h2>
+          <p>Plan and requirements reviewers. Spawned by the js-ce-document-review skill, each applies a distinct lens -- coherence, feasibility, design, product, scope, security, and adversarial stress-testing.</p>
+
+          <div class="agent-detail" id="js-ce-adversarial-document-reviewer">
+            <div class="agent-detail-header">
+              <h3>js-ce-adversarial-document-reviewer</h3>
+            </div>
+            <p class="agent-detail-description">
+              Conditional document-review persona, selected when the document has &gt;5 requirements or implementation units, makes significant architectural decisions, covers high-stakes domains, or proposes new abstractions. Challenges premises, surfaces unstated assumptions, and stress-tests decisions rather than evaluating document quality.
+            </p>
+            <div class="card-code-block">
+              <pre><code>claude agent js-ce-adversarial-document-reviewer</code></pre>
+            </div>
+          </div>
+
+          <div class="agent-detail" id="js-ce-coherence-reviewer">
+            <div class="agent-detail-header">
+              <h3>js-ce-coherence-reviewer</h3>
+            </div>
+            <p class="agent-detail-description">
+              Reviews planning documents for internal consistency -- contradictions between sections, terminology drift, structural issues, and ambiguity where readers would diverge. Spawned by the js-ce-document-review skill.
+            </p>
+            <div class="card-code-block">
+              <pre><code>claude agent js-ce-coherence-reviewer</code></pre>
+            </div>
+          </div>
+
+          <div class="agent-detail" id="js-ce-design-lens-reviewer">
+            <div class="agent-detail-header">
+              <h3>js-ce-design-lens-reviewer</h3>
+            </div>
+            <p class="agent-detail-description">
+              Reviews planning documents for missing design decisions -- information architecture, interaction states, user flows, and AI slop risk. Uses dimensional rating to identify gaps. Spawned by the document-review skill.
+            </p>
+            <div class="card-code-block">
+              <pre><code>claude agent js-ce-design-lens-reviewer</code></pre>
+            </div>
+          </div>
+
+          <div class="agent-detail" id="js-ce-feasibility-reviewer">
+            <div class="agent-detail-header">
+              <h3>js-ce-feasibility-reviewer</h3>
+            </div>
+            <p class="agent-detail-description">
+              Evaluates whether proposed technical approaches in planning documents will survive contact with reality -- architecture conflicts, dependency gaps, migration risks, and implementability. Spawned by the document-review skill.
+            </p>
+            <div class="card-code-block">
+              <pre><code>claude agent js-ce-feasibility-reviewer</code></pre>
+            </div>
+          </div>
+
+          <div class="agent-detail" id="js-ce-product-lens-reviewer">
+            <div class="agent-detail-header">
+              <h3>js-ce-product-lens-reviewer</h3>
+            </div>
+            <p class="agent-detail-description">
+              Reviews planning documents as a senior product leader -- challenges premise claims, assesses strategic consequences (trajectory, identity, adoption, opportunity cost), and surfaces goal-work misalignment. Domain-agnostic: users may be end users, developers, operators, or any audience. Spawned by the document-review skill.
+            </p>
+            <div class="card-code-block">
+              <pre><code>claude agent js-ce-product-lens-reviewer</code></pre>
+            </div>
+          </div>
+
+          <div class="agent-detail" id="js-ce-scope-guardian-reviewer">
+            <div class="agent-detail-header">
+              <h3>js-ce-scope-guardian-reviewer</h3>
+            </div>
+            <p class="agent-detail-description">
+              Reviews planning documents for scope alignment and unjustified complexity -- challenges unnecessary abstractions, premature frameworks, and scope that exceeds stated goals. Spawned by the document-review skill.
+            </p>
+            <div class="card-code-block">
+              <pre><code>claude agent js-ce-scope-guardian-reviewer</code></pre>
+            </div>
+          </div>
+
+          <div class="agent-detail" id="js-ce-security-lens-reviewer">
+            <div class="agent-detail-header">
+              <h3>js-ce-security-lens-reviewer</h3>
+            </div>
+            <p class="agent-detail-description">
+              Evaluates planning documents for security gaps at the plan level -- auth/authz assumptions, data exposure risks, API surface vulnerabilities, and missing threat model elements. Spawned by the document-review skill.
+            </p>
+            <div class="card-code-block">
+              <pre><code>claude agent js-ce-security-lens-reviewer</code></pre>
+            </div>
+          </div>
+        </section>
+
         <section id="research-agents">
-          <h2><i class="fa-solid fa-microscope"></i> Research Agents (5)</h2>
-          <p>Stop guessing. These agents dig through documentation, GitHub repos, git history, and real-world examples
-            to give you answers backed by evidence. They read faster than you, remember more than you, and synthesize
-            patterns you'd miss. Perfect for "how should I actually do this?" questions.</p>
+          <h2><i class="fa-solid fa-microscope"></i> Research Agents (9)</h2>
+          <p>Evidence over guesswork. These agents dig through docs, git history, GitHub issues, prior sessions, Slack, and the open web to ground planning and ideation in real context.</p>
 
-          <div class="agent-detail" id="js-framework-docs-researcher">
+          <div class="agent-detail" id="js-ce-best-practices-researcher">
             <div class="agent-detail-header">
-              <h3>js-framework-docs-researcher</h3>
-              <span class="agent-badge">Research</span>
+              <h3>js-ce-best-practices-researcher</h3>
             </div>
             <p class="agent-detail-description">
-              Official docs are scattered. GitHub examples are inconsistent. Deprecations hide in changelogs. This agent
-              pulls it all together—docs, source code, version constraints, real-world examples. Ask "how do I use
-              Express middleware?" and get back patterns that actually work in production, not toy tutorials.
+              Researches and synthesizes external best practices, documentation, and examples for any technology or framework. Use when you need industry standards, community conventions, or implementation guidance.
             </p>
-            <h4>Capabilities</h4>
-            <ul>
-              <li>Fetch official framework and library documentation</li>
-              <li>Identify version-specific constraints and deprecations</li>
-              <li>Search GitHub for real-world usage examples</li>
-              <li>Analyze gem/library source code using <code>bundle show</code></li>
-              <li>Synthesize findings with practical examples</li>
-            </ul>
             <div class="card-code-block">
-              <pre><code>claude agent js-framework-docs-researcher "Research Express middleware patterns"</code></pre>
+              <pre><code>claude agent js-ce-best-practices-researcher</code></pre>
             </div>
           </div>
 
-          <div class="agent-detail" id="js-best-practices-researcher">
+          <div class="agent-detail" id="js-ce-framework-docs-researcher">
             <div class="agent-detail-header">
-              <h3>js-best-practices-researcher</h3>
-              <span class="agent-badge">Research</span>
+              <h3>js-ce-framework-docs-researcher</h3>
             </div>
             <p class="agent-detail-description">
-              "Best practices" are everywhere and contradictory. This agent cuts through the noise by evaluating sources
-              (official docs, trusted blogs, real GitHub repos), checking recency, and synthesizing actionable guidance.
-              You get code templates, patterns that scale, and answers you can trust—not StackOverflow copy-paste
-              roulette.
+              Gathers comprehensive documentation and best practices for frameworks, libraries, or dependencies. Use when you need official docs, version-specific constraints, or implementation patterns.
             </p>
-            <h4>Capabilities</h4>
-            <ul>
-              <li>Leverage multiple sources (Context7 MCP, web search, GitHub)</li>
-              <li>Evaluate information quality and recency</li>
-              <li>Synthesize into actionable guidance</li>
-              <li>Provide code examples and templates</li>
-              <li>Research issue templates and community engagement</li>
-            </ul>
             <div class="card-code-block">
-              <pre><code>claude agent js-best-practices-researcher "Find pagination patterns"</code></pre>
+              <pre><code>claude agent js-ce-framework-docs-researcher</code></pre>
             </div>
           </div>
 
-          <div class="agent-detail" id="js-git-history-analyzer">
+          <div class="agent-detail" id="js-ce-git-history-analyzer">
             <div class="agent-detail-header">
-              <h3>js-git-history-analyzer</h3>
-              <span class="agent-badge">Git</span>
+              <h3>js-ce-git-history-analyzer</h3>
             </div>
             <p class="agent-detail-description">
-              Your codebase has a history—decisions, patterns, mistakes. This agent does archaeology with git tools:
-              file evolution, blame analysis, contributor expertise mapping. Ask "why does this code exist?" and get the
-              commit that explains it. Spot patterns in how bugs appear. Understand the design decisions buried in
-              history.
+              Performs archaeological analysis of git history to trace code evolution, identify contributors, and understand why code patterns exist. Use when you need historical context for code changes.
             </p>
-            <h4>Analysis Techniques</h4>
-            <ul>
-              <li>Trace file evolution using <code>git log --follow</code></li>
-              <li>Determine code origins using <code>git blame -w -C -C -C</code></li>
-              <li>Identify patterns from commit history</li>
-              <li>Map key contributors and expertise areas</li>
-              <li>Extract historical patterns of issues and fixes</li>
-            </ul>
             <div class="card-code-block">
-              <pre><code>claude agent js-git-history-analyzer "Analyze changes to User model"</code></pre>
+              <pre><code>claude agent js-ce-git-history-analyzer</code></pre>
             </div>
           </div>
 
-          <div class="agent-detail" id="js-repo-research-analyst">
+          <div class="agent-detail" id="js-ce-issue-intelligence-analyst">
             <div class="agent-detail-header">
-              <h3>js-repo-research-analyst</h3>
-              <span class="agent-badge">Research</span>
+              <h3>js-ce-issue-intelligence-analyst</h3>
             </div>
             <p class="agent-detail-description">
-              Every repo has conventions—some documented, most tribal knowledge. This agent reads ARCHITECTURE.md, issue
-              templates, PR patterns, and actual code to reverse-engineer the standards. Perfect for joining a new
-              project or ensuring your PR matches the team's implicit style. Finds the rules nobody wrote down.
+              Fetches and analyzes GitHub issues to surface recurring themes, pain patterns, and severity trends. Use when understanding a project's issue landscape, analyzing bug patterns for ideation, or summarizing what users are reporting.
             </p>
-            <h4>Analysis Areas</h4>
-            <ul>
-              <li>Architecture and documentation files (ARCHITECTURE.md, README.md, CLAUDE.md)</li>
-              <li>GitHub issues for patterns and conventions</li>
-              <li>Issue/PR templates and guidelines</li>
-              <li>Implementation patterns using ast-grep or rg</li>
-              <li>Project-specific conventions</li>
-            </ul>
             <div class="card-code-block">
-              <pre><code>claude agent js-repo-research-analyst</code></pre>
+              <pre><code>claude agent js-ce-issue-intelligence-analyst</code></pre>
             </div>
           </div>
 
-          <div class="agent-detail" id="js-learnings-researcher">
+          <div class="agent-detail" id="js-ce-learnings-researcher">
             <div class="agent-detail-header">
-              <h3>js-learnings-researcher</h3>
-              <span class="agent-badge">Research</span>
+              <h3>js-ce-learnings-researcher</h3>
             </div>
             <p class="agent-detail-description">
-              Search institutional learnings in docs/solutions/ for relevant past solutions before implementing. This
-              agent efficiently filters documented solutions by frontmatter metadata (tags, category, module, symptoms)
-              to find applicable patterns, gotchas, and lessons learned. Prevents repeated mistakes by surfacing
-              relevant institutional knowledge before work begins.
+              Searches docs/solutions/ for applicable past learnings via frontmatter metadata (bugs, architecture, design patterns, conventions, workflow learnings). Use before implementing features, making decisions, or starting work in a documented area so institutional knowledge carries forward.
             </p>
-            <h4>Search Strategy</h4>
-            <ul>
-              <li><strong>Grep-First Filtering</strong> - Pre-filters files by frontmatter before reading content</li>
-              <li><strong>Category Narrowing</strong> - Searches targeted directories (performance, database, security, etc.)</li>
-              <li><strong>Relevance Scoring</strong> - Ranks matches by module, tags, symptoms, and component overlap</li>
-              <li><strong>Critical Patterns</strong> - Always checks critical-patterns.md for must-know issues</li>
-              <li>Integrates with /js-ce:plan and /js-deepen-plan for informed planning</li>
-            </ul>
             <div class="card-code-block">
-              <pre><code>claude agent js-learnings-researcher "Check for learnings about email processing"</code></pre>
+              <pre><code>claude agent js-ce-learnings-researcher</code></pre>
+            </div>
+          </div>
+
+          <div class="agent-detail" id="js-ce-repo-research-analyst">
+            <div class="agent-detail-header">
+              <h3>js-ce-repo-research-analyst</h3>
+            </div>
+            <p class="agent-detail-description">
+              Conducts thorough research on repository structure, documentation, conventions, and implementation patterns. Use when onboarding to a new codebase or understanding project conventions.
+            </p>
+            <div class="card-code-block">
+              <pre><code>claude agent js-ce-repo-research-analyst</code></pre>
+            </div>
+          </div>
+
+          <div class="agent-detail" id="js-ce-session-historian">
+            <div class="agent-detail-header">
+              <h3>js-ce-session-historian</h3>
+            </div>
+            <p class="agent-detail-description">
+              Synthesizes findings from prior coding-agent sessions about the same problem or topic. Receives pre-extracted skeleton/error file paths from a `js-ce-sessions` orchestrator and returns prose findings -- investigation journey, what didn't work, key decisions, related context. Not intended for direct dispatch -- use `/js-ce:sessions` (or another caller that runs the full discovery + extract pipeline first).
+            </p>
+            <div class="card-code-block">
+              <pre><code>claude agent js-ce-session-historian</code></pre>
+            </div>
+          </div>
+
+          <div class="agent-detail" id="js-ce-slack-researcher">
+            <div class="agent-detail-header">
+              <h3>js-ce-slack-researcher</h3>
+            </div>
+            <p class="agent-detail-description">
+              Searches Slack for organizational context relevant to the current task -- decisions, constraints, and discussions that may not be documented elsewhere. Use when the user explicitly asks to search Slack for context during ideation, planning, or brainstorming. Always surfaces the workspace identity so the user can verify the correct Slack instance was searched.
+            </p>
+            <div class="card-code-block">
+              <pre><code>claude agent js-ce-slack-researcher</code></pre>
+            </div>
+          </div>
+
+          <div class="agent-detail" id="js-ce-web-researcher">
+            <div class="agent-detail-header">
+              <h3>js-ce-web-researcher</h3>
+            </div>
+            <p class="agent-detail-description">
+              Performs iterative web research and returns structured external grounding. Use when planning or ideating outside the codebase, validating prior art, scanning competitor patterns, finding cross-domain analogies, or fetching market signals. Prefer over manual web searches for structured external context.
+            </p>
+            <div class="card-code-block">
+              <pre><code>claude agent js-ce-web-researcher</code></pre>
             </div>
           </div>
         </section>
 
-        <!-- Workflow Agents -->
-        <section id="workflow-agents">
-          <h2><i class="fa-solid fa-gears"></i> Workflow Agents (5)</h2>
-          <p>Tedious work you hate doing. These agents handle the grind—reproducing bugs, resolving PR comments, running
-            linters, analyzing specs. They're fast, they don't complain, and they free you up to solve interesting
-            problems instead of mechanical ones.</p>
-
-          <div class="agent-detail" id="js-bug-reproduction-validator">
-            <div class="agent-detail-header">
-              <h3>js-bug-reproduction-validator</h3>
-              <span class="agent-badge">Bugs</span>
-            </div>
-            <p class="agent-detail-description">
-              Half of bug reports aren't bugs—they're user errors, environment issues, or misunderstood features. This
-              agent systematically reproduces the reported behavior, classifies what it finds (Confirmed, Can't
-              Reproduce, Not a Bug, etc.), and assesses severity. Saves you from chasing ghosts or missing real issues.
-            </p>
-            <h4>Classification Types</h4>
-            <ul>
-              <li><strong>Confirmed</strong> - Bug reproduced successfully</li>
-              <li><strong>Cannot Reproduce</strong> - Unable to reproduce</li>
-              <li><strong>Not a Bug</strong> - Expected behavior</li>
-              <li><strong>Environmental</strong> - Environment-specific issue</li>
-              <li><strong>Data</strong> - Data-related issue</li>
-              <li><strong>User Error</strong> - User misunderstanding</li>
-            </ul>
-            <div class="card-code-block">
-              <pre><code>claude agent js-bug-reproduction-validator</code></pre>
-            </div>
-          </div>
-
-          <div class="agent-detail" id="js-pr-comment-resolver">
-            <div class="agent-detail-header">
-              <h3>js-pr-comment-resolver</h3>
-              <span class="agent-badge">PR</span>
-            </div>
-            <p class="agent-detail-description">
-              Code review comments pile up. This agent reads them, plans fixes, implements changes, and reports back
-              what it did. It doesn't argue with reviewers or skip hard feedback—it just resolves the work
-              systematically. Great for burning through a dozen "change this variable name" comments in seconds.
-            </p>
-            <h4>Workflow</h4>
-            <ul>
-              <li>Analyze code review comments</li>
-              <li>Plan the resolution before implementation</li>
-              <li>Implement requested modifications</li>
-              <li>Verify resolution doesn't break functionality</li>
-              <li>Provide clear resolution reports</li>
-            </ul>
-            <div class="card-code-block">
-              <pre><code>claude agent js-pr-comment-resolver</code></pre>
-            </div>
-          </div>
-
-          <div class="agent-detail" id="js-lint">
-            <div class="agent-detail-header">
-              <h3>js-lint</h3>
-              <span class="agent-badge">Quality</span>
-            </div>
-            <p class="agent-detail-description">
-              Linters are pedantic robots that enforce consistency. This agent runs ESLint, Prettier, and npm audit
-              for you—checking JavaScript/TypeScript style, formatting, and security issues. It's fast (uses the Haiku model) and
-              catches the formatting noise before CI does.
-            </p>
-            <h4>Tools Run</h4>
-            <ul>
-              <li><code>npx eslint .</code> - JavaScript/TypeScript linting</li>
-              <li><code>npx prettier --check .</code> - Code formatting</li>
-              <li><code>npm audit</code> - Security vulnerability scanning</li>
-            </ul>
-            <div class="card-code-block">
-              <pre><code>claude agent js-lint</code></pre>
-            </div>
-          </div>
-
-          <div class="agent-detail" id="js-spec-flow-analyzer">
-            <div class="agent-detail-header">
-              <h3>js-spec-flow-analyzer</h3>
-              <span class="agent-badge">Testing</span>
-            </div>
-            <p class="agent-detail-description">
-              Specs always have gaps—edge cases nobody thought about, ambiguous requirements, missing error states. This
-              agent maps all possible user flows, identifies what's unclear or missing, and generates the questions you
-              need to ask stakeholders. Runs before you code to avoid building the wrong thing.
-            </p>
-            <h4>Analysis Areas</h4>
-            <ul>
-              <li>Map all possible user flows and permutations</li>
-              <li>Identify gaps, ambiguities, and missing specifications</li>
-              <li>Consider different user types, roles, permissions</li>
-              <li>Analyze error states and edge cases</li>
-              <li>Generate critical questions requiring clarification</li>
-            </ul>
-            <div class="card-code-block">
-              <pre><code>claude agent js-spec-flow-analyzer</code></pre>
-            </div>
-          </div>
-
-          <div class="agent-detail" id="js-every-style-editor">
-            <div class="agent-detail-header">
-              <h3>js-every-style-editor</h3>
-              <span class="agent-badge">Content</span>
-            </div>
-            <p class="agent-detail-description">
-              Style guides are arbitrary rules that make writing consistent. This agent enforces Every's particular
-              quirks—title case in headlines, no overused filler words ("actually," "very"), active voice, Oxford
-              commas. It's a line-by-line grammar cop for content that needs to match the brand.
-            </p>
-            <h4>Style Checks</h4>
-            <ul>
-              <li>Title case in headlines, sentence case elsewhere</li>
-              <li>Company singular/plural usage</li>
-              <li>Remove overused words (actually, very, just)</li>
-              <li>Enforce active voice</li>
-              <li>Apply formatting rules (Oxford commas, em dashes)</li>
-            </ul>
-            <div class="card-code-block">
-              <pre><code>claude agent js-every-style-editor</code></pre>
-            </div>
-          </div>
-        </section>
-
-        <!-- Design Agents -->
         <section id="design-agents">
           <h2><i class="fa-solid fa-palette"></i> Design Agents (3)</h2>
-          <p>Design is iteration. These agents take screenshots, compare them to Figma, make targeted improvements, and
-            repeat. They fix spacing, alignment, colors, typography—the visual details that compound into polish.
-            Perfect for closing the gap between "it works" and "it looks right."</p>
+          <p>Close the gap between "it works" and "it looks right." Screenshot, compare against Figma, iterate.</p>
 
-          <div class="agent-detail" id="js-design-iterator">
+          <div class="agent-detail" id="js-ce-design-implementation-reviewer">
             <div class="agent-detail-header">
-              <h3>js-design-iterator</h3>
-              <span class="agent-badge">Design</span>
+              <h3>js-ce-design-implementation-reviewer</h3>
             </div>
             <p class="agent-detail-description">
-              Design doesn't happen in one pass. This agent runs a loop: screenshot the UI, analyze what's off (spacing,
-              colors, alignment), implement 3-5 targeted fixes, repeat. Run it for 10 iterations and watch rough
-              interfaces transform into polished designs through systematic refinement.
+              Visually compares live UI implementation against Figma designs and provides detailed feedback on discrepancies. Use after writing or modifying HTML/CSS/React components to verify design fidelity.
             </p>
-            <h4>Process</h4>
-            <ul>
-              <li>Take focused screenshots of target elements</li>
-              <li>Analyze current state and identify 3-5 improvements</li>
-              <li>Implement targeted CSS/design changes</li>
-              <li>Document changes made</li>
-              <li>Repeat for specified iterations (default 10)</li>
-            </ul>
             <div class="card-code-block">
-              <pre><code>claude agent js-design-iterator</code></pre>
+              <pre><code>claude agent js-ce-design-implementation-reviewer</code></pre>
             </div>
           </div>
 
-          <div class="agent-detail" id="js-figma-design-sync">
+          <div class="agent-detail" id="js-ce-design-iterator">
             <div class="agent-detail-header">
-              <h3>js-figma-design-sync</h3>
-              <span class="agent-badge">Figma</span>
+              <h3>js-ce-design-iterator</h3>
             </div>
             <p class="agent-detail-description">
-              Designers hand you a Figma file. You build it. Then: "the spacing is wrong, the font is off, the colors
-              don't match." This agent compares your implementation to the Figma spec, identifies every visual
-              discrepancy, and fixes them automatically. Designers stay happy. You stay sane.
+              Iteratively refines UI design through N screenshot-analyze-improve cycles. Use PROACTIVELY when design changes aren't coming together after 1-2 attempts, or when user requests iterative refinement.
             </p>
-            <h4>Workflow</h4>
-            <ul>
-              <li>Extract design specifications from Figma</li>
-              <li>Capture implementation screenshots</li>
-              <li>Conduct systematic visual comparison</li>
-              <li>Make precise code changes to fix discrepancies</li>
-              <li>Verify implementation matches design</li>
-            </ul>
             <div class="card-code-block">
-              <pre><code>claude agent js-figma-design-sync</code></pre>
+              <pre><code>claude agent js-ce-design-iterator</code></pre>
             </div>
           </div>
 
-          <div class="agent-detail" id="js-design-implementation-reviewer">
+          <div class="agent-detail" id="js-ce-figma-design-sync">
             <div class="agent-detail-header">
-              <h3>js-design-implementation-reviewer</h3>
-              <span class="agent-badge">Review</span>
+              <h3>js-ce-figma-design-sync</h3>
             </div>
             <p class="agent-detail-description">
-              Before you ship UI changes, run this agent. It compares your implementation against Figma at a pixel
-              level—layouts, typography, colors, spacing, responsive behavior. Uses the Opus model for detailed visual
-              analysis. Catches the "close enough" mistakes that users notice but you don't.
+              Detects and fixes visual differences between a web implementation and its Figma design. Use iteratively when syncing implementation to match Figma specs.
             </p>
-            <h4>Comparison Areas</h4>
-            <ul>
-              <li>Layouts and structure</li>
-              <li>Typography (fonts, sizes, weights)</li>
-              <li>Colors and themes</li>
-              <li>Spacing and alignment</li>
-              <li>Different viewport sizes</li>
-            </ul>
             <div class="card-code-block">
-              <pre><code>claude agent js-design-implementation-reviewer</code></pre>
+              <pre><code>claude agent js-ce-figma-design-sync</code></pre>
             </div>
           </div>
         </section>
 
-        <!-- Docs Agents -->
+        <section id="workflow-agents">
+          <h2><i class="fa-solid fa-gears"></i> Workflow Agents (2)</h2>
+          <p>Mechanical work, handled. Resolve PR feedback and analyze spec flows for gaps.</p>
+
+          <div class="agent-detail" id="js-ce-pr-comment-resolver">
+            <div class="agent-detail-header">
+              <h3>js-ce-pr-comment-resolver</h3>
+            </div>
+            <p class="agent-detail-description">
+              Evaluates and resolves one or more related PR review threads -- assesses validity, implements fixes, and returns structured summaries with reply text. Spawned by the resolve-pr-feedback skill.
+            </p>
+            <div class="card-code-block">
+              <pre><code>claude agent js-ce-pr-comment-resolver</code></pre>
+            </div>
+          </div>
+
+          <div class="agent-detail" id="js-ce-spec-flow-analyzer">
+            <div class="agent-detail-header">
+              <h3>js-ce-spec-flow-analyzer</h3>
+            </div>
+            <p class="agent-detail-description">
+              Analyzes specifications and feature descriptions for user flow completeness and gap identification. Use when a spec, plan, or feature description needs flow analysis, edge case discovery, or requirements validation.
+            </p>
+            <div class="card-code-block">
+              <pre><code>claude agent js-ce-spec-flow-analyzer</code></pre>
+            </div>
+          </div>
+        </section>
+
         <section id="docs-agents">
-          <h2><i class="fa-solid fa-file-lines"></i> Documentation Agent (1)</h2>
+          <h2><i class="fa-solid fa-file-lines"></i> Documentation Agents (1)</h2>
+          <p>README generation in a clean, scannable style.</p>
 
-          <div class="agent-detail" id="js-sorhus-readme-writer">
+          <div class="agent-detail" id="js-ce-sorhus-readme-writer">
             <div class="agent-detail-header">
-              <h3>js-sorhus-readme-writer</h3>
-              <span class="agent-badge">Docs</span>
+              <h3>js-ce-sorhus-readme-writer</h3>
             </div>
             <p class="agent-detail-description">
-              Andrew Kane writes READMEs that are models of clarity—concise, scannable, zero fluff. This agent generates
-              gem documentation in that style: 15 words max per sentence, imperative voice, single-purpose code
-              examples. If your README rambles, this agent will fix it.
+              Creates or updates README files following Sindre Sorhus-style template for npm packages. Use when writing package documentation with imperative voice, concise prose, and standard section ordering.
             </p>
-            <h4>Section Order</h4>
-            <ol>
-              <li>Header (title + description)</li>
-              <li>Installation</li>
-              <li>Quick Start</li>
-              <li>Usage</li>
-              <li>Options</li>
-              <li>Upgrading</li>
-              <li>Contributing</li>
-              <li>License</li>
-            </ol>
-            <h4>Style Guidelines</h4>
-            <ul>
-              <li>Imperative voice throughout</li>
-              <li>15 words max per sentence</li>
-              <li>Single-purpose code fences</li>
-              <li>Up to 4 badges maximum</li>
-              <li>No HTML comments</li>
-            </ul>
             <div class="card-code-block">
-              <pre><code>claude agent js-sorhus-readme-writer</code></pre>
+              <pre><code>claude agent js-ce-sorhus-readme-writer</code></pre>
             </div>
           </div>
         </section>
 
-        <!-- Navigation -->
         <nav class="docs-nav-footer">
           <a href="getting-started.html" class="nav-prev">
             <span class="nav-label">Previous</span>
             <span class="nav-title"><i class="fa-solid fa-arrow-left"></i> Getting Started</span>
           </a>
-          <a href="commands.html" class="nav-next">
+          <a href="skills.html" class="nav-next">
             <span class="nav-label">Next</span>
-            <span class="nav-title">Commands <i class="fa-solid fa-arrow-right"></i></span>
+            <span class="nav-title">Skills <i class="fa-solid fa-arrow-right"></i></span>
           </a>
         </nav>
       </article>

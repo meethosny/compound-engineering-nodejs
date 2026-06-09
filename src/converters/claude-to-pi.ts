@@ -108,6 +108,13 @@ export function transformContentForPi(body: string): string {
 
   // Claude-specific tool references
   result = result.replace(/\bAskUserQuestion\b/g, "ask_user_question")
+  // Claude Code task-tracking primitives: current Task* API (TaskCreate/TaskUpdate/
+  // TaskList/TaskGet/TaskStop/TaskOutput) plus the deprecated legacy pair
+  // (TodoWrite/TodoRead). All map to the fork's file-based todo workflow.
+  result = result.replace(
+    /\bTask(?:Create|Update|List|Get|Stop|Output)\b/g,
+    "file-based todos (todos/ + /skill:todo-create)",
+  )
   result = result.replace(/\bTodoWrite\b/g, "file-based todos (todos/ + /skill:todo-create)")
   result = result.replace(/\bTodoRead\b/g, "file-based todos (todos/ + /skill:todo-create)")
 

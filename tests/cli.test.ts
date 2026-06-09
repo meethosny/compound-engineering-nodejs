@@ -179,7 +179,7 @@ describe("CLI", () => {
     expect(await exists(path.join(tempRoot, ".config", "opencode", "opencode.json"))).toBe(true)
     // Bundled plugin takes priority over GitHub when no --branch is specified,
     // so agents have the js- prefix from the real plugin
-    expect(await exists(path.join(tempRoot, ".config", "opencode", "agents", "js-repo-research-analyst.md"))).toBe(true)
+    expect(await exists(path.join(tempRoot, ".config", "opencode", "agents", "js-ce-repo-research-analyst.md"))).toBe(true)
   })
 
   test("install uses bundled js-compound-engineering plugin for codex output", async () => {
@@ -609,7 +609,7 @@ describe("CLI", () => {
     expect(json.permission).not.toBeNull()
   })
 
-  test("sync --target all detects new sync targets and ignores stale cursor directories", async () => {
+  test("sync --target all detects new sync targets including cursor", async () => {
     const tempHome = await fs.mkdtemp(path.join(os.tmpdir(), "cli-sync-home-"))
     const tempCwd = await fs.mkdtemp(path.join(os.tmpdir(), "cli-sync-cwd-"))
     const repoRoot = path.join(import.meta.dir, "..")
@@ -649,10 +649,7 @@ describe("CLI", () => {
     await fs.mkdir(path.join(tempHome, ".factory"), { recursive: true })
     await fs.mkdir(path.join(tempHome, ".copilot"), { recursive: true })
     await fs.mkdir(path.join(tempHome, ".gemini"), { recursive: true })
-    await fs.mkdir(path.join(tempHome, ".codeium", "windsurf"), { recursive: true })
     await fs.mkdir(path.join(tempHome, ".kiro"), { recursive: true })
-    await fs.mkdir(path.join(tempHome, ".qwen"), { recursive: true })
-    await fs.mkdir(path.join(tempHome, ".openclaw"), { recursive: true })
     await fs.mkdir(path.join(tempCwd, ".cursor"), { recursive: true })
 
     const proc = Bun.spawn([
@@ -684,13 +681,10 @@ describe("CLI", () => {
     expect(stdout).toContain("Synced to opencode")
     expect(stdout).toContain("Synced to pi")
     expect(stdout).toContain("Synced to droid")
-    expect(stdout).toContain("Synced to windsurf")
     expect(stdout).toContain("Synced to kiro")
-    expect(stdout).toContain("Synced to qwen")
-    expect(stdout).toContain("Synced to openclaw")
     expect(stdout).toContain("Synced to copilot")
     expect(stdout).toContain("Synced to gemini")
-    expect(stdout).not.toContain("cursor")
+    expect(stdout).toContain("Synced to cursor")
 
     expect(await exists(path.join(tempHome, ".config", "opencode", "commands", "workflows", "plan.md"))).toBe(true)
     expect(await exists(path.join(tempHome, ".codex", "config.toml"))).toBe(true)
@@ -698,16 +692,11 @@ describe("CLI", () => {
     expect(await exists(path.join(tempHome, ".codex", "skills", "workflows-plan", "SKILL.md"))).toBe(true)
     expect(await exists(path.join(tempHome, ".pi", "agent", "prompts", "workflows-plan.md"))).toBe(true)
     expect(await exists(path.join(tempHome, ".factory", "commands", "plan.md"))).toBe(true)
-    expect(await exists(path.join(tempHome, ".codeium", "windsurf", "mcp_config.json"))).toBe(true)
-    expect(await exists(path.join(tempHome, ".codeium", "windsurf", "global_workflows", "workflows-plan.md"))).toBe(true)
     expect(await exists(path.join(tempHome, ".kiro", "settings", "mcp.json"))).toBe(true)
     expect(await exists(path.join(tempHome, ".kiro", "skills", "workflows-plan", "SKILL.md"))).toBe(true)
-    expect(await exists(path.join(tempHome, ".qwen", "settings.json"))).toBe(true)
-    expect(await exists(path.join(tempHome, ".qwen", "commands", "workflows", "plan.md"))).toBe(true)
     expect(await exists(path.join(tempHome, ".copilot", "mcp-config.json"))).toBe(true)
     expect(await exists(path.join(tempHome, ".copilot", "skills", "workflows-plan", "SKILL.md"))).toBe(true)
     expect(await exists(path.join(tempHome, ".gemini", "settings.json"))).toBe(true)
     expect(await exists(path.join(tempHome, ".gemini", "commands", "workflows", "plan.toml"))).toBe(true)
-    expect(await exists(path.join(tempHome, ".openclaw", "skills", "skill-one"))).toBe(true)
   })
 })

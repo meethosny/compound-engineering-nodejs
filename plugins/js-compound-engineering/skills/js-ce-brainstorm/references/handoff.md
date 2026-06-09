@@ -1,44 +1,81 @@
 # Handoff
 
-This content is loaded when Phase 4 begins — after the requirements document is written and reviewed.
+This content is loaded when Phase 4 begins — after the requirements document is written.
 
 ---
 
 #### 4.1 Present Next-Step Options
 
-Present next steps using the platform's blocking question tool when available (see Interaction Rules in the main skill). Otherwise present numbered options in chat and end the turn.
+The Phase 4 menu's visible option count varies by state: no requirements doc hides the review and Proof options, `OUTPUT_FORMAT=html` also hides the review option (js-ce-document-review is markdown-only today), unresolved `Resolve Before Planning` hides `Plan implementation` and `Build it now`, a failing direct-to-work gate hides `Build it now`. Count the visible options for the current state and choose the rendering mode accordingly:
+
+- **4 or fewer visible:** use the platform's blocking question tool (`AskUserQuestion` in Claude Code — call `ToolSearch` with `select:AskUserQuestion` first if its schema isn't loaded; `request_user_input` in Codex; `ask_user` in Gemini). This is the default.
+- **5 or more visible:** render as a numbered list in chat. This is the narrow option-overflow fallback; trimming would hide legitimate choices (plan, review, Proof, build, refine, pause are all distinct destinations). Include a hint that free-form input is accepted ("Pick a number or describe what you want.") so the numbered list retains the blocking tool's open-endedness.
+
+Never silently skip the question.
 
 If `Resolve Before Planning` contains any items:
 - Ask the blocking questions now, one at a time, by default
 - If the user explicitly wants to proceed anyway, first convert each remaining item into an explicit decision, assumption, or `Deferred to Planning` question
 - If the user chooses to pause instead, present the handoff as paused or blocked rather than complete
-- Do not offer `Proceed to planning` or `Proceed directly to work` while `Resolve Before Planning` remains non-empty
+- Do not offer the `Plan implementation` or `Build it now` options while `Resolve Before Planning` remains non-empty
 
-**Question when no blocking questions remain:** "Brainstorm complete. What would you like to do next?"
+In both preambles below, the "Pick a number or describe what you want." hint applies only in numbered-list mode. When using the blocking tool, omit that line and pass the remaining stem as the question.
 
-**Question when blocking questions remain and user wants to pause:** "Brainstorm paused. Planning is blocked until the remaining questions are resolved. What would you like to do next?"
+**Path format:** Use absolute paths for chat-output file references — relative paths are not auto-linked as clickable in most terminals.
 
-Present only the options that apply:
-- **Proceed to planning (Recommended)** - Run `/js-ce:plan` for structured implementation planning
-- **Proceed directly to work** - Only offer this when scope is lightweight, success criteria are clear, scope boundaries are clear, and no meaningful technical or research questions remain
-- **Run additional document review** - Offer this only when a requirements document exists. Runs another pass for further refinement
-- **Ask more questions** - Continue clarifying scope, preferences, or edge cases
-- **Share to Proof** - Offer this only when a requirements document exists
-- **Done for now** - Return later
+**Preamble when no blocking questions remain:**
 
-If the direct-to-work gate is not satisfied, omit that option entirely.
+```
+Brainstorm complete.
+
+Requirements doc: <absolute path to requirements doc>  # omit line if no doc was created
+
+What would you like to do next? (Pick a number or describe what you want.)
+```
+
+**Preamble when blocking questions remain and user wants to pause:**
+
+```
+Brainstorm paused. Planning is blocked until the remaining questions are resolved.
+
+Requirements doc: <absolute path to requirements doc>  # omit line if no doc was created
+
+What would you like to do next? (Pick a number or describe what you want.)
+```
+
+Present only the options that apply. Renumber so visible options stay contiguous starting at 1.
+
+1. **Plan implementation with `/js-ce:plan` (Recommended)** - Move to `/js-ce:plan` for structured implementation planning. Shown only when `Resolve Before Planning` is empty.
+2. **Agent review of requirements doc with `js-ce-document-review`** - Dispatch reviewer agents to check the doc for coherence, feasibility, scope, and other persona-specific issues; auto-apply safe fixes; route remaining findings interactively. Shown only when a requirements document exists **and `OUTPUT_FORMAT=md`** — js-ce-document-review's walkthrough applies markdown-only mutations (`##`/`###` heading inserts, single-file markdown edits via apply-set) and would corrupt an HTML artifact, so HTML brainstorms skip this option until js-ce-document-review gains HTML-aware mutation support. Under HTML mode, surface a one-line note above the menu: `Agent review unavailable in output:html mode — js-ce-document-review is markdown-only today. Switch to output:md if you want a review pass.`
+3. **Share to Proof** - Upload the doc to Every's Proof editor and get a shareable web link for collaborative review. Shown only when a requirements document exists. **Render only when `OUTPUT_FORMAT=md`** (Proof operates on markdown and cannot ingest HTML).
+3. **Open in browser** — open the HTML requirements file locally for review and sharing. Shown only when a requirements document exists. **Render only when `OUTPUT_FORMAT=html`.** Replaces "Share to Proof" at the same slot under exclusive output mode — the doc is either markdown OR HTML, never both, so exactly one of the two labels applies per run.
+4. **Build it now with `/js-ce:work` (skip planning)** - Skip planning and move to `/js-ce:work`; suited to lightweight, well-defined changes. Shown only when `Resolve Before Planning` is empty **and** scope is lightweight, success criteria are clear, scope boundaries are clear, and no meaningful technical or research questions remain (the "direct-to-work gate").
+5. **More clarifying questions to sharpen the doc** - Keep refining scope, edge cases, constraints, and preferences through further dialogue. Always shown.
+6. **Done for now** - Pause; the requirements doc is saved and can be resumed later. Always shown.
+
+**Post-review nudge (subsequent rounds only):** If the user has already run `js-ce-document-review` this session and residual P0/P1 findings remain unaddressed, add a one-line prose nudge adjacent to the menu (e.g., "Document review flagged 2 P1 findings you may want to address — pick \"Agent review of requirements doc\" to run another pass."). Reference the option by label, not number: the menu renumbers when `Resolve Before Planning` hides `Plan implementation` and `Build it now`, so a hardcoded option number can point users at the wrong action. Do not add a separate menu option; reuse the existing agent-review option. Suppress this nudge when `OUTPUT_FORMAT=html` — the agent-review option is hidden in that mode, so the nudge would point users at a missing action.
 
 #### 4.2 Handle the Selected Option
 
-**If user selects "Proceed to planning (Recommended)":**
+Selections may be the literal option label (when the user types the label or a close paraphrase) or the option number. Match numbers against the currently-rendered (post-trim) list. Free-form input that doesn't match an option or describe an alternative action should be treated as clarification — ask a follow-up rather than guessing.
 
-Immediately run `/js-ce:plan` in the current session. Pass the requirements document path when one exists; otherwise pass a concise summary of the finalized brainstorm decisions. Do not print the closing summary first.
+**If user selects "Plan implementation with `/js-ce:plan` (Recommended)":**
 
-**If user selects "Proceed directly to work":**
+Immediately load the `js-ce:plan` skill in the current session. Pass the requirements document path when one exists; otherwise pass a concise summary of the finalized brainstorm decisions. Do not print the closing summary first.
 
-Immediately run `/js-ce:work` in the current session using the finalized brainstorm output as context. If a compact requirements document exists, pass its path. Do not print the closing summary first.
+**If user selects "Agent review of requirements doc with `js-ce-document-review`":**
+
+Load the `js-ce-document-review` skill, passing the requirements document path as the argument. When js-ce-document-review returns "Review complete", return to the Phase 4 options and re-render the menu (the doc may have changed, so re-evaluate `Resolve Before Planning`, direct-to-work gate, and residual findings). If residual P0/P1 findings remain unaddressed, include the post-review nudge above the menu. Do not show the closing summary yet.
+
+**If user selects "Build it now with `/js-ce:work` (skip planning)":**
+
+Immediately load the `js-ce:work` skill in the current session using the finalized brainstorm output as context. If a compact requirements document exists, pass its path. Do not print the closing summary first.
+
+**If user selects "More clarifying questions to sharpen the doc":** Return to Phase 1.3 (Collaborative Dialogue) and continue asking the user clarifying questions one at a time to further refine scope, edge cases, constraints, and preferences. Continue until the user is satisfied, then return to Phase 4. Do not show the closing summary yet.
 
 **If user selects "Share to Proof":**
+
+Upload the requirements doc to Proof and surface the shareable link:
 
 ```bash
 CONTENT=$(cat docs/brainstorms/YYYY-MM-DD-<topic>-requirements.md)
@@ -49,28 +86,24 @@ RESPONSE=$(curl -s -X POST https://www.proofeditor.ai/share/markdown \
 PROOF_URL=$(echo "$RESPONSE" | jq -r '.tokenUrl')
 ```
 
-Display the URL prominently: `View & collaborate in Proof: <PROOF_URL>`
+Display the URL prominently: `View & collaborate in Proof: <PROOF_URL>`. If the curl fails (network error, Proof API down), tell the user the upload didn't succeed and briefly explain why rather than leaving them wondering why the option did nothing. Then return to the Phase 4 options so the user can pick a follow-up action.
 
-If the curl fails, skip silently. Then return to the Phase 4 options.
+**If user selects "Open in browser":** Display the absolute path to the `.html` requirements file so the user can open it locally. Where the platform exposes a browser-opening primitive (e.g., `open` on macOS, `xdg-open` on Linux, `start` on Windows), the agent may invoke it directly; otherwise print the absolute path and let the user open it. After the path is displayed (or the browser is opened), return to the Phase 4 options so the user can pick a follow-up action.
 
-**If user selects "Ask more questions":** Return to Phase 1.3 (Collaborative Dialogue) and continue asking the user questions one at a time to further refine the design. Probe deeper into edge cases, constraints, preferences, or areas not yet explored. Continue until the user is satisfied, then return to Phase 4. Do not show the closing summary yet.
-
-**If user selects "Run additional document review":**
-
-Load the `document-review` skill and apply it to the requirements document for another pass.
-
-When document-review returns "Review complete", return to the normal Phase 4 options and present only the options that still apply. Do not show the closing summary yet.
+**If user selects "Done for now":** Display the closing summary (see 4.3) and end the turn.
 
 #### 4.3 Closing Summary
 
 Use the closing summary only when this run of the workflow is ending or handing off, not when returning to the Phase 4 options.
+
+In both templates below, substitute `<absolute path to requirements doc>` with the actual file path written this run — `.md` for `OUTPUT_FORMAT=md`, `.html` for `OUTPUT_FORMAT=html`. Do not emit a hardcoded `.md` path when the artifact is HTML, or the closing summary will point users at a file that was never written.
 
 When complete and ready for planning, display:
 
 ```text
 Brainstorm complete!
 
-Requirements doc: docs/brainstorms/YYYY-MM-DD-<topic>-requirements.md  # if one was created
+Requirements doc: <absolute path to requirements doc>  # omit line if no doc was created
 
 Key decisions:
 - [Decision 1]
@@ -84,7 +117,7 @@ If the user pauses with `Resolve Before Planning` still populated, display:
 ```text
 Brainstorm paused.
 
-Requirements doc: docs/brainstorms/YYYY-MM-DD-<topic>-requirements.md  # if one was created
+Requirements doc: <absolute path to requirements doc>  # omit line if no doc was created
 
 Planning is blocked by:
 - [Blocking question 1]

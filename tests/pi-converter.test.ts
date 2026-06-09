@@ -149,6 +149,46 @@ describe("convertClaudeToPi", () => {
     expect(parsedPrompt.body).not.toContain("()")
   })
 
+  test("maps current Task* task-tracking primitives to file-based todos", () => {
+    const plugin: ClaudePlugin = {
+      root: "/tmp/plugin",
+      manifest: { name: "fixture", version: "1.0.0" },
+      agents: [],
+      commands: [
+        {
+          name: "work",
+          description: "Work with task tracking",
+          body: [
+            "Use TaskCreate to start, TaskUpdate to progress, and TaskList to review.",
+            "Inspect with TaskGet, TaskOutput, and stop via TaskStop.",
+            "Legacy: TodoWrite and TodoRead.",
+          ].join("\n"),
+          sourcePath: "/tmp/plugin/commands/work.md",
+        },
+      ],
+      skills: [],
+      hooks: undefined,
+      mcpServers: undefined,
+    }
+
+    const bundle = convertClaudeToPi(plugin, {
+      agentMode: "subagent",
+      inferTemperature: false,
+      permissions: "none",
+    })
+
+    const parsedPrompt = parseFrontmatter(bundle.prompts[0].content)
+    expect(parsedPrompt.body).toContain("file-based todos (todos/ + /skill:todo-create)")
+    expect(parsedPrompt.body).not.toContain("TaskCreate")
+    expect(parsedPrompt.body).not.toContain("TaskUpdate")
+    expect(parsedPrompt.body).not.toContain("TaskList")
+    expect(parsedPrompt.body).not.toContain("TaskGet")
+    expect(parsedPrompt.body).not.toContain("TaskOutput")
+    expect(parsedPrompt.body).not.toContain("TaskStop")
+    expect(parsedPrompt.body).not.toContain("TodoWrite")
+    expect(parsedPrompt.body).not.toContain("TodoRead")
+  })
+
   test("appends MCPorter compatibility note when command references MCP", () => {
     const plugin: ClaudePlugin = {
       root: "/tmp/plugin",

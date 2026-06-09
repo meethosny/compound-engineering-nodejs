@@ -91,48 +91,48 @@ Strengthening [section names] — [brief reason for each, e.g., "decision ration
 
 For each selected section, choose the smallest useful agent set. Do **not** run every agent. Use at most **1-3 agents per section** and usually no more than **8 agents total**.
 
-Use fully-qualified agent names inside Task calls.
+Use the bare `js-ce-<agent-name>` form inside Task/Agent calls — the `js-ce-` prefix is sufficient for uniqueness across plugins.
 
 **Deterministic Section-to-Agent Mapping:**
 
 **Requirements Trace / Open Questions classification**
-- `js-compound-engineering:workflow:spec-flow-analyzer` for missing user flows, edge cases, and handoff gaps
-- `js-compound-engineering:research:repo-research-analyst` (Scope: `architecture, patterns`) for repo-grounded patterns, conventions, and implementation reality checks
+- `js-ce-spec-flow-analyzer` for missing user flows, edge cases, and handoff gaps
+- `js-ce-repo-research-analyst` (Scope: `architecture, patterns`) for repo-grounded patterns, conventions, and implementation reality checks
 
 **Context & Research / Sources & References gaps**
-- `js-compound-engineering:research:learnings-researcher` for institutional knowledge and past solved problems
-- `js-compound-engineering:research:framework-docs-researcher` for official framework or library behavior
-- `js-compound-engineering:research:best-practices-researcher` for current external patterns and industry guidance
-- Add `js-compound-engineering:research:git-history-analyzer` only when historical rationale or prior art is materially missing
+- `js-ce-learnings-researcher` for institutional knowledge and past solved problems
+- `js-ce-framework-docs-researcher` for official framework or library behavior
+- `js-ce-best-practices-researcher` for current external patterns and industry guidance
+- Add `js-ce-git-history-analyzer` only when historical rationale or prior art is materially missing
 
 **Key Technical Decisions**
-- `js-compound-engineering:review:architecture-strategist` for design integrity, boundaries, and architectural tradeoffs
-- Add `js-compound-engineering:research:framework-docs-researcher` or `js-compound-engineering:research:best-practices-researcher` when the decision needs external grounding beyond repo evidence
+- `js-ce-architecture-strategist` for design integrity, boundaries, and architectural tradeoffs
+- Add `js-ce-framework-docs-researcher` or `js-ce-best-practices-researcher` when the decision needs external grounding beyond repo evidence
 
 **High-Level Technical Design**
-- `js-compound-engineering:review:architecture-strategist` for validating that the technical design accurately represents the intended approach and identifying gaps
-- `js-compound-engineering:research:repo-research-analyst` (Scope: `architecture, patterns`) for grounding the technical design in existing repo patterns and conventions
-- Add `js-compound-engineering:research:best-practices-researcher` when the technical design involves a DSL, API surface, or pattern that benefits from external validation
+- `js-ce-architecture-strategist` for validating that the technical design accurately represents the intended approach and identifying gaps
+- `js-ce-repo-research-analyst` (Scope: `architecture, patterns`) for grounding the technical design in existing repo patterns and conventions
+- Add `js-ce-best-practices-researcher` when the technical design involves a DSL, API surface, or pattern that benefits from external validation
 
 **Implementation Units / Verification**
-- `js-compound-engineering:research:repo-research-analyst` (Scope: `patterns`) for concrete file targets, patterns to follow, and repo-specific sequencing clues
-- `js-compound-engineering:review:pattern-recognition-specialist` for consistency, duplication risks, and alignment with existing patterns
-- Add `js-compound-engineering:workflow:spec-flow-analyzer` when sequencing depends on user flow or handoff completeness
+- `js-ce-repo-research-analyst` (Scope: `patterns`) for concrete file targets, patterns to follow, and repo-specific sequencing clues
+- `js-ce-pattern-recognition-specialist` for consistency, duplication risks, and alignment with existing patterns
+- Add `js-ce-spec-flow-analyzer` when sequencing depends on user flow or handoff completeness
 
 **System-Wide Impact**
-- `js-compound-engineering:review:architecture-strategist` for cross-boundary effects, interface surfaces, and architectural knock-on impact
+- `js-ce-architecture-strategist` for cross-boundary effects, interface surfaces, and architectural knock-on impact
 - Add the specific specialist that matches the risk:
-  - `js-compound-engineering:review:performance-oracle` for scalability, latency, throughput, and resource-risk analysis
-  - `js-compound-engineering:review:security-sentinel` for auth, validation, exploit surfaces, and security boundary review
-  - `js-compound-engineering:review:data-integrity-guardian` for migrations, persistent state safety, consistency, and data lifecycle risks
+  - `js-ce-performance-oracle` for scalability, latency, throughput, and resource-risk analysis
+  - `js-ce-security-sentinel` for auth, validation, exploit surfaces, and security boundary review
+  - `js-ce-data-integrity-guardian` for migrations, persistent state safety, consistency, and data lifecycle risks
 
 **Risks & Dependencies / Operational Notes**
 - Use the specialist that matches the actual risk:
-  - `js-compound-engineering:review:security-sentinel` for security, auth, privacy, and exploit risk
-  - `js-compound-engineering:review:data-integrity-guardian` for persistent data safety, constraints, and transaction boundaries
-  - `js-compound-engineering:review:data-migration-expert` for migration realism, backfills, and production data transformation risk
-  - `js-compound-engineering:review:deployment-verification-agent` for rollout checklists, rollback planning, and launch verification
-  - `js-compound-engineering:review:performance-oracle` for capacity, latency, and scaling concerns
+  - `js-ce-security-sentinel` for security, auth, privacy, and exploit risk
+  - `js-ce-data-integrity-guardian` for persistent data safety, constraints, and transaction boundaries
+  - `js-ce-data-migration-expert` for migration realism, backfills, and production data transformation risk
+  - `js-ce-deployment-verification-agent` for rollout checklists, rollback planning, and launch verification
+  - `js-ce-performance-oracle` for capacity, latency, and scaling concerns
 
 **Agent Prompt Shape:**
 
@@ -164,7 +164,7 @@ Signals that justify artifact-backed mode:
 
 If artifact-backed mode is not clearly warranted, stay in direct mode.
 
-Artifact-backed mode uses a per-run scratch directory under `.context/compound-engineering/js-ce-plan/deepen/`.
+Artifact-backed mode uses a per-run scratch directory under `.context/js-compound-engineering/js-ce-plan/deepen/`.
 
 ## 5.3.6 Run Targeted Research
 
@@ -204,9 +204,9 @@ When presenting findings from multiple agents targeting the same section, presen
 
 After all agents have been reviewed, carry only the accepted findings forward to 5.3.7.
 
-If the user accepted no findings, report "No findings accepted — plan unchanged." If artifact-backed mode was used, clean up the scratch directory before continuing. Then proceed directly to Phase 5.4 (skip document-review and synthesis — the plan was not modified). This interactive-mode-only skip does not apply in auto mode; auto mode always proceeds through 5.3.7 and 5.3.8.
+If the user accepted no findings, report "No findings accepted — plan unchanged." If artifact-backed mode was used, clean up the scratch directory before continuing. Then proceed directly to Phase 5.4 (skip js-ce-document-review and synthesis — the plan was not modified). This interactive-mode-only skip does not apply in auto mode; auto mode always proceeds through 5.3.7 and 5.3.8.
 
-If findings were accepted and the plan was modified, proceed through 5.3.7 and 5.3.8 as normal — document-review acts as a quality gate on the changes.
+If findings were accepted and the plan was modified, proceed through 5.3.7 and 5.3.8 as normal — js-ce-document-review acts as a quality gate on the changes.
 
 ## 5.3.7 Synthesize and Update the Plan
 

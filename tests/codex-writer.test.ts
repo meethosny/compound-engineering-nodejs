@@ -2,7 +2,7 @@ import { describe, expect, test } from "bun:test"
 import { promises as fs } from "fs"
 import path from "path"
 import os from "os"
-import { mergeCodexConfig, renderCodexConfig, writeCodexBundle } from "../src/targets/codex"
+import { mergeCodexConfig, mergeCodexHooks, renderCodexConfig, userOwnedMcpServerNames, writeCodexBundle } from "../src/targets/codex"
 import type { CodexBundle } from "../src/types/codex"
 
 async function exists(filePath: string): Promise<boolean> {
@@ -136,6 +136,70 @@ describe("writeCodexBundle", () => {
     expect(config.match(/# BEGIN Compound Engineering plugin MCP/g)?.length).toBe(1)
     expect(config.match(/# END Compound Engineering plugin MCP/g)?.length).toBe(1)
     expect(config).toContain("[user]")
+  })
+
+  test("does not duplicate an mcp_server the user already declares", async () => {
+    const tempRoot = await fs.mkdtemp(path.join(os.tmpdir(), "codex-mcp-dedup-"))
+    const codexRoot = path.join(tempRoot, ".codex")
+    const configPath = path.join(codexRoot, "config.toml")
+
+    await fs.mkdir(codexRoot, { recursive: true })
+    // User already declares context7 outside any managed block.
+    await fs.writeFile(configPath, [
+      'model = "gpt-5.5"',
+      "",
+      "[mcp_servers.context7]",
+      'url = "https://mcp.context7.com/mcp"',
+      "",
+      "[mcp_servers.clickup]",
+      'url = "https://mcp.clickup.com/mcp"',
+      "",
+    ].join("\n"))
+
+    const bundle: CodexBundle = {
+      prompts: [],
+      skillDirs: [],
+      generatedSkills: [],
+      // Plugin ships context7 (collides with the user's) + a fresh server.
+      mcpServers: {
+        context7: { url: "https://mcp.context7.com/mcp" },
+        "ce-fresh": { command: "echo" },
+      },
+    }
+
+    await writeCodexBundle(codexRoot, bundle)
+
+    const config = await fs.readFile(configPath, "utf8")
+    // context7 must appear exactly once (the user's) — never a duplicate table.
+    expect(config.match(/^\[mcp_servers\.context7\]/gm)?.length).toBe(1)
+    // The user's other server is preserved.
+    expect(config).toContain("[mcp_servers.clickup]")
+    // A non-colliding plugin server is still added.
+    expect(config).toContain("[mcp_servers.ce-fresh]")
+  })
+
+  test("userOwnedMcpServerNames excludes managed blocks and env sub-tables", () => {
+    const content = [
+      "[mcp_servers.context7]",
+      'url = "x"',
+      "",
+      "[mcp_servers.node_repl]",
+      'command = "n"',
+      "",
+      "[mcp_servers.node_repl.env]",
+      'K = "v"',
+      "",
+      "# BEGIN Compound Engineering plugin MCP -- do not edit this block",
+      "[mcp_servers.managed_only]",
+      'url = "y"',
+      "# END Compound Engineering plugin MCP",
+    ].join("\n")
+
+    const names = userOwnedMcpServerNames(content)
+    expect(names.has("context7")).toBe(true)
+    expect(names.has("node_repl")).toBe(true)
+    expect(names.has("managed_only")).toBe(false)
+    expect(names.size).toBe(2)
   })
 
   test("migrates old managed block markers to new ones", async () => {
@@ -386,6 +450,91 @@ Workflow handoff:
     expect(installedSkill).not.toContain("/prompts:settings")
     expect(installedSkill).not.toContain("https://prompts:www.proofeditor.ai")
   })
+  test("copies generated skill sidecar directories (#563)", async () => {
+    const tempRoot = await fs.mkdtemp(path.join(os.tmpdir(), "codex-sidecar-write-"))
+    const sourceScriptsDir = path.join(tempRoot, "source-scripts")
+    await fs.mkdir(sourceScriptsDir, { recursive: true })
+    await fs.writeFile(path.join(sourceScriptsDir, "run.sh"), "echo run\n")
+
+    const bundle: CodexBundle = {
+      prompts: [],
+      skillDirs: [],
+      generatedSkills: [
+        {
+          name: "tool-runner",
+          content: "Skill body",
+          sidecarDirs: [{ sourceDir: sourceScriptsDir, targetName: "scripts" }],
+        },
+      ],
+    }
+
+    await writeCodexBundle(tempRoot, bundle)
+
+    expect(await exists(path.join(tempRoot, ".codex", "skills", "tool-runner", "SKILL.md"))).toBe(true)
+    expect(await exists(path.join(tempRoot, ".codex", "skills", "tool-runner", "scripts", "run.sh"))).toBe(true)
+  })
+
+  test("writes plugin hooks to .codex/hooks.json (#742)", async () => {
+    const tempRoot = await fs.mkdtemp(path.join(os.tmpdir(), "codex-hooks-"))
+
+    const bundle: CodexBundle = {
+      prompts: [],
+      skillDirs: [],
+      generatedSkills: [],
+      pluginName: "js-compound-engineering",
+      hooks: {
+        hooks: {
+          PreToolUse: [
+            { matcher: "Bash", hooks: [{ type: "command", command: "echo hi" }] },
+          ],
+        },
+      },
+    }
+
+    await writeCodexBundle(tempRoot, bundle)
+
+    const hooksPath = path.join(tempRoot, ".codex", "hooks.json")
+    expect(await exists(hooksPath)).toBe(true)
+    const parsed = JSON.parse(await fs.readFile(hooksPath, "utf8"))
+    expect(parsed.hooks.PreToolUse).toHaveLength(1)
+    expect(parsed.hooks.PreToolUse[0].hooks[0].command).toBe("echo hi")
+    // Managed index tracks ownership without polluting hook entry objects
+    expect(parsed._managed["js-compound-engineering"].PreToolUse).toEqual([0])
+    expect(parsed.hooks.PreToolUse[0]._source).toBeUndefined()
+  })
+
+  test("does not write hooks.json when no pluginName and no hooks", async () => {
+    const tempRoot = await fs.mkdtemp(path.join(os.tmpdir(), "codex-no-hooks-"))
+    const bundle: CodexBundle = { prompts: [], skillDirs: [], generatedSkills: [] }
+    await writeCodexBundle(tempRoot, bundle)
+    expect(await exists(path.join(tempRoot, ".codex", "hooks.json"))).toBe(false)
+  })
+
+  test("preserves user settings after unmarked legacy marker on no-MCP install (#564)", async () => {
+    const tempRoot = await fs.mkdtemp(path.join(os.tmpdir(), "codex-no-mcp-legacy-"))
+    const codexRoot = path.join(tempRoot, ".codex")
+    const configPath = path.join(codexRoot, "config.toml")
+
+    await fs.mkdir(codexRoot, { recursive: true })
+    await fs.writeFile(configPath, [
+      "[user]",
+      'model = "gpt-4.1"',
+      "",
+      "# Generated by compound-plugin",
+      "",
+      "[user-after]",
+      'key = "kept"',
+    ].join("\n"))
+
+    await writeCodexBundle(codexRoot, { prompts: [], skillDirs: [], generatedSkills: [] })
+
+    const config = await fs.readFile(configPath, "utf8")
+    // No-MCP path must not strip user content sitting after the unmarked legacy
+    // marker — there is no safe boundary for deleting only plugin-owned TOML.
+    expect(config).toContain("[user]")
+    expect(config).toContain("[user-after]")
+    expect(config).toContain('key = "kept"')
+  })
 })
 
 describe("renderCodexConfig", () => {
@@ -524,5 +673,75 @@ describe("mergeCodexConfig", () => {
 
     const result = mergeCodexConfig(existing, null)
     expect(result).toBe("")
+  })
+
+  test("preserves content after unmarked legacy marker on no-MCP (#564)", () => {
+    const existing = [
+      "[user]",
+      'model = "gpt-4.1"',
+      "",
+      "# Generated by compound-plugin",
+      "",
+      "[user-after]",
+      'key = "kept"',
+    ].join("\n")
+
+    const result = mergeCodexConfig(existing, null)!
+    // No-MCP path must NOT strip the unmarked legacy marker / following user TOML
+    expect(result).toContain("[user]")
+    expect(result).toContain("# Generated by compound-plugin")
+    expect(result).toContain("[user-after]")
+    expect(result).toContain('key = "kept"')
+  })
+
+  test("returns existing content unchanged on no-MCP when no managed block present", () => {
+    const existing = "[user]\nmodel = \"gpt-4.1\"\n"
+    expect(mergeCodexConfig(existing, null)).toBe(existing)
+  })
+})
+
+describe("mergeCodexHooks", () => {
+  test("adds plugin hooks under a managed index", () => {
+    const result = mergeCodexHooks(
+      null,
+      { PreToolUse: [{ matcher: "Bash", hooks: [{ type: "command", command: "echo" }] }] },
+      "js-compound-engineering",
+    )
+    expect((result.hooks as Record<string, unknown[]>).PreToolUse).toHaveLength(1)
+    expect((result._managed as Record<string, Record<string, number[]>>)["js-compound-engineering"].PreToolUse).toEqual([0])
+  })
+
+  test("preserves foreign hooks and replaces only this plugin's entries", () => {
+    const existing = {
+      hooks: {
+        PreToolUse: [
+          { matcher: "Other", hooks: [{ type: "command", command: "foreign" }] },
+          { matcher: "Bash", hooks: [{ type: "command", command: "old-mine" }] },
+        ],
+      },
+      _managed: { "js-compound-engineering": { PreToolUse: [1] } },
+    }
+
+    const result = mergeCodexHooks(
+      existing,
+      { PreToolUse: [{ matcher: "Bash", hooks: [{ type: "command", command: "new-mine" }] }] },
+      "js-compound-engineering",
+    )
+
+    const entries = (result.hooks as Record<string, Array<{ matcher?: string; hooks: Array<{ command?: string }> }>>).PreToolUse
+    expect(entries).toHaveLength(2)
+    expect(entries[0].hooks[0].command).toBe("foreign")
+    expect(entries[1].hooks[0].command).toBe("new-mine")
+  })
+
+  test("removes this plugin's entries when no hooks supplied", () => {
+    const existing = {
+      hooks: { PreToolUse: [{ matcher: "Bash", hooks: [{ type: "command", command: "mine" }] }] },
+      _managed: { "js-compound-engineering": { PreToolUse: [0] } },
+    }
+
+    const result = mergeCodexHooks(existing, {}, "js-compound-engineering")
+    expect(result.hooks).toEqual({})
+    expect(result._managed).toBeUndefined()
   })
 })
