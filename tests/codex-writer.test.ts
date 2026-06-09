@@ -2,7 +2,7 @@ import { describe, expect, test } from "bun:test"
 import { promises as fs } from "fs"
 import path from "path"
 import os from "os"
-import { mergeCodexConfig, mergeCodexHooks, renderCodexConfig, writeCodexBundle } from "../src/targets/codex"
+import { mergeCodexConfig, mergeCodexHooks, renderCodexConfig, userOwnedMcpServerNames, writeCodexBundle } from "../src/targets/codex"
 import type { CodexBundle } from "../src/types/codex"
 
 async function exists(filePath: string): Promise<boolean> {
@@ -136,6 +136,70 @@ describe("writeCodexBundle", () => {
     expect(config.match(/# BEGIN Compound Engineering plugin MCP/g)?.length).toBe(1)
     expect(config.match(/# END Compound Engineering plugin MCP/g)?.length).toBe(1)
     expect(config).toContain("[user]")
+  })
+
+  test("does not duplicate an mcp_server the user already declares", async () => {
+    const tempRoot = await fs.mkdtemp(path.join(os.tmpdir(), "codex-mcp-dedup-"))
+    const codexRoot = path.join(tempRoot, ".codex")
+    const configPath = path.join(codexRoot, "config.toml")
+
+    await fs.mkdir(codexRoot, { recursive: true })
+    // User already declares context7 outside any managed block.
+    await fs.writeFile(configPath, [
+      'model = "gpt-5.5"',
+      "",
+      "[mcp_servers.context7]",
+      'url = "https://mcp.context7.com/mcp"',
+      "",
+      "[mcp_servers.clickup]",
+      'url = "https://mcp.clickup.com/mcp"',
+      "",
+    ].join("\n"))
+
+    const bundle: CodexBundle = {
+      prompts: [],
+      skillDirs: [],
+      generatedSkills: [],
+      // Plugin ships context7 (collides with the user's) + a fresh server.
+      mcpServers: {
+        context7: { url: "https://mcp.context7.com/mcp" },
+        "ce-fresh": { command: "echo" },
+      },
+    }
+
+    await writeCodexBundle(codexRoot, bundle)
+
+    const config = await fs.readFile(configPath, "utf8")
+    // context7 must appear exactly once (the user's) — never a duplicate table.
+    expect(config.match(/^\[mcp_servers\.context7\]/gm)?.length).toBe(1)
+    // The user's other server is preserved.
+    expect(config).toContain("[mcp_servers.clickup]")
+    // A non-colliding plugin server is still added.
+    expect(config).toContain("[mcp_servers.ce-fresh]")
+  })
+
+  test("userOwnedMcpServerNames excludes managed blocks and env sub-tables", () => {
+    const content = [
+      "[mcp_servers.context7]",
+      'url = "x"',
+      "",
+      "[mcp_servers.node_repl]",
+      'command = "n"',
+      "",
+      "[mcp_servers.node_repl.env]",
+      'K = "v"',
+      "",
+      "# BEGIN Compound Engineering plugin MCP -- do not edit this block",
+      "[mcp_servers.managed_only]",
+      'url = "y"',
+      "# END Compound Engineering plugin MCP",
+    ].join("\n")
+
+    const names = userOwnedMcpServerNames(content)
+    expect(names.has("context7")).toBe(true)
+    expect(names.has("node_repl")).toBe(true)
+    expect(names.has("managed_only")).toBe(false)
+    expect(names.size).toBe(2)
   })
 
   test("migrates old managed block markers to new ones", async () => {

@@ -51,7 +51,14 @@ export async function writeCodexBundle(outputRoot: string, bundle: CodexBundle):
 
   const configPath = path.join(codexRoot, "config.toml")
   const existingConfig = await readFileSafe(configPath)
-  const mcpToml = renderCodexConfig(bundle.mcpServers)
+  // Skip MCP servers the user already declares outside our managed block —
+  // emitting a duplicate [mcp_servers.<name>] table is invalid TOML and makes
+  // Codex reject the entire config (breaking unrelated settings).
+  const ownedMcpNames = userOwnedMcpServerNames(existingConfig)
+  const mcpServersToWrite = bundle.mcpServers
+    ? Object.fromEntries(Object.entries(bundle.mcpServers).filter(([name]) => !ownedMcpNames.has(name)))
+    : bundle.mcpServers
+  const mcpToml = renderCodexConfig(mcpServersToWrite)
   const merged = mergeCodexConfig(existingConfig, mcpToml)
   if (merged !== null) {
     const backupPath = await backupFile(configPath)
@@ -141,6 +148,37 @@ async function readFileSafe(filePath: string): Promise<string> {
     }
     return ""
   }
+}
+
+/**
+ * Top-level `mcp_servers` names a user has declared in their config.toml
+ * OUTSIDE the plugin's managed/legacy blocks. Used to avoid emitting a
+ * second `[mcp_servers.<name>]` table for a server the user already defines —
+ * duplicate TOML tables are invalid and make Codex reject the whole file.
+ *
+ * Mirrors `mergeCodexConfig`'s stripping so the plugin's OWN prior managed
+ * entries are not counted as user-owned (those get replaced, not deduped).
+ */
+export function userOwnedMcpServerNames(existingContent: string): Set<string> {
+  let cleaned = existingContent
+  for (const [start, end] of [[MANAGED_START_MARKER, MANAGED_END_MARKER], [PREV_START_MARKER, PREV_END_MARKER]]) {
+    cleaned = cleaned.replace(
+      new RegExp(`${escapeForRegex(start)}[\\s\\S]*?${escapeForRegex(end)}\\n?`, "g"),
+      "",
+    )
+  }
+  for (const marker of [LEGACY_MARKER, UNMARKED_LEGACY_MARKER]) {
+    const idx = cleaned.indexOf(marker)
+    if (idx !== -1) cleaned = cleaned.slice(0, idx)
+  }
+  const names = new Set<string>()
+  // Match only top-level server tables (e.g. [mcp_servers.context7]); the
+  // `[A-Za-z0-9_-]+` class stops before a dot, so `[mcp_servers.foo.env]`
+  // sub-tables are correctly ignored.
+  for (const match of cleaned.matchAll(/^\[mcp_servers\.([A-Za-z0-9_-]+)\]\s*$/gm)) {
+    names.add(match[1])
+  }
+  return names
 }
 
 export function mergeCodexConfig(existingContent: string, mcpToml: string | null): string | null {
