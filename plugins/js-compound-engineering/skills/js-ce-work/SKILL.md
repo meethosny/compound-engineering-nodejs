@@ -99,7 +99,7 @@ Determine how to proceed based on what was provided in `<input_document>`.
 
    **Option B: Use a worktree (recommended for parallel development)**
    ```bash
-   skill: js-git-worktree
+   skill: js-ce-git-worktree
    # The skill will create a new branch from the default branch in an isolated worktree
    ```
 
@@ -309,7 +309,7 @@ Determine how to proceed based on what was provided in `<input_document>`.
    For UI work with Figma designs:
 
    - Implement components following design specs
-   - Use the `js-figma-design-sync` agent iteratively to compare
+   - Use the `js-ce-figma-design-sync` agent iteratively to compare
    - Fix visual differences identified
    - Repeat until implementation matches design
 

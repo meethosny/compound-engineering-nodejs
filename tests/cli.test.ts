@@ -179,7 +179,7 @@ describe("CLI", () => {
     expect(await exists(path.join(tempRoot, ".config", "opencode", "opencode.json"))).toBe(true)
     // Bundled plugin takes priority over GitHub when no --branch is specified,
     // so agents have the js- prefix from the real plugin
-    expect(await exists(path.join(tempRoot, ".config", "opencode", "agents", "js-repo-research-analyst.md"))).toBe(true)
+    expect(await exists(path.join(tempRoot, ".config", "opencode", "agents", "js-ce-repo-research-analyst.md"))).toBe(true)
   })
 
   test("install uses bundled js-compound-engineering plugin for codex output", async () => {

@@ -42,8 +42,8 @@ describe("js-ce:work review contract", () => {
     // Commit/PR delegation content extracted to references/shipping-workflow.md
     const shipping = await readRepoFile("plugins/js-compound-engineering/skills/js-ce-work/references/shipping-workflow.md")
 
-    expect(shipping).toContain("`js-git-commit-push-pr` skill")
-    expect(shipping).toContain("`js-git-commit` skill")
+    expect(shipping).toContain("`js-ce-git-commit-push-pr` skill")
+    expect(shipping).toContain("`js-ce-git-commit` skill")
 
     // Should not contain inline PR templates or attribution placeholders
     expect(content).not.toContain("gh pr create")
@@ -293,9 +293,9 @@ describe("js-ce:brainstorm review contract", () => {
     expect(content).toContain("`references/brainstorm-sections.md`")
     expect(content).toContain("`references/handoff.md`")
 
-    // Phase 4 menu exposes agent review as a first-class option and routes to js-document-review
-    expect(handoff).toContain("Agent review of requirements doc with `js-document-review`")
-    expect(handoff).toContain("Load the `js-document-review` skill")
+    // Phase 4 menu exposes agent review as a first-class option and routes to js-ce-document-review
+    expect(handoff).toContain("Agent review of requirements doc with `js-ce-document-review`")
+    expect(handoff).toContain("Load the `js-ce-document-review` skill")
 
     // Subsequent-round residual findings are surfaced as a prose nudge, not a separate menu option
     expect(handoff).toContain("Post-review nudge")
@@ -323,7 +323,7 @@ describe("js-ce:plan review contract", () => {
 
     // Phase 5.3.8 runs document-review before final checks (5.3.9)
     expect(content).toContain("## 5.3.8 Document Review")
-    expect(content).toContain("`js-document-review` skill")
+    expect(content).toContain("`js-ce-document-review` skill")
 
     // Document review must come before final checks so auto-applied edits are validated
     const docReviewIdx = content.indexOf("5.3.8 Document Review")
@@ -344,7 +344,7 @@ describe("js-ce:plan review contract", () => {
 
     // Default at Phase 5.3.8 is `mode:headless` so users opt into deeper interactive review
     // explicitly from the post-generation menu rather than being forced through it.
-    expect(content).toContain("js-document-review` with `mode:headless`")
+    expect(content).toContain("js-ce-document-review` with `mode:headless`")
     expect(content).not.toContain("skip document-review and return control")
 
     // The interactive walkthrough is opt-in via the post-generation menu, not automatic
@@ -358,14 +358,14 @@ describe("js-ce:plan review contract", () => {
     expect(content).toContain("**Start `/js-ce:work`** (recommended) - Begin implementing this plan in the current session")
 
     // Deeper review is a first-class menu fixture so users can engage with surfaced findings
-    // without relying on free-form prompting; routed through js-document-review without headless mode.
+    // without relying on free-form prompting; routed through js-ce-document-review without headless mode.
     expect(content).toContain("**Run deeper doc review**")
-    expect(content).toContain("`js-document-review`")
+    expect(content).toContain("`js-ce-document-review`")
     expect(content).toContain("without** `mode:headless`")
 
     // Deeper-review menu fixture is hidden when no actionable findings remain so the menu
     // collapses back to a 4-option AskUserQuestion-friendly shape on Claude Code. FYI-only
-    // state also hides the option since js-document-review's walkthrough is gated to actionable
+    // state also hides the option since js-ce-document-review's walkthrough is gated to actionable
     // findings (anchor 75/100, gated_auto/manual) and FYIs (anchor 50) bypass it.
     expect(content).toContain("Hide `Run deeper doc review` when no actionable findings remain")
     expect(content).toContain("proposed_fixes_count + decisions_count > 0")
@@ -374,7 +374,7 @@ describe("js-ce:plan review contract", () => {
     expect(content).toContain("Summary line above the menu")
 
     // No conditional ordering based on plan depth (review already ran)
-    expect(content).not.toContain("**Options when js-document-review is recommended:**")
+    expect(content).not.toContain("**Options when js-ce-document-review is recommended:**")
     expect(content).not.toContain("**Options for Standard or Lightweight plans:**")
   })
 })

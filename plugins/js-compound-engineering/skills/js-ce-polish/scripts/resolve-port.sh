@@ -40,7 +40,7 @@
 #
 # .env parsing contract: surrounding double or single quotes are stripped.
 # Inline comments (# ...) are truncated after trimming whitespace. This is
-# intentionally more aggressive than the js-test-browser skill's inline cascade,
+# intentionally more aggressive than the js-ce-test-browser skill's inline cascade,
 # which does neither. See dev-server-detection.md for the divergence notes.
 
 set -u

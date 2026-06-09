@@ -11,7 +11,7 @@ content rendered by different skills shares the same HTML principles.
 The HTML artifact is the *only* artifact the skill produces for that run —
 output mode is exclusive (markdown OR HTML, never both). Downstream
 consumers that read HTML today (`js-ce:work`, human readers) do so directly;
-the agent-consumability rules below make that work. `js-document-review` is
+the agent-consumability rules below make that work. `js-ce-document-review` is
 *not* currently an HTML consumer — its mutation mechanics are markdown-only,
 so the js-ce:plan handoff gates the 5.3.8 doc-review pass to `OUTPUT_FORMAT=md`
 runs and skips it for HTML.
@@ -465,7 +465,7 @@ fine when the content suggests them.
 ## Agent-consumability rules
 
 Downstream agents that read HTML today (`js-ce:work`, future consumers) read
-the HTML file as text linearly, not via DOM extraction. `js-document-review` is
+the HTML file as text linearly, not via DOM extraction. `js-ce-document-review` is
 not a current HTML consumer (see opening note). Compose so semantic
 understanding is reachable in source:
 

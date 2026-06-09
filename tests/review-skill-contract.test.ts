@@ -94,7 +94,7 @@ describe("js-ce-review contract", () => {
     expect(content).toContain("Actionable Findings")
     expect(content).toContain("Actionable findings: none.")
 
-    expect(content).not.toContain("js-todo-create")
+    expect(content).not.toContain("js-ce-todo-create")
     expect(content).not.toContain("create durable todo files")
     expect(content).not.toMatch(/harness task primitive|task-tracking primitive/)
 
@@ -419,23 +419,23 @@ describe("js-ce-review contract", () => {
     // JSON-pipeline personas all carry the anchored rubric. swift-ios uses the js-ce- prefix;
     // the Node/Python/CLI stack personas are fork additions that follow the same contract.
     const personas = [
-      "js-correctness-reviewer",
-      "js-testing-reviewer",
-      "js-maintainability-reviewer",
-      "js-project-standards-reviewer",
-      "js-security-reviewer",
-      "js-performance-reviewer",
-      "js-api-contract-reviewer",
-      "js-data-migrations-reviewer",
-      "js-reliability-reviewer",
-      "js-adversarial-reviewer",
-      "js-previous-comments-reviewer",
-      "js-julik-frontend-races-reviewer",
-      "js-modern-nodejs-reviewer",
-      "js-kieran-typescript-reviewer",
-      "js-kieran-python-reviewer",
-      "js-cli-readiness-reviewer",
-      "js-agent-native-reviewer",
+      "js-ce-correctness-reviewer",
+      "js-ce-testing-reviewer",
+      "js-ce-maintainability-reviewer",
+      "js-ce-project-standards-reviewer",
+      "js-ce-security-reviewer",
+      "js-ce-performance-reviewer",
+      "js-ce-api-contract-reviewer",
+      "js-ce-data-migrations-reviewer",
+      "js-ce-reliability-reviewer",
+      "js-ce-adversarial-reviewer",
+      "js-ce-previous-comments-reviewer",
+      "js-ce-julik-frontend-races-reviewer",
+      "js-ce-modern-nodejs-reviewer",
+      "js-ce-kieran-typescript-reviewer",
+      "js-ce-kieran-python-reviewer",
+      "js-ce-cli-readiness-reviewer",
+      "js-ce-agent-native-reviewer",
       "js-ce-swift-ios-reviewer",
     ]
 
@@ -486,10 +486,10 @@ describe("js-ce-review contract", () => {
     // Fork stack personas: file lives at agents/review/js-<name>.md; the JSON `reviewer`
     // field uses the bare persona name (no js- prefix).
     const reviewers = [
-      { path: `${AGENTS}/js-modern-nodejs-reviewer.md`, reviewer: "modern-nodejs" },
-      { path: `${AGENTS}/js-kieran-typescript-reviewer.md`, reviewer: "kieran-typescript" },
-      { path: `${AGENTS}/js-kieran-python-reviewer.md`, reviewer: "kieran-python" },
-      { path: `${AGENTS}/js-julik-frontend-races-reviewer.md`, reviewer: "julik-frontend-races" },
+      { path: `${AGENTS}/js-ce-modern-nodejs-reviewer.md`, reviewer: "modern-nodejs" },
+      { path: `${AGENTS}/js-ce-kieran-typescript-reviewer.md`, reviewer: "kieran-typescript" },
+      { path: `${AGENTS}/js-ce-kieran-python-reviewer.md`, reviewer: "kieran-python" },
+      { path: `${AGENTS}/js-ce-julik-frontend-races-reviewer.md`, reviewer: "julik-frontend-races" },
     ]
 
     for (const reviewer of reviewers) {
@@ -515,22 +515,22 @@ describe("js-ce-review contract", () => {
     // Without Write in tools, that "one permitted write" cannot happen and headless
     // detail enrichment loses its why_it_matters/evidence source (upstream issue #733).
     const personas = [
-      "js-correctness-reviewer",
-      "js-testing-reviewer",
-      "js-maintainability-reviewer",
-      "js-project-standards-reviewer",
-      "js-security-reviewer",
-      "js-performance-reviewer",
-      "js-api-contract-reviewer",
-      "js-data-migrations-reviewer",
-      "js-reliability-reviewer",
-      "js-adversarial-reviewer",
-      "js-previous-comments-reviewer",
-      "js-julik-frontend-races-reviewer",
-      "js-modern-nodejs-reviewer",
-      "js-kieran-typescript-reviewer",
-      "js-kieran-python-reviewer",
-      "js-cli-readiness-reviewer",
+      "js-ce-correctness-reviewer",
+      "js-ce-testing-reviewer",
+      "js-ce-maintainability-reviewer",
+      "js-ce-project-standards-reviewer",
+      "js-ce-security-reviewer",
+      "js-ce-performance-reviewer",
+      "js-ce-api-contract-reviewer",
+      "js-ce-data-migrations-reviewer",
+      "js-ce-reliability-reviewer",
+      "js-ce-adversarial-reviewer",
+      "js-ce-previous-comments-reviewer",
+      "js-ce-julik-frontend-races-reviewer",
+      "js-ce-modern-nodejs-reviewer",
+      "js-ce-kieran-typescript-reviewer",
+      "js-ce-kieran-python-reviewer",
+      "js-ce-cli-readiness-reviewer",
       "js-ce-swift-ios-reviewer",
     ]
 
@@ -544,10 +544,10 @@ describe("js-ce-review contract", () => {
   })
 
   test("data-migration reviewer emits structured findings; expert stays unstructured", async () => {
-    // Fork reality: js-data-migrations-reviewer is the structured JSON persona
-    // (reviewer "data-migrations"); js-data-migration-expert is the unstructured checklist.
-    const structured = await readRepoFile(`${AGENTS}/js-data-migrations-reviewer.md`)
-    const expert = await readRepoFile(`${AGENTS}/js-data-migration-expert.md`)
+    // Fork reality: js-ce-data-migrations-reviewer is the structured JSON persona
+    // (reviewer "data-migrations"); js-ce-data-migration-expert is the unstructured checklist.
+    const structured = await readRepoFile(`${AGENTS}/js-ce-data-migrations-reviewer.md`)
+    const expert = await readRepoFile(`${AGENTS}/js-ce-data-migration-expert.md`)
     const skill = await readRepoFile(SKILL)
 
     expect(structured).toContain('"reviewer": "data-migrations"')
@@ -631,8 +631,8 @@ describe("js-ce-review contract", () => {
     // Accept-and-proceed path threads findings into the PR description.
     expect(workflow).toContain("Known Residuals")
     expect(workflow).toContain("docs/residual-review-findings/<branch-or-head-sha>.md")
-    // Fork uses the js-git-commit no-PR path instead of upstream's ce-commit.
-    expect(workflow).toContain("If the user later chooses the no-PR `js-git-commit` path")
+    // Fork uses the js-ce-git-commit no-PR path instead of upstream's ce-commit.
+    expect(workflow).toContain("If the user later chooses the no-PR `js-ce-git-commit` path")
     expect(workflow).toContain("must not live only in the transient session")
   })
 
@@ -695,7 +695,7 @@ describe("js-ce-review contract", () => {
 
 describe("testing-reviewer contract", () => {
   test("includes behavioral-changes-with-no-test-additions check", async () => {
-    const content = await readRepoFile(`${AGENTS}/js-testing-reviewer.md`)
+    const content = await readRepoFile(`${AGENTS}/js-ce-testing-reviewer.md`)
 
     // New check exists in "What you're hunting for" section
     expect(content).toContain("Behavioral changes with no test additions")

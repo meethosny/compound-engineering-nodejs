@@ -1,6 +1,6 @@
 # Tracker Detection and Defer Execution
 
-This reference covers how residual actionable findings are filed in the project's tracker. Loaded by caller workflows (for example `js-ce-work` Residual Work Gate, or `js-lfg` residual handling) — not by `js-ce-review`, which stops after the report.
+This reference covers how residual actionable findings are filed in the project's tracker. Loaded by caller workflows (for example `js-ce-work` Residual Work Gate, or `js-ce-lfg` residual handling) — not by `js-ce-review`, which stops after the report.
 
 ---
 
@@ -18,7 +18,7 @@ Used by `js-ce-work` Residual Work Gate and similar caller flows when the user c
 
 ### Non-interactive mode
 
-Used by autonomous callers like `js-lfg` that must not prompt. All blocking questions are skipped; the fallback chain is executed silently in order. Behavior:
+Used by autonomous callers like `js-ce-lfg` that must not prompt. All blocking questions are skipped; the fallback chain is executed silently in order. Behavior:
 
 - No confirmation on the first generic-label Defer; proceed directly.
 - On execution failure, automatically fall to the next tier without prompting. Record the failure.

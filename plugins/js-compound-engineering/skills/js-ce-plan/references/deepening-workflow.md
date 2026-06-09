@@ -204,9 +204,9 @@ When presenting findings from multiple agents targeting the same section, presen
 
 After all agents have been reviewed, carry only the accepted findings forward to 5.3.7.
 
-If the user accepted no findings, report "No findings accepted — plan unchanged." If artifact-backed mode was used, clean up the scratch directory before continuing. Then proceed directly to Phase 5.4 (skip js-document-review and synthesis — the plan was not modified). This interactive-mode-only skip does not apply in auto mode; auto mode always proceeds through 5.3.7 and 5.3.8.
+If the user accepted no findings, report "No findings accepted — plan unchanged." If artifact-backed mode was used, clean up the scratch directory before continuing. Then proceed directly to Phase 5.4 (skip js-ce-document-review and synthesis — the plan was not modified). This interactive-mode-only skip does not apply in auto mode; auto mode always proceeds through 5.3.7 and 5.3.8.
 
-If findings were accepted and the plan was modified, proceed through 5.3.7 and 5.3.8 as normal — js-document-review acts as a quality gate on the changes.
+If findings were accepted and the plan was modified, proceed through 5.3.7 and 5.3.8 as normal — js-ce-document-review acts as a quality gate on the changes.
 
 ## 5.3.7 Synthesize and Update the Plan
 

@@ -47,65 +47,65 @@ For `/js-ce-optimize`, see [`skills/js-ce-optimize/README.md`](./skills/js-ce-op
 
 | Skill | Description |
 |-------|-------------|
-| `js-git-clean-gone-branches` | Clean up local branches whose remote tracking branch is gone |
-| `js-git-commit` | Create a git commit with a value-communicating message |
-| `js-git-commit-push-pr` | Commit, push, and open a PR with an adaptive description; also update an existing PR description |
-| `js-git-worktree` | Manage Git worktrees for parallel development |
+| `js-ce-git-clean-gone-branches` | Clean up local branches whose remote tracking branch is gone |
+| `js-ce-git-commit` | Create a git commit with a value-communicating message |
+| `js-ce-git-commit-push-pr` | Commit, push, and open a PR with an adaptive description; also update an existing PR description |
+| `js-ce-git-worktree` | Manage Git worktrees for parallel development |
 
 ### Workflow Utilities
 
 | Skill | Description |
 |-------|-------------|
-| `/js-changelog` | Create engaging changelogs for recent merges |
+| `/js-ce-changelog` | Create engaging changelogs for recent merges |
 | `/js-ce-demo-reel` | Capture a visual demo reel (GIF demos, terminal recordings, screenshots) for PRs with project-type-aware tier selection |
-| `/js-report-bug-ce` | Report a bug in the js-compound-engineering plugin |
-| `/js-resolve-pr-feedback` | Resolve PR review feedback in parallel |
-| `/js-test-browser` | Run browser tests on PR-affected pages |
-| `/js-test-xcode` | Build and test iOS apps on simulator using XcodeBuildMCP |
-| `/js-onboarding` | Generate `ONBOARDING.md` to help new contributors understand the codebase |
+| `/js-ce-report-bug` | Report a bug in the js-compound-engineering plugin |
+| `/js-ce-resolve-pr-feedback` | Resolve PR review feedback in parallel |
+| `/js-ce-test-browser` | Run browser tests on PR-affected pages |
+| `/js-ce-test-xcode` | Build and test iOS apps on simulator using XcodeBuildMCP |
+| `/js-ce-onboarding` | Generate `ONBOARDING.md` to help new contributors understand the codebase |
 | `/js-ce-setup` | Diagnose environment, install missing tools, and bootstrap project config |
 | `/js-ce-update` | Check js-compound-engineering plugin version and fix stale cache (Claude Code only) |
-| `/js-todo-resolve` | Resolve todos in parallel |
-| `/js-todo-triage` | Triage and prioritize pending todos |
+| `/js-ce-todo-resolve` | Resolve todos in parallel |
+| `/js-ce-todo-triage` | Triage and prioritize pending todos |
 
 ### Development Frameworks
 
 | Skill | Description |
 |-------|-------------|
-| `js-agent-native-architecture` | Build AI agents using prompt-native architecture |
-| `js-sindre-sorhus-package-writer` | Write npm packages following Sindre Sorhus's patterns |
-| `js-modern-nodejs-style` | Write Node.js code with modern, pragmatic patterns |
+| `js-ce-agent-native-architecture` | Build AI agents using prompt-native architecture |
+| `js-ce-sindre-sorhus-package-writer` | Write npm packages following Sindre Sorhus's patterns |
+| `js-ce-modern-nodejs-style` | Write Node.js code with modern, pragmatic patterns |
 | `js-dspy-python` | Build type-safe LLM applications with DSPy Python |
-| `js-frontend-design` | Create production-grade frontend interfaces |
+| `js-ce-frontend-design` | Create production-grade frontend interfaces |
 
 ### Review & Quality
 
 | Skill | Description |
 |-------|-------------|
 | `js-claude-permissions-optimizer` | Optimize Claude Code permissions from session history |
-| `js-document-review` | Review documents using parallel persona agents for role-specific feedback |
-| `js-agent-native-audit` | Run comprehensive agent-native architecture review with scored principles |
+| `js-ce-document-review` | Review documents using parallel persona agents for role-specific feedback |
+| `js-ce-agent-native-audit` | Run comprehensive agent-native architecture review with scored principles |
 
 ### Content & Collaboration
 
 | Skill | Description |
 |-------|-------------|
-| `js-every-style-editor` | Review copy for Every's style guide compliance |
-| `js-proof` | Create, edit, and share documents via Proof collaborative editor |
-| `js-todo-create` | File-based todo tracking system |
+| `js-ce-every-style-editor` | Review copy for Every's style guide compliance |
+| `js-ce-proof` | Create, edit, and share documents via Proof collaborative editor |
+| `js-ce-todo-create` | File-based todo tracking system |
 
 ### Automation & Tools
 
 | Skill | Description |
 |-------|-------------|
-| `js-gemini-imagegen` | Generate and edit images using Google's Gemini API |
-| `js-deploy-docs` | Deploy documentation site |
+| `js-ce-gemini-imagegen` | Generate and edit images using Google's Gemini API |
+| `js-ce-deploy-docs` | Deploy documentation site |
 
 ### Beta / Experimental
 
 | Skill | Description |
 |-------|-------------|
-| `/js-lfg` | Full autonomous engineering workflow |
+| `/js-ce-lfg` | Full autonomous engineering workflow |
 | `js-ce-work-beta` | Beta Codex delegation mode for ce:work |
 
 ## Agents
@@ -116,80 +116,80 @@ Agents are specialized subagents invoked by skills -- you typically don't call t
 
 | Agent | Description |
 |-------|-------------|
-| `js-agent-native-reviewer` | Verify features are agent-native (action + context parity) |
-| `js-api-contract-reviewer` | Detect breaking API contract changes |
-| `js-cli-agent-readiness-reviewer` | Evaluate CLI agent-friendliness against 7 core principles |
-| `js-cli-readiness-reviewer` | CLI agent-readiness persona for js-ce:review (conditional, structured JSON) |
-| `js-architecture-strategist` | Analyze architectural decisions and compliance |
-| `js-code-simplicity-reviewer` | Final pass for simplicity and minimalism |
-| `js-correctness-reviewer` | Logic errors, edge cases, state bugs |
-| `js-data-integrity-guardian` | Database migrations and data integrity |
-| `js-data-migration-expert` | Validate ID mappings match production, check for swapped values |
-| `js-data-migrations-reviewer` | Migration safety with confidence calibration |
-| `js-deployment-verification-agent` | Create Go/No-Go deployment checklists for risky data changes |
-| `js-modern-nodejs-reviewer` | Node.js review from TJ Holowaychuk/Matteo Collina perspective |
-| `js-julik-frontend-races-reviewer` | Review JavaScript/Stimulus code for race conditions |
-| `js-kieran-nodejs-reviewer` | Node.js code review with strict conventions |
-| `js-kieran-python-reviewer` | Python code review with strict conventions |
-| `js-kieran-typescript-reviewer` | TypeScript code review with strict conventions |
-| `js-maintainability-reviewer` | Coupling, complexity, naming, dead code |
-| `js-pattern-recognition-specialist` | Analyze code for patterns and anti-patterns |
-| `js-performance-oracle` | Performance analysis and optimization |
-| `js-performance-reviewer` | Runtime performance with confidence calibration |
-| `js-previous-comments-reviewer` | Check whether prior review feedback has been addressed |
-| `js-reliability-reviewer` | Production reliability and failure modes |
-| `js-schema-drift-detector` | Detect unrelated schema changes in PRs |
-| `js-security-reviewer` | Exploitable vulnerabilities with confidence calibration |
-| `js-security-sentinel` | Security audits and vulnerability assessments |
-| `js-testing-reviewer` | Test coverage gaps, weak assertions |
-| `js-project-standards-reviewer` | CLAUDE.md and AGENTS.md compliance |
-| `js-adversarial-reviewer` | Construct failure scenarios to break implementations across component boundaries |
+| `js-ce-agent-native-reviewer` | Verify features are agent-native (action + context parity) |
+| `js-ce-api-contract-reviewer` | Detect breaking API contract changes |
+| `js-ce-cli-agent-readiness-reviewer` | Evaluate CLI agent-friendliness against 7 core principles |
+| `js-ce-cli-readiness-reviewer` | CLI agent-readiness persona for js-ce:review (conditional, structured JSON) |
+| `js-ce-architecture-strategist` | Analyze architectural decisions and compliance |
+| `js-ce-code-simplicity-reviewer` | Final pass for simplicity and minimalism |
+| `js-ce-correctness-reviewer` | Logic errors, edge cases, state bugs |
+| `js-ce-data-integrity-guardian` | Database migrations and data integrity |
+| `js-ce-data-migration-expert` | Validate ID mappings match production, check for swapped values |
+| `js-ce-data-migrations-reviewer` | Migration safety with confidence calibration |
+| `js-ce-deployment-verification-agent` | Create Go/No-Go deployment checklists for risky data changes |
+| `js-ce-modern-nodejs-reviewer` | Node.js review from TJ Holowaychuk/Matteo Collina perspective |
+| `js-ce-julik-frontend-races-reviewer` | Review JavaScript/Stimulus code for race conditions |
+| `js-ce-kieran-nodejs-reviewer` | Node.js code review with strict conventions |
+| `js-ce-kieran-python-reviewer` | Python code review with strict conventions |
+| `js-ce-kieran-typescript-reviewer` | TypeScript code review with strict conventions |
+| `js-ce-maintainability-reviewer` | Coupling, complexity, naming, dead code |
+| `js-ce-pattern-recognition-specialist` | Analyze code for patterns and anti-patterns |
+| `js-ce-performance-oracle` | Performance analysis and optimization |
+| `js-ce-performance-reviewer` | Runtime performance with confidence calibration |
+| `js-ce-previous-comments-reviewer` | Check whether prior review feedback has been addressed |
+| `js-ce-reliability-reviewer` | Production reliability and failure modes |
+| `js-ce-schema-drift-detector` | Detect unrelated schema changes in PRs |
+| `js-ce-security-reviewer` | Exploitable vulnerabilities with confidence calibration |
+| `js-ce-security-sentinel` | Security audits and vulnerability assessments |
+| `js-ce-testing-reviewer` | Test coverage gaps, weak assertions |
+| `js-ce-project-standards-reviewer` | CLAUDE.md and AGENTS.md compliance |
+| `js-ce-adversarial-reviewer` | Construct failure scenarios to break implementations across component boundaries |
 
 ### Document Review
 
 | Agent | Description |
 |-------|-------------|
-| `js-coherence-reviewer` | Review documents for internal consistency, contradictions, and terminology drift |
-| `js-design-lens-reviewer` | Review plans for missing design decisions, interaction states, and AI slop risk |
-| `js-feasibility-reviewer` | Evaluate whether proposed technical approaches will survive contact with reality |
-| `js-product-lens-reviewer` | Challenge problem framing, evaluate scope decisions, surface goal misalignment |
-| `js-scope-guardian-reviewer` | Challenge unjustified complexity, scope creep, and premature abstractions |
-| `js-security-lens-reviewer` | Evaluate plans for security gaps at the plan level (auth, data, APIs) |
-| `js-adversarial-document-reviewer` | Challenge premises, surface unstated assumptions, and stress-test decisions |
+| `js-ce-coherence-reviewer` | Review documents for internal consistency, contradictions, and terminology drift |
+| `js-ce-design-lens-reviewer` | Review plans for missing design decisions, interaction states, and AI slop risk |
+| `js-ce-feasibility-reviewer` | Evaluate whether proposed technical approaches will survive contact with reality |
+| `js-ce-product-lens-reviewer` | Challenge problem framing, evaluate scope decisions, surface goal misalignment |
+| `js-ce-scope-guardian-reviewer` | Challenge unjustified complexity, scope creep, and premature abstractions |
+| `js-ce-security-lens-reviewer` | Evaluate plans for security gaps at the plan level (auth, data, APIs) |
+| `js-ce-adversarial-document-reviewer` | Challenge premises, surface unstated assumptions, and stress-test decisions |
 
 ### Research
 
 | Agent | Description |
 |-------|-------------|
-| `js-best-practices-researcher` | Gather external best practices and examples |
-| `js-framework-docs-researcher` | Research framework documentation and best practices |
-| `js-git-history-analyzer` | Analyze git history and code evolution |
-| `js-issue-intelligence-analyst` | Analyze GitHub issues to surface recurring themes and pain patterns |
-| `js-learnings-researcher` | Search institutional learnings for relevant past solutions |
-| `js-repo-research-analyst` | Research repository structure and conventions |
-| `js-session-historian` | Search prior Claude Code, Codex, and Cursor sessions for related investigation context |
-| `js-slack-researcher` | Search Slack for organizational context relevant to the current task |
+| `js-ce-best-practices-researcher` | Gather external best practices and examples |
+| `js-ce-framework-docs-researcher` | Research framework documentation and best practices |
+| `js-ce-git-history-analyzer` | Analyze git history and code evolution |
+| `js-ce-issue-intelligence-analyst` | Analyze GitHub issues to surface recurring themes and pain patterns |
+| `js-ce-learnings-researcher` | Search institutional learnings for relevant past solutions |
+| `js-ce-repo-research-analyst` | Research repository structure and conventions |
+| `js-ce-session-historian` | Search prior Claude Code, Codex, and Cursor sessions for related investigation context |
+| `js-ce-slack-researcher` | Search Slack for organizational context relevant to the current task |
 
 ### Design
 
 | Agent | Description |
 |-------|-------------|
-| `js-design-implementation-reviewer` | Verify UI implementations match Figma designs |
-| `js-design-iterator` | Iteratively refine UI through systematic design iterations |
-| `js-figma-design-sync` | Synchronize web implementations with Figma designs |
+| `js-ce-design-implementation-reviewer` | Verify UI implementations match Figma designs |
+| `js-ce-design-iterator` | Iteratively refine UI through systematic design iterations |
+| `js-ce-figma-design-sync` | Synchronize web implementations with Figma designs |
 
 ### Workflow
 
 | Agent | Description |
 |-------|-------------|
-| `js-pr-comment-resolver` | Address PR comments and implement fixes |
-| `js-spec-flow-analyzer` | Analyze user flows and identify gaps in specifications |
+| `js-ce-pr-comment-resolver` | Address PR comments and implement fixes |
+| `js-ce-spec-flow-analyzer` | Analyze user flows and identify gaps in specifications |
 
 ### Docs
 
 | Agent | Description |
 |-------|-------------|
-| `js-sorhus-readme-writer` | Create READMEs following Sindre Sorhus style for npm packages |
+| `js-ce-sorhus-readme-writer` | Create READMEs following Sindre Sorhus style for npm packages |
 
 ## MCP Servers
 

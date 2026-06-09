@@ -16,33 +16,33 @@ Major sync bringing the Node.js fork to full parity with the original compound-e
 **New Agents (21):**
 
 *Review (13):*
-- `js-api-contract-reviewer` - Detect breaking API contract changes
-- `js-cli-readiness-reviewer` - CLI agent-readiness persona for js-ce:review (conditional, structured JSON)
-- `js-correctness-reviewer` - Logic errors, edge cases, state bugs
-- `js-data-migrations-reviewer` - Migration safety with confidence calibration
-- `js-maintainability-reviewer` - Coupling, complexity, naming, dead code
-- `js-performance-reviewer` - Runtime performance with confidence calibration
-- `js-previous-comments-reviewer` - Check whether prior review feedback has been addressed
-- `js-reliability-reviewer` - Production reliability and failure modes
-- `js-security-reviewer` - Exploitable vulnerabilities with confidence calibration
-- `js-testing-reviewer` - Test coverage gaps, weak assertions
-- `js-project-standards-reviewer` - CLAUDE.md and AGENTS.md compliance
-- `js-adversarial-reviewer` - Construct failure scenarios to break implementations
-- `js-cli-agent-readiness-reviewer` - Evaluate CLI agent-friendliness against 7 core principles
+- `js-ce-api-contract-reviewer` - Detect breaking API contract changes
+- `js-ce-cli-readiness-reviewer` - CLI agent-readiness persona for js-ce:review (conditional, structured JSON)
+- `js-ce-correctness-reviewer` - Logic errors, edge cases, state bugs
+- `js-ce-data-migrations-reviewer` - Migration safety with confidence calibration
+- `js-ce-maintainability-reviewer` - Coupling, complexity, naming, dead code
+- `js-ce-performance-reviewer` - Runtime performance with confidence calibration
+- `js-ce-previous-comments-reviewer` - Check whether prior review feedback has been addressed
+- `js-ce-reliability-reviewer` - Production reliability and failure modes
+- `js-ce-security-reviewer` - Exploitable vulnerabilities with confidence calibration
+- `js-ce-testing-reviewer` - Test coverage gaps, weak assertions
+- `js-ce-project-standards-reviewer` - CLAUDE.md and AGENTS.md compliance
+- `js-ce-adversarial-reviewer` - Construct failure scenarios to break implementations
+- `js-ce-cli-agent-readiness-reviewer` - Evaluate CLI agent-friendliness against 7 core principles
 
 *Document Review (7):*
-- `js-coherence-reviewer` - Review documents for internal consistency and terminology drift
-- `js-design-lens-reviewer` - Review plans for missing design decisions and AI slop risk
-- `js-feasibility-reviewer` - Evaluate whether proposed technical approaches will survive contact with reality
-- `js-product-lens-reviewer` - Challenge problem framing and surface goal misalignment
-- `js-scope-guardian-reviewer` - Challenge unjustified complexity and scope creep
-- `js-security-lens-reviewer` - Evaluate plans for security gaps at the plan level
-- `js-adversarial-document-reviewer` - Challenge premises and stress-test decisions
+- `js-ce-coherence-reviewer` - Review documents for internal consistency and terminology drift
+- `js-ce-design-lens-reviewer` - Review plans for missing design decisions and AI slop risk
+- `js-ce-feasibility-reviewer` - Evaluate whether proposed technical approaches will survive contact with reality
+- `js-ce-product-lens-reviewer` - Challenge problem framing and surface goal misalignment
+- `js-ce-scope-guardian-reviewer` - Challenge unjustified complexity and scope creep
+- `js-ce-security-lens-reviewer` - Evaluate plans for security gaps at the plan level
+- `js-ce-adversarial-document-reviewer` - Challenge premises and stress-test decisions
 
 *Research (3):*
-- `js-issue-intelligence-analyst` - Analyze GitHub issues to surface recurring themes
-- `js-session-historian` - Search prior Claude Code, Codex, and Cursor sessions for related context
-- `js-slack-researcher` - Search Slack for organizational context relevant to the current task
+- `js-ce-issue-intelligence-analyst` - Analyze GitHub issues to surface recurring themes
+- `js-ce-session-historian` - Search prior Claude Code, Codex, and Cursor sessions for related context
+- `js-ce-slack-researcher` - Search Slack for organizational context relevant to the current task
 
 **New Skills (22):**
 - `js-ce-ideate` - Discover high-impact project improvements through divergent ideation
@@ -55,18 +55,18 @@ Major sync bringing the Node.js fork to full parity with the original compound-e
 - `js-ce-update` - Check plugin version and fix stale cache
 - `js-ce-compound-refresh` - Refresh stale or drifting learnings
 - `js-ce-work-beta` - Beta Codex delegation mode for ce:work
-- `js-changelog` - Create engaging changelogs for recent merges
+- `js-ce-changelog` - Create engaging changelogs for recent merges
 - `js-claude-permissions-optimizer` - Optimize Claude Code permissions from session history
-- `js-deploy-docs` - Deploy documentation site
-- `js-git-clean-gone-branches` - Clean up local branches whose remote is gone
-- `js-git-commit` - Create a git commit with a value-communicating message
-- `js-git-commit-push-pr` - Commit, push, and open a PR with adaptive description
-- `js-onboarding` - Generate ONBOARDING.md for new contributors
-- `js-proof` - Create, edit, and share documents via Proof collaborative editor
-- `js-report-bug-ce` - Report a bug in the plugin
-- `js-todo-create` - File-based todo tracking system
-- `js-todo-resolve` - Resolve todos in parallel
-- `js-todo-triage` - Triage and prioritize pending todos
+- `js-ce-deploy-docs` - Deploy documentation site
+- `js-ce-git-clean-gone-branches` - Clean up local branches whose remote is gone
+- `js-ce-git-commit` - Create a git commit with a value-communicating message
+- `js-ce-git-commit-push-pr` - Commit, push, and open a PR with adaptive description
+- `js-ce-onboarding` - Generate ONBOARDING.md for new contributors
+- `js-ce-proof` - Create, edit, and share documents via Proof collaborative editor
+- `js-ce-report-bug` - Report a bug in the plugin
+- `js-ce-todo-create` - File-based todo tracking system
+- `js-ce-todo-resolve` - Resolve todos in parallel
+- `js-ce-todo-triage` - Triage and prioritize pending todos
 
 ### Changed
 
@@ -98,13 +98,13 @@ Major sync bringing the Node.js fork to full parity with the original compound-e
 ### Added
 
 - **`js-setup` skill** - Interactive configurator for review agents. Auto-detects project stack (TypeScript, Node.js, Python) and writes `js-compound-engineering.local.md` settings file
-- **`js-document-review` skill** - Structured self-review for brainstorm and plan documents. Assesses clarity, completeness, specificity, and YAGNI compliance
+- **`js-ce-document-review` skill** - Structured self-review for brainstorm and plan documents. Assesses clarity, completeness, specificity, and YAGNI compliance
 - **`js-resolve-pr-parallel` skill** - Skill version of PR comment resolution for structured parallel resolution
 
 ### Changed
 
-- **`/js-workflows:review` command** - Major rewrite: dynamic agent loading from `js-compound-engineering.local.md` settings file, falls back to `js-setup` skill when no config exists. `js-learnings-researcher` now always runs alongside `js-agent-native-reviewer`. Synthesis step surfaces past solutions as "Known Pattern" with links
-- **`/js-workflows:plan` command** - Added `status: active` to all plan YAML frontmatter templates. Added "Review and refine" post-generation option using `js-document-review` skill
+- **`/js-workflows:review` command** - Major rewrite: dynamic agent loading from `js-compound-engineering.local.md` settings file, falls back to `js-setup` skill when no config exists. `js-ce-learnings-researcher` now always runs alongside `js-ce-agent-native-reviewer`. Synthesis step surfaces past solutions as "Known Pattern" with links
+- **`/js-workflows:plan` command** - Added `status: active` to all plan YAML frontmatter templates. Added "Review and refine" post-generation option using `js-ce-document-review` skill
 - **`/js-workflows:work` command** - Phase 3 now reads configured review agents from settings file. Phase 4 updates plan frontmatter from `status: active` to `status: completed`. PR description template includes Post-Deploy Monitoring & Validation section
 - **Context token optimization** - Added `disable-model-invocation: true` to 18 side-effect commands and 6 skills to reduce context token usage (~79% reduction). Prevents silent component exclusion when context budget is exceeded
 
@@ -123,7 +123,7 @@ Major sync bringing the Node.js fork to full parity with the original compound-e
 
 ### Added
 
-- **`js-schema-drift-detector` agent** - Detects unrelated migration and schema drift in PRs
+- **`js-ce-schema-drift-detector` agent** - Detects unrelated migration and schema drift in PRs
   - Supports Prisma, TypeORM, Knex, Sequelize, Drizzle migrations
   - Detects lock file drift (package-lock.json, yarn.lock, pnpm-lock.yaml)
   - Provides clear fix instructions per ORM
@@ -131,14 +131,14 @@ Major sync bringing the Node.js fork to full parity with the original compound-e
   - Covers primitives: Agent, Team, Teammate, Leader, Task, Inbox, Message, Backend
   - Documents subagents vs teammates spawning methods
   - Includes 6 orchestration patterns and 3 complete workflows
-- **`/js-slfg` command** - Swarm-enabled variant of `/js-lfg` for parallel execution
+- **`/js-slfg` command** - Swarm-enabled variant of `/js-ce-lfg` for parallel execution
 
 ### Changed
 
 - **`/js-workflows:work` command** - Added optional Swarm Mode section for parallel execution
 - **`/js-workflows:plan` command** - Added brainstorm detection, research decision logic, learnings-researcher integration, consolidated research step, and updated post-generation options
 - **`/js-workflows:review` command** - Added Protected Artifacts section and Conditional Agents for migration PRs (Prisma, TypeORM, Knex, Sequelize, Drizzle)
-- **`js-best-practices-researcher` agent** - Added Phase 1 skill discovery, Phase 1.5 API deprecation checking, and 3-phase research methodology
+- **`js-ce-best-practices-researcher` agent** - Added Phase 1 skill discovery, Phase 1.5 API deprecation checking, and 3-phase research methodology
 - **`CLAUDE.md`** - Added Skill Compliance Checklist section
 
 ### Component Summary
@@ -160,15 +160,15 @@ This release renames the entire plugin from `compound-engineering-nodejs` to `js
 
 **Plugin Rename:**
 - Plugin renamed from `compound-engineering-nodejs` to `js-compound-engineering`
-- All 28 agents now prefixed with `js-` (e.g., `js-modern-nodejs-reviewer`, `js-security-sentinel`)
-- All 24 commands now prefixed with `js-` (e.g., `/js-lfg`, `/js-deepen-plan`)
-- All 15 skills now prefixed with `js-` (e.g., `js-modern-nodejs-style`, `js-gemini-imagegen`)
+- All 28 agents now prefixed with `js-` (e.g., `js-ce-modern-nodejs-reviewer`, `js-ce-security-sentinel`)
+- All 24 commands now prefixed with `js-` (e.g., `/js-ce-lfg`, `/js-deepen-plan`)
+- All 15 skills now prefixed with `js-` (e.g., `js-ce-modern-nodejs-style`, `js-ce-gemini-imagegen`)
 - Workflow commands now use `js-workflows:` prefix (e.g., `/js-workflows:plan`, `/js-workflows:review`)
 
 **Cross-Reference Updates:**
 - All internal references updated to use new `js-` prefixed names
-- Task agent calls updated (e.g., `Task js-pr-comment-resolver`)
-- Skill invocations updated (e.g., `skill: js-git-worktree`)
+- Task agent calls updated (e.g., `Task js-ce-pr-comment-resolver`)
+- Skill invocations updated (e.g., `skill: js-ce-git-worktree`)
 - Command invocations updated throughout all workflow files
 
 **Installation:**
@@ -185,15 +185,15 @@ This release brings the Node.js fork up to feature parity with the original comp
 ### Added
 
 **New Agent (1):**
-- `js-learnings-researcher` - Search documented learnings in `docs/solutions/` for institutional knowledge. Uses grep-first filtering to find relevant past solutions.
+- `js-ce-learnings-researcher` - Search documented learnings in `docs/solutions/` for institutional knowledge. Uses grep-first filtering to find relevant past solutions.
 
 **New Commands (6):**
 - `/js-workflows:brainstorm` - Pre-planning command for exploring WHAT to build before HOW
 - `/js-deepen-plan` - Enhance plans with parallel research agents, skills discovery, and learnings integration
-- `/js-lfg` - Full autonomous engineering workflow: plan -> deepen-plan -> work -> review -> resolve_todo_parallel -> test-browser -> feature-video
+- `/js-ce-lfg` - Full autonomous engineering workflow: plan -> deepen-plan -> work -> review -> resolve_todo_parallel -> test-browser -> feature-video
 - `/js-feature-video` - Record video walkthroughs using agent-browser CLI and add to PR descriptions
-- `/js-test-browser` - Run browser tests on PR-affected pages using agent-browser CLI (replaces `/js-playwright-test`)
-- `/js-agent-native-audit` - Comprehensive agent-native architecture review with 8 scored principles
+- `/js-ce-test-browser` - Run browser tests on PR-affected pages using agent-browser CLI (replaces `/js-playwright-test`)
+- `/js-ce-agent-native-audit` - Comprehensive agent-native architecture review with 8 scored principles
 
 **New Skills (3):**
 - `js-agent-browser` - Headless browser automation using Vercel's agent-browser CLI with ref-based element selection
@@ -212,18 +212,18 @@ This release brings the Node.js fork up to feature parity with the original comp
 - Added branch safety checks (detects if on default branch, requires explicit confirmation)
 - Added checkbox tracking (automatically marks `[ ]` -> `[x]` in plan files)
 - Added Compound Engineered badge to PR template
-- Updated reviewer agents list to include `js-modern-nodejs-reviewer` and `js-kieran-typescript-reviewer`
+- Updated reviewer agents list to include `js-ce-modern-nodejs-reviewer` and `js-ce-kieran-typescript-reviewer`
 - Changed screenshot capture from Playwright MCP to agent-browser CLI
 
 **Node.js Adaptations:**
 - All route mappings adapted for Node.js frameworks (Next.js Pages/App Router, Express, Fastify, Hono, Remix)
 - All `bin/dev` references changed to `npm run dev`
-- All `dhh-rails-style` skill references changed to `js-modern-nodejs-style`
-- All `kieran-rails-reviewer` references changed to `js-kieran-nodejs-reviewer`
+- All `dhh-rails-style` skill references changed to `js-ce-modern-nodejs-style`
+- All `kieran-rails-reviewer` references changed to `js-ce-kieran-nodejs-reviewer`
 
 ### Removed
 
-- `/js-playwright-test` command (replaced by `/js-test-browser`)
+- `/js-playwright-test` command (replaced by `/js-ce-test-browser`)
 - `playwright` MCP server (browser automation now via agent-browser skill)
 
 ### Component Summary
@@ -266,20 +266,20 @@ This release brings the Node.js fork up to feature parity with the original comp
 ### Added
 
 **Skills (new):**
-- `js-modern-nodejs-style` - Write Node.js code with modern, pragmatic patterns (MVP-focused, minimal dependencies, async-first)
-- `js-sindre-sorhus-package-writer` - Write npm packages following Sindre Sorhus's proven patterns (ESM-first, zero deps, TypeScript definitions)
+- `js-ce-modern-nodejs-style` - Write Node.js code with modern, pragmatic patterns (MVP-focused, minimal dependencies, async-first)
+- `js-ce-sindre-sorhus-package-writer` - Write npm packages following Sindre Sorhus's proven patterns (ESM-first, zero deps, TypeScript definitions)
 - `js-dspy-python` - Build type-safe LLM applications with Stanford's original Python DSPy framework
 
 **Agents (new):**
-- `js-modern-nodejs-reviewer` - Modern Node.js review with minimalist, pragmatic approach
-- `js-kieran-nodejs-reviewer` - Node.js code review with strict conventions
-- `js-sorhus-readme-writer` - Create READMEs following Sindre Sorhus style for npm packages
+- `js-ce-modern-nodejs-reviewer` - Modern Node.js review with minimalist, pragmatic approach
+- `js-ce-kieran-nodejs-reviewer` - Node.js code review with strict conventions
+- `js-ce-sorhus-readme-writer` - Create READMEs following Sindre Sorhus style for npm packages
 
 ### Changed
 
 **Commands updated:**
 - `js-generate_command` - Changed `bin/rails test` -> `npm test`, `bundle exec standardrb` -> `npx eslint .`
-- `js-test-browser` - Changed Rails server commands to Node.js (`npm run dev`)
+- `js-ce-test-browser` - Changed Rails server commands to Node.js (`npm run dev`)
 - `js-ce:review` - Updated parallel agents list for Node.js
 
 **Documentation updated:**
@@ -293,7 +293,7 @@ This release brings the Node.js fork up to feature parity with the original comp
 
 ### Changed
 
-- **`/js-workflows:review` command** - Section 7 now detects project type (Web, iOS, or Hybrid) and offers appropriate testing. Web projects get `/js-test-browser`, iOS projects get `/js-xcode-test`, hybrid projects can run both.
+- **`/js-workflows:review` command** - Section 7 now detects project type (Web, iOS, or Hybrid) and offers appropriate testing. Web projects get `/js-ce-test-browser`, iOS projects get `/js-xcode-test`, hybrid projects can run both.
 
 ## [2.15.0] - 2025-12-18
 
@@ -315,18 +315,18 @@ This release brings the Node.js fork up to feature parity with the original comp
 
 ### Added
 
-- **`js-modern-nodejs-style` skill** - Write Node.js code with modern, pragmatic patterns. MVP-focused, minimal dependencies, async-first. Covers Express, Fastify, Hono, and TypeScript patterns.
+- **`js-ce-modern-nodejs-style` skill** - Write Node.js code with modern, pragmatic patterns. MVP-focused, minimal dependencies, async-first. Covers Express, Fastify, Hono, and TypeScript patterns.
 
 ## [2.12.0] - 2025-12-15
 
 ### Added
 
-- **`js-data-migration-expert` agent** - New review agent for validating database migrations and data backfills. Ensures ID mappings match production reality, checks for swapped values, verifies rollback safety, and provides SQL verification snippets. Prevents silent data corruption from mismatched enum/ID mappings.
-- **`js-deployment-verification-agent` agent** - New review agent that produces Go/No-Go deployment checklists for risky data changes. Creates pre/post-deploy SQL verification queries, defines data invariants, documents rollback procedures, and plans post-deploy monitoring.
+- **`js-ce-data-migration-expert` agent** - New review agent for validating database migrations and data backfills. Ensures ID mappings match production reality, checks for swapped values, verifies rollback safety, and provides SQL verification snippets. Prevents silent data corruption from mismatched enum/ID mappings.
+- **`js-ce-deployment-verification-agent` agent** - New review agent that produces Go/No-Go deployment checklists for risky data changes. Creates pre/post-deploy SQL verification queries, defines data invariants, documents rollback procedures, and plans post-deploy monitoring.
 
 ### Changed
 
-- **`/js-workflows:review` command** - Added conditional agents section. Now automatically runs `js-data-migration-expert` and `js-deployment-verification-agent` when PR contains database migrations, data backfills, or ID/enum mapping changes.
+- **`/js-workflows:review` command** - Added conditional agents section. Now automatically runs `js-ce-data-migration-expert` and `js-ce-deployment-verification-agent` when PR contains database migrations, data backfills, or ID/enum mapping changes.
 
 ## [2.11.0] - 2025-12-10
 
@@ -354,12 +354,12 @@ This release brings the Node.js fork up to feature parity with the original comp
 
 ### Added
 
-- **`js-agent-native-reviewer` agent** - New review agent that verifies features are agent-native. Checks that any action a user can take, an agent can also take (Action Parity), and anything a user can see, an agent can see (Context Parity). Enforces the principle: "Whatever the user can do, the agent can do."
-- **`js-agent-native-architecture` skill** - Build AI agents using prompt-native architecture where features are defined in prompts, not code. Includes patterns for MCP tool design, system prompts, self-modification, and refactoring to prompt-native.
+- **`js-ce-agent-native-reviewer` agent** - New review agent that verifies features are agent-native. Checks that any action a user can take, an agent can also take (Action Parity), and anything a user can see, an agent can see (Context Parity). Enforces the principle: "Whatever the user can do, the agent can do."
+- **`js-ce-agent-native-architecture` skill** - Build AI agents using prompt-native architecture where features are defined in prompts, not code. Includes patterns for MCP tool design, system prompts, self-modification, and refactoring to prompt-native.
 
 ### Changed
 
-- **`/js-review` command** - Added `js-agent-native-reviewer` to the parallel review agents. Code reviews now automatically check if new features are accessible to agents.
+- **`/js-review` command** - Added `js-ce-agent-native-reviewer` to the parallel review agents. Code reviews now automatically check if new features are accessible to agents.
 
 ## [2.9.4] - 2025-12-08
 
@@ -399,13 +399,13 @@ This release brings the Node.js fork up to feature parity with the original comp
 
 ### Fixed
 
-- **`js-gemini-imagegen` skill** - Added critical documentation about file format handling. Gemini returns JPEG by default, so using `.jpg` extension is required to avoid "Image does not match media type" API errors.
+- **`js-ce-gemini-imagegen` skill** - Added critical documentation about file format handling. Gemini returns JPEG by default, so using `.jpg` extension is required to avoid "Image does not match media type" API errors.
 
 ## [2.8.2] - 2025-11-28
 
 ### Changed
 
-- **`js-gemini-imagegen` skill** - Updated to use only Pro model by default. Added explicit options for aspect ratio and resolution.
+- **`js-ce-gemini-imagegen` skill** - Updated to use only Pro model by default. Added explicit options for aspect ratio and resolution.
 
 ## [2.8.1] - 2025-11-27
 
@@ -417,7 +417,7 @@ This release brings the Node.js fork up to feature parity with the original comp
 
 ### Added
 
-- **`js-julik-frontend-races-reviewer` agent** - New review agent specializing in JavaScript and Stimulus code race conditions.
+- **`js-ce-julik-frontend-races-reviewer` agent** - New review agent specializing in JavaScript and Stimulus code race conditions.
 
 ## [2.7.0] - 2025-11-27
 
@@ -455,7 +455,7 @@ This release brings the Node.js fork up to feature parity with the original comp
 
 ### Improved
 
-- **`js-design-iterator` agent** - Added focused screenshot guidance.
+- **`js-ce-design-iterator` agent** - Added focused screenshot guidance.
 
 ## [2.4.0] - 2024-11-24
 
@@ -495,7 +495,7 @@ This release brings the Node.js fork up to feature parity with the original comp
 
 ### Changed
 
-- `js-design-iterator` agent - Updated description to emphasize proactive usage.
+- `js-ce-design-iterator` agent - Updated description to emphasize proactive usage.
 
 ## [2.0.1] - 2024-11-24
 
@@ -510,16 +510,16 @@ Major reorganization consolidating agents, commands, and skills from multiple so
 ### Added
 
 **New Agents (7)**
-- `js-design-iterator` - Iteratively refine UI through systematic design iterations
-- `js-design-implementation-reviewer` - Verify UI implementations match Figma designs
-- `js-figma-design-sync` - Synchronize web implementations with Figma designs
+- `js-ce-design-iterator` - Iteratively refine UI through systematic design iterations
+- `js-ce-design-implementation-reviewer` - Verify UI implementations match Figma designs
+- `js-ce-figma-design-sync` - Synchronize web implementations with Figma designs
 - `js-bug-reproduction-validator` - Systematically reproduce and validate bug reports
-- `js-spec-flow-analyzer` - Analyze user flows and identify gaps in specifications
+- `js-ce-spec-flow-analyzer` - Analyze user flows and identify gaps in specifications
 - `js-lint` - Run linting and code quality checks on JavaScript and TypeScript files
-- `js-sorhus-readme-writer` - Create READMEs following Sindre Sorhus style for npm packages
+- `js-ce-sorhus-readme-writer` - Create READMEs following Sindre Sorhus style for npm packages
 
 **New Commands (9)**
-- `/js-changelog` - Create engaging changelogs for recent merges
+- `/js-ce-changelog` - Create engaging changelogs for recent merges
 - `/js-plan_review` - Multi-agent plan review in parallel
 - `/js-resolve_parallel` - Resolve TODO comments in parallel
 - `/js-resolve_pr_parallel` - Resolve PR comments in parallel
@@ -529,15 +529,15 @@ Major reorganization consolidating agents, commands, and skills from multiple so
 - `/js-codify` - Document solved problems for knowledge base
 
 **New Skills (10)**
-- `js-sindre-sorhus-package-writer` - Write npm packages following Sindre Sorhus patterns
+- `js-ce-sindre-sorhus-package-writer` - Write npm packages following Sindre Sorhus patterns
 - `js-compound-docs` - Capture solved problems as categorized documentation
 - `js-create-agent-skills` - Expert guidance for creating Claude Code skills
-- `js-modern-nodejs-style` - Write Node.js code with modern, pragmatic patterns
+- `js-ce-modern-nodejs-style` - Write Node.js code with modern, pragmatic patterns
 - `js-dspy-python` - Build type-safe LLM applications with DSPy Python
-- `js-every-style-editor` - Review copy for Every's style guide compliance
+- `js-ce-every-style-editor` - Review copy for Every's style guide compliance
 - `js-file-todos` - File-based todo tracking system
-- `js-frontend-design` - Create production-grade frontend interfaces
-- `js-git-worktree` - Manage Git worktrees for parallel development
+- `js-ce-frontend-design` - Create production-grade frontend interfaces
+- `js-ce-git-worktree` - Manage Git worktrees for parallel development
 - `js-skill-creator` - Guide for creating effective Claude Code skills
 
 ### Changed
@@ -555,7 +555,7 @@ Major reorganization consolidating agents, commands, and skills from multiple so
 
 ### Added
 
-**js-gemini-imagegen Skill**
+**js-ce-gemini-imagegen Skill**
 - Text-to-image generation with Google's Gemini API
 - Image editing and manipulation
 - Multi-turn refinement via chat interface
@@ -579,28 +579,28 @@ Initial release of the compound-engineering plugin (Node.js fork).
 **17 Specialized Agents**
 
 *Code Review (5)*
-- `js-kieran-nodejs-reviewer` - Node.js code review with strict conventions
-- `js-kieran-python-reviewer` - Python code review with quality standards
-- `js-kieran-typescript-reviewer` - TypeScript code review
-- `js-modern-nodejs-reviewer` - Node.js review from modern perspective
-- `js-code-simplicity-reviewer` - Final pass for simplicity and minimalism
+- `js-ce-kieran-nodejs-reviewer` - Node.js code review with strict conventions
+- `js-ce-kieran-python-reviewer` - Python code review with quality standards
+- `js-ce-kieran-typescript-reviewer` - TypeScript code review
+- `js-ce-modern-nodejs-reviewer` - Node.js review from modern perspective
+- `js-ce-code-simplicity-reviewer` - Final pass for simplicity and minimalism
 
 *Analysis & Architecture (4)*
-- `js-architecture-strategist` - Architectural decisions and compliance
-- `js-pattern-recognition-specialist` - Design pattern analysis
-- `js-security-sentinel` - Security audits and vulnerability assessments
-- `js-performance-oracle` - Performance analysis and optimization
-- `js-data-integrity-guardian` - Database migrations and data integrity
+- `js-ce-architecture-strategist` - Architectural decisions and compliance
+- `js-ce-pattern-recognition-specialist` - Design pattern analysis
+- `js-ce-security-sentinel` - Security audits and vulnerability assessments
+- `js-ce-performance-oracle` - Performance analysis and optimization
+- `js-ce-data-integrity-guardian` - Database migrations and data integrity
 
 *Research (4)*
-- `js-framework-docs-researcher` - Framework documentation research
-- `js-best-practices-researcher` - External best practices gathering
-- `js-git-history-analyzer` - Git history and code evolution analysis
-- `js-repo-research-analyst` - Repository structure and conventions
+- `js-ce-framework-docs-researcher` - Framework documentation research
+- `js-ce-best-practices-researcher` - External best practices gathering
+- `js-ce-git-history-analyzer` - Git history and code evolution analysis
+- `js-ce-repo-research-analyst` - Repository structure and conventions
 
 *Workflow (3)*
-- `js-every-style-editor` - Every's style guide compliance
-- `js-pr-comment-resolver` - PR comment resolution
+- `js-ce-every-style-editor` - Every's style guide compliance
+- `js-ce-pr-comment-resolver` - PR comment resolution
 - `js-feedback-codifier` - Feedback pattern codification
 
 **6 Slash Commands**

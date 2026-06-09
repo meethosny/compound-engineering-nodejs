@@ -59,5 +59,5 @@ When the conversation has enough material to narrow — reflect back what you've
 
 - **Create a plan** → hand off to `/js-ce:plan` with the decided goal and constraints
 - **Save summary to disk** → write the summary as a markdown file in the current working directory
-- **Share to Proof (web app) — review and comment to iterate** → load the `js-proof` skill to create a shareable web link for others to review
+- **Share to Proof (web app) — review and comment to iterate** → load the `js-ce-proof` skill to create a shareable web link for others to review
 - **Done** → the conversation was the value, no artifact needed

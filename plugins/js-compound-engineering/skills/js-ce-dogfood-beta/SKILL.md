@@ -32,13 +32,13 @@ This workflow drives the browser exclusively through the `agent-browser` CLI. Do
 
 | When | Skill | Why |
 |------|-------|-----|
-| Phase 0 isolation | `js-git-worktree` | Run the dogfood in an isolated worktree so the main checkout stays clean. |
+| Phase 0 isolation | `js-ce-git-worktree` | Run the dogfood in an isolated worktree so the main checkout stays clean. |
 | agent-browser missing | `js-ce-setup` | Installs `agent-browser` and other deps. |
 | A failure's root cause is non-obvious | `js-ce-debug` | Systematic root-cause analysis instead of guess-and-check. |
-| Committing each fix | `js-git-commit` | Consistent, well-scoped commit messages. |
+| Committing each fix | `js-ce-git-commit` | Consistent, well-scoped commit messages. |
 | A bug reveals a reusable lesson | `js-ce-compound` | Capture the learning so the team compounds knowledge. |
 
-Reuse `js-test-browser`'s mechanics for port detection and dev-server startup (see Phase 3) rather than reinventing them.
+Reuse `js-ce-test-browser`'s mechanics for port detection and dev-server startup (see Phase 3) rather than reinventing them.
 
 ## Workflow
 
@@ -61,7 +61,7 @@ Parse `$ARGUMENTS`: a PR number, a branch name, or blank (use current branch). S
    - **Branch name:** check it out (probe for an existing worktree first).
    - **Blank:** use the current branch.
 2. **Refuse to run on `main`/`master`.** If the resolved branch is the trunk, stop and tell the user — there is no diff to dogfood.
-3. **Offer isolation.** Ask whether to run in a git worktree so the main checkout stays untouched (use the platform's blocking question tool). If yes, hand off to `js-git-worktree`; if no, continue in place.
+3. **Offer isolation.** Ask whether to run in a git worktree so the main checkout stays untouched (use the platform's blocking question tool). If yes, hand off to `js-ce-git-worktree`; if no, continue in place.
 4. **Resume if a prior run exists.** Look for an existing report at `docs/dogfood-reports/*-<branch-slug>-dogfood.md`. If one is found with unfinished scenarios, ask whether to resume it or start fresh. To resume, re-hydrate the task list from its matrix (Pass/Fixed/Skipped stay done; Pending/Blocked/in-progress become the remaining work) and continue from there.
 
 ### Resumability (stop and return at any point)
@@ -120,7 +120,7 @@ Map changed files to concrete routes (views -> their pages, components -> pages 
 
 ### Phase 3: Detect Port and Start the Dev Server
 
-Determine the port (priority: explicit `--port` > `AGENTS.md`/`CLAUDE.md` > `package.json` dev script > `.env*` `PORT=` > default `3000`). If a server is already listening, reuse it; otherwise start the project's dev command in the background and wait for the port to come up. This is the same mechanism `js-test-browser` uses — follow its Phase 5–6 logic.
+Determine the port (priority: explicit `--port` > `AGENTS.md`/`CLAUDE.md` > `package.json` dev script > `.env*` `PORT=` > default `3000`). If a server is already listening, reuse it; otherwise start the project's dev command in the background and wait for the port to come up. This is the same mechanism `js-ce-test-browser` uses — follow its Phase 5–6 logic.
 
 ```bash
 agent-browser open "http://localhost:${PORT}"
@@ -160,7 +160,7 @@ When a scenario fails, **fix it and prove it** — but first decide whether the 
 1. Investigate the root cause. If it's non-obvious, use `js-ce-debug`.
 2. Apply the fix in the code.
 3. **Add an automated regression test** that fails before the fix and passes after, so the bug can't return.
-4. Commit the fix with a clear message (use `js-git-commit`). One logical fix per commit.
+4. Commit the fix with a clear message (use `js-ce-git-commit`). One logical fix per commit.
 5. Re-run the failing scenario in the browser to confirm it now passes; then continue the matrix.
 6. If the bug carried a reusable lesson, capture it with `js-ce-compound`.
 
