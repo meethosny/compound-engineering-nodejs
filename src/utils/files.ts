@@ -76,6 +76,21 @@ export async function walkFiles(root: string): Promise<string[]> {
 }
 
 /**
+ * Guard a relative artifact path against escaping its managed root.
+ * Rejects absolute paths and any `..` traversal so a tampered name from a
+ * legacy allow-list (or a future caller) can't trigger an out-of-tree
+ * rename/delete. Returns true only when `relativePath` resolves to a location
+ * strictly inside `root`.
+ */
+export function isSafeManagedPath(root: string, relativePath: string): boolean {
+  if (typeof relativePath !== "string" || relativePath.length === 0) return false
+  if (path.isAbsolute(relativePath)) return false
+  const resolvedRoot = path.resolve(root)
+  const resolved = path.resolve(resolvedRoot, relativePath)
+  return resolved !== resolvedRoot && resolved.startsWith(resolvedRoot + path.sep)
+}
+
+/**
  * Sanitize a name for use as a filesystem path component.
  * Replaces colons with hyphens so colon-namespaced names
  * (e.g. "js-ce:brainstorm") become flat directory names ("ce-brainstorm")

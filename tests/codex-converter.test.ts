@@ -1,4 +1,7 @@
 import { describe, expect, test } from "bun:test"
+import { promises as fs } from "fs"
+import path from "path"
+import os from "os"
 import { convertClaudeToCodex } from "../src/converters/claude-to-codex"
 import { parseFrontmatter } from "../src/utils/frontmatter"
 import type { ClaudePlugin } from "../src/types/claude"
@@ -497,6 +500,96 @@ Run \`/js-compound-engineering-setup\` to create a settings file.`,
 
     // Tool-agnostic path in project root — no rewriting needed
     expect(parsed.body).toContain("js-compound-engineering.local.md")
+  })
+
+  test("passes through pluginName and hooks for downstream hooks.json merge", () => {
+    const plugin: ClaudePlugin = {
+      ...fixturePlugin,
+      manifest: { name: "js-compound-engineering", version: "1.0.0" },
+      hooks: {
+        hooks: {
+          PreToolUse: [
+            { matcher: "Bash", hooks: [{ type: "command", command: "echo hi" }] },
+          ],
+        },
+      },
+    }
+
+    const bundle = convertClaudeToCodex(plugin, {
+      agentMode: "subagent",
+      inferTemperature: false,
+      permissions: "none",
+    })
+
+    expect(bundle.pluginName).toBe("js-compound-engineering")
+    expect(bundle.hooks?.hooks.PreToolUse).toHaveLength(1)
+  })
+
+  test("collects sidecar directories referenced in agent bodies (#563)", async () => {
+    const tempRoot = await fs.mkdtemp(path.join(os.tmpdir(), "codex-sidecar-conv-"))
+    const agentsDir = path.join(tempRoot, "agents")
+    const scriptsDir = path.join(agentsDir, "scripts")
+    await fs.mkdir(scriptsDir, { recursive: true })
+    await fs.writeFile(path.join(scriptsDir, "run.sh"), "echo run\n")
+    const agentPath = path.join(agentsDir, "tool-runner.md")
+    await fs.writeFile(agentPath, "Run `scripts/run.sh` to do the work.\n")
+
+    const plugin: ClaudePlugin = {
+      ...fixturePlugin,
+      commands: [],
+      skills: [],
+      agents: [
+        {
+          name: "tool-runner",
+          description: "Runs a co-located script",
+          body: "Run `scripts/run.sh` to do the work.",
+          sourcePath: agentPath,
+        },
+      ],
+    }
+
+    const bundle = convertClaudeToCodex(plugin, {
+      agentMode: "subagent",
+      inferTemperature: false,
+      permissions: "none",
+    })
+
+    const skill = bundle.generatedSkills.find((s) => s.name === "tool-runner")
+    expect(skill).toBeDefined()
+    expect(skill!.sidecarDirs).toHaveLength(1)
+    expect(skill!.sidecarDirs![0].targetName).toBe("scripts")
+    expect(skill!.sidecarDirs![0].sourceDir).toBe(scriptsDir)
+  })
+
+  test("does not collect unreferenced sibling directories as sidecars", async () => {
+    const tempRoot = await fs.mkdtemp(path.join(os.tmpdir(), "codex-sidecar-none-"))
+    const agentsDir = path.join(tempRoot, "agents")
+    await fs.mkdir(path.join(agentsDir, "unused"), { recursive: true })
+    const agentPath = path.join(agentsDir, "plain.md")
+    await fs.writeFile(agentPath, "No directory references here.\n")
+
+    const plugin: ClaudePlugin = {
+      ...fixturePlugin,
+      commands: [],
+      skills: [],
+      agents: [
+        {
+          name: "plain",
+          description: "No sidecars",
+          body: "No directory references here.",
+          sourcePath: agentPath,
+        },
+      ],
+    }
+
+    const bundle = convertClaudeToCodex(plugin, {
+      agentMode: "subagent",
+      inferTemperature: false,
+      permissions: "none",
+    })
+
+    const skill = bundle.generatedSkills.find((s) => s.name === "plain")
+    expect(skill!.sidecarDirs ?? []).toHaveLength(0)
   })
 
   test("truncates generated skill descriptions to Codex limits and single line", () => {

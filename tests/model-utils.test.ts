@@ -35,11 +35,6 @@ describe("addProviderPrefix", () => {
     expect(addProviderPrefix("gemini-2.0")).toBe("google/gemini-2.0")
   })
 
-  test("prefixes Qwen models with qwen/", () => {
-    expect(addProviderPrefix("qwen-max")).toBe("qwen/qwen-max")
-    expect(addProviderPrefix("qwen-3.5-plus")).toBe("qwen/qwen-3.5-plus")
-  })
-
   test("prefixes MiniMax models with minimax/", () => {
     expect(addProviderPrefix("minimax-m2.7")).toBe("minimax/minimax-m2.7")
     expect(addProviderPrefix("minimax-m2.5-highspeed")).toBe("minimax/minimax-m2.5-highspeed")

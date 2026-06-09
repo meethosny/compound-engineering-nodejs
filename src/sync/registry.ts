@@ -6,11 +6,11 @@ import { syncToCopilot } from "./copilot"
 import { syncToDroid } from "./droid"
 import { syncToGemini } from "./gemini"
 import { syncToKiro } from "./kiro"
-import { syncToOpenClaw } from "./openclaw"
 import { syncToOpenCode } from "./opencode"
 import { syncToPi } from "./pi"
-import { syncToQwen } from "./qwen"
-import { syncToWindsurf } from "./windsurf"
+import { syncToCursor } from "./cursor"
+import { syncToAntigravity } from "./antigravity"
+import { syncToAgents } from "./agents"
 
 function getCopilotHomeRoot(home: string): string {
   return path.join(home, ".copilot")
@@ -27,10 +27,10 @@ export type SyncTargetName =
   | "droid"
   | "copilot"
   | "gemini"
-  | "windsurf"
   | "kiro"
-  | "qwen"
-  | "openclaw"
+  | "cursor"
+  | "antigravity"
+  | "agents"
 
 export type SyncTargetDefinition = {
   name: SyncTargetName
@@ -88,15 +88,6 @@ export const syncTargets: SyncTargetDefinition[] = [
     sync: syncToGemini,
   },
   {
-    name: "windsurf",
-    detectPaths: (home, cwd) => [
-      path.join(home, ".codeium", "windsurf"),
-      path.join(cwd, ".windsurf"),
-    ],
-    resolveOutputRoot: (home) => path.join(home, ".codeium", "windsurf"),
-    sync: syncToWindsurf,
-  },
-  {
     name: "kiro",
     detectPaths: (home, cwd) => [
       path.join(home, ".kiro"),
@@ -106,19 +97,31 @@ export const syncTargets: SyncTargetDefinition[] = [
     sync: syncToKiro,
   },
   {
-    name: "qwen",
+    name: "cursor",
     detectPaths: (home, cwd) => [
-      path.join(home, ".qwen"),
-      path.join(cwd, ".qwen"),
+      path.join(home, ".cursor"),
+      path.join(cwd, ".cursor"),
     ],
-    resolveOutputRoot: (home) => path.join(home, ".qwen"),
-    sync: syncToQwen,
+    resolveOutputRoot: (home) => path.join(home, ".cursor"),
+    sync: syncToCursor,
   },
   {
-    name: "openclaw",
-    detectPaths: (home) => [path.join(home, ".openclaw")],
-    resolveOutputRoot: (home) => path.join(home, ".openclaw"),
-    sync: syncToOpenClaw,
+    name: "antigravity",
+    detectPaths: (home, cwd) => [
+      path.join(cwd, ".agent"),
+      getGeminiHomeRoot(home),
+    ],
+    resolveOutputRoot: (home) => getGeminiHomeRoot(home),
+    sync: syncToAntigravity,
+  },
+  {
+    name: "agents",
+    detectPaths: (home, cwd) => [
+      path.join(cwd, ".agents"),
+      path.join(home, ".agents"),
+    ],
+    resolveOutputRoot: (home) => path.join(home, ".agents"),
+    sync: syncToAgents,
   },
 ]
 

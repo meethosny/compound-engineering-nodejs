@@ -1,36 +1,36 @@
 import path from "path"
 import type { ClaudeHomeConfig } from "../parsers/claude-home"
 import type { ClaudeMcpServer } from "../types/claude"
-import type { QwenMcpServer } from "../types/qwen"
-import { syncQwenCommands } from "./commands"
+import type { CursorMcpServer } from "../types/cursor"
+import { syncCursorCommands } from "./commands"
 import { mergeJsonConfigAtKey } from "./json-config"
-import { hasExplicitRemoteTransport, hasExplicitSseTransport } from "./mcp-transports"
 import { syncSkills } from "./skills"
 
-export async function syncToQwen(
+export async function syncToCursor(
   config: ClaudeHomeConfig,
   outputRoot: string,
 ): Promise<void> {
   await syncSkills(config.skills, path.join(outputRoot, "skills"))
-  await syncQwenCommands(config, outputRoot)
+  await syncCursorCommands(config, outputRoot)
 
   if (Object.keys(config.mcpServers).length > 0) {
     await mergeJsonConfigAtKey({
-      configPath: path.join(outputRoot, "settings.json"),
+      configPath: path.join(outputRoot, "mcp.json"),
       key: "mcpServers",
-      incoming: convertMcpForQwen(config.mcpServers),
+      incoming: convertMcpForCursor(config.mcpServers),
     })
   }
 }
 
-function convertMcpForQwen(
+function convertMcpForCursor(
   servers: Record<string, ClaudeMcpServer>,
-): Record<string, QwenMcpServer> {
-  const result: Record<string, QwenMcpServer> = {}
+): Record<string, CursorMcpServer> {
+  const result: Record<string, CursorMcpServer> = {}
 
   for (const [name, server] of Object.entries(servers)) {
     if (server.command) {
       result[name] = {
+        type: "stdio",
         command: server.command,
         args: server.args,
         env: server.env,
@@ -38,27 +38,11 @@ function convertMcpForQwen(
       continue
     }
 
-    if (!server.url) {
-      continue
-    }
-
-    if (hasExplicitSseTransport(server)) {
+    if (server.url) {
       result[name] = {
         url: server.url,
         headers: server.headers,
       }
-      continue
-    }
-
-    if (!hasExplicitRemoteTransport(server)) {
-      console.warn(
-        `Warning: Qwen MCP server "${name}" has an ambiguous remote transport; defaulting to Streamable HTTP.`,
-      )
-    }
-
-    result[name] = {
-      httpUrl: server.url,
-      headers: server.headers,
     }
   }
 

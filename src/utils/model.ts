@@ -42,14 +42,13 @@ export function addProviderPrefix(model: string): string {
   if (/^claude-/.test(model)) return `anthropic/${model}`
   if (/^(gpt-|o1-|o3-)/.test(model)) return `openai/${model}`
   if (/^gemini-/.test(model)) return `google/${model}`
-  if (/^qwen-/.test(model)) return `qwen/${model}`
   if (/^minimax-/i.test(model)) return `minimax/${model}`
   return `anthropic/${model}`
 }
 
 /**
  * Normalize a model for targets that use provider-prefixed IDs
- * (OpenCode, OpenClaw). Resolves bare aliases and adds provider prefix.
+ * (OpenCode). Resolves bare aliases and adds provider prefix.
  *
  * "sonnet"                  -> "anthropic/claude-sonnet-4-6"
  * "claude-sonnet-4-20250514" -> "anthropic/claude-sonnet-4-20250514"

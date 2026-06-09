@@ -502,7 +502,7 @@ describe("discover-sessions", () => {
       "js-compound-engineering-plugin",
       "7",
       "--platform",
-      "windsurf"
+      "nonexistent"
     )
     expect(exitCode).toBe(1)
     expect(stderr).toContain("Unknown platform")

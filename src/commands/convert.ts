@@ -5,7 +5,7 @@ import { loadClaudePlugin } from "../parsers/claude"
 import { targets, validateScope } from "../targets"
 import type { ClaudeToOpenCodeOptions, PermissionMode } from "../converters/claude-to-opencode"
 import { ensureCodexAgentsFile } from "../utils/codex-agents"
-import { expandHome, resolveTargetHome } from "../utils/resolve-home"
+import { expandHome, resolveCodexHome, resolveTargetHome } from "../utils/resolve-home"
 import { resolveTargetOutputRoot } from "../utils/resolve-output"
 import { detectInstalledTools } from "../utils/detect-tools"
 
@@ -25,7 +25,7 @@ export default defineCommand({
     to: {
       type: "string",
       default: "opencode",
-      description: "Target format (opencode | codex | droid | cursor | pi | copilot | gemini | kiro | windsurf | openclaw | qwen | all)",
+      description: "Target format (opencode | codex | droid | pi | copilot | gemini | kiro | cursor | antigravity | agents | all)",
     },
     output: {
       type: "string",
@@ -35,22 +35,12 @@ export default defineCommand({
     codexHome: {
       type: "string",
       alias: "codex-home",
-      description: "Write Codex output to this .codex root (ex: ~/.codex)",
+      description: "Write Codex output to this Codex root (default: $CODEX_HOME or ~/.codex)",
     },
     piHome: {
       type: "string",
       alias: "pi-home",
       description: "Write Pi output to this Pi root (ex: ~/.pi/agent or ./.pi)",
-    },
-    openclawHome: {
-      type: "string",
-      alias: "openclaw-home",
-      description: "Write OpenClaw output to this extensions root (ex: ~/.openclaw/extensions)",
-    },
-    qwenHome: {
-      type: "string",
-      alias: "qwen-home",
-      description: "Write Qwen output to this Qwen extensions root (ex: ~/.qwen/extensions)",
     },
     scope: {
       type: "string",
@@ -87,10 +77,8 @@ export default defineCommand({
     const plugin = await loadClaudePlugin(String(args.source))
     const outputRoot = resolveOutputRoot(args.output)
     const hasExplicitOutput = Boolean(args.output && String(args.output).trim())
-    const codexHome = resolveTargetHome(args.codexHome, path.join(os.homedir(), ".codex"))
+    const codexHome = resolveCodexHome(args.codexHome)
     const piHome = resolveTargetHome(args.piHome, path.join(os.homedir(), ".pi", "agent"))
-    const openclawHome = resolveTargetHome(args.openclawHome, path.join(os.homedir(), ".openclaw", "extensions"))
-    const qwenHome = resolveTargetHome(args.qwenHome, path.join(os.homedir(), ".qwen", "extensions"))
 
     const options: ClaudeToOpenCodeOptions = {
       agentMode: String(args.agentMode) === "primary" ? "primary" : "subagent",
@@ -128,8 +116,6 @@ export default defineCommand({
           outputRoot,
           codexHome,
           piHome,
-          openclawHome,
-          qwenHome,
           pluginName: plugin.manifest.name,
           hasExplicitOutput,
         })
@@ -159,8 +145,6 @@ export default defineCommand({
       outputRoot,
       codexHome,
       piHome,
-      openclawHome,
-      qwenHome,
       pluginName: plugin.manifest.name,
       hasExplicitOutput,
       scope: resolvedScope,
@@ -195,8 +179,6 @@ export default defineCommand({
         outputRoot: path.join(outputRoot, extra),
         codexHome,
         piHome,
-        openclawHome,
-        qwenHome,
         pluginName: plugin.manifest.name,
         hasExplicitOutput,
         scope: handler.defaultScope,

@@ -1,44 +1,53 @@
 import { formatFrontmatter } from "../utils/frontmatter"
 import { type ClaudeAgent, type ClaudeCommand, type ClaudeMcpServer, type ClaudePlugin, filterSkillsByPlatform } from "../types/claude"
-import type { GeminiBundle, GeminiCommand, GeminiMcpServer, GeminiSkill } from "../types/gemini"
+import { normalizeName, sanitizeDescription, uniqueName } from "./claude-to-gemini"
+import type {
+  AntigravityBundle,
+  AntigravityMcpServer,
+  AntigravitySkill,
+  AntigravityWorkflow,
+} from "../types/antigravity"
 import type { ClaudeToOpenCodeOptions } from "./claude-to-opencode"
 
-export type ClaudeToGeminiOptions = ClaudeToOpenCodeOptions
+export type ClaudeToAntigravityOptions = ClaudeToOpenCodeOptions
 
-const GEMINI_DESCRIPTION_MAX_LENGTH = 1024
-
-export function convertClaudeToGemini(
+export function convertClaudeToAntigravity(
   plugin: ClaudePlugin,
-  _options: ClaudeToGeminiOptions,
-): GeminiBundle {
+  _options: ClaudeToAntigravityOptions,
+): AntigravityBundle {
   const usedSkillNames = new Set<string>()
-  const usedCommandNames = new Set<string>()
+  const usedWorkflowNames = new Set<string>()
 
-  const platformSkills = filterSkillsByPlatform(plugin.skills, "gemini")
+  const platformSkills = filterSkillsByPlatform(plugin.skills, "antigravity")
   const skillDirs = platformSkills.map((skill) => ({
     name: skill.name,
     sourceDir: skill.sourceDir,
   }))
 
-  // Reserve skill names from pass-through skills
+  // Reserve skill names from pass-through skills before generating agent skills.
   for (const skill of skillDirs) {
     usedSkillNames.add(normalizeName(skill.name))
   }
 
+  // Agents -> Skills. Antigravity subagents are runtime-dynamic with no stable
+  // user-authorable file format, so (like the Gemini converter) we map every
+  // Claude agent to an Antigravity skill: a SKILL.md with name + description
+  // frontmatter and the agent instructions as the body.
   const generatedSkills = plugin.agents.map((agent) => convertAgentToSkill(agent, usedSkillNames))
 
-  const commands = plugin.commands.map((command) => convertCommand(command, usedCommandNames))
+  // Commands -> markdown workflows (NOT Gemini's TOML).
+  const workflows = plugin.commands.map((command) => convertCommandToWorkflow(command, usedWorkflowNames))
 
   const mcpServers = convertMcpServers(plugin.mcpServers)
 
   if (plugin.hooks && Object.keys(plugin.hooks.hooks).length > 0) {
-    console.warn("Warning: Gemini CLI hooks use a different format (BeforeTool/AfterTool with matchers). Hooks were skipped during conversion.")
+    console.warn("Warning: Antigravity does not support Claude Code hooks. Hooks were skipped during conversion.")
   }
 
-  return { generatedSkills, skillDirs, commands, mcpServers }
+  return { generatedSkills, skillDirs, workflows, rules: [], mcpServers }
 }
 
-function convertAgentToSkill(agent: ClaudeAgent, usedNames: Set<string>): GeminiSkill {
+function convertAgentToSkill(agent: ClaudeAgent, usedNames: Set<string>): AntigravitySkill {
   const name = uniqueName(normalizeName(agent.name), usedNames)
   const description = sanitizeDescription(
     agent.description ?? `Use this skill for ${agent.name} tasks`,
@@ -46,7 +55,7 @@ function convertAgentToSkill(agent: ClaudeAgent, usedNames: Set<string>): Gemini
 
   const frontmatter: Record<string, unknown> = { name, description }
 
-  let body = transformContentForGemini(agent.body.trim())
+  let body = transformContentForAntigravity(agent.body.trim())
   if (agent.capabilities && agent.capabilities.length > 0) {
     const capabilities = agent.capabilities.map((c) => `- ${c}`).join("\n")
     body = `## Capabilities\n${capabilities}\n\n${body}`.trim()
@@ -59,32 +68,33 @@ function convertAgentToSkill(agent: ClaudeAgent, usedNames: Set<string>): Gemini
   return { name, content }
 }
 
-function convertCommand(command: ClaudeCommand, usedNames: Set<string>): GeminiCommand {
+function convertCommandToWorkflow(command: ClaudeCommand, usedNames: Set<string>): AntigravityWorkflow {
   // Preserve namespace structure: workflows:plan -> workflows/plan
   const commandPath = resolveCommandPath(command.name)
   const pathKey = commandPath.join("/")
   uniqueName(pathKey, usedNames) // Track for dedup
 
   const description = command.description ?? `Converted from Claude command ${command.name}`
-  const transformedBody = transformContentForGemini(command.body.trim())
+  const transformedBody = transformContentForAntigravity(command.body.trim())
 
-  let prompt = transformedBody
+  let steps = transformedBody
   if (command.argumentHint) {
-    prompt += `\n\nUser request: {{args}}`
+    steps += `\n\nUser request: {{args}}`
   }
 
-  const content = toToml(description, prompt)
+  const content = toWorkflowMarkdown(description, steps)
   return { name: pathKey, content }
 }
 
 /**
- * Transform Claude Code content to Gemini-compatible content.
+ * Transform Claude Code content to Antigravity-compatible content.
  *
  * 1. Task agent calls: Task agent-name(args) -> Use the agent-name skill to: args
- * 2. Path rewriting: .claude/ -> .gemini/, ~/.claude/ -> ~/.gemini/
+ * 2. Path rewriting: .claude/ -> .agent/ (project config root). ~/.claude/ stays
+ *    mapped to ~/.gemini/ since Antigravity's global config lives under ~/.gemini/.
  * 3. Agent references: @agent-name -> the agent-name skill
  */
-export function transformContentForGemini(body: string): string {
+export function transformContentForAntigravity(body: string): string {
   let result = body
 
   // 1. Transform Task agent calls (supports namespaced names like js-compound-engineering:research:agent-name)
@@ -98,10 +108,11 @@ export function transformContentForGemini(body: string): string {
       : `${prefix}Use the ${skillName} skill`
   })
 
-  // 2. Rewrite .claude/ paths to .gemini/
+  // 2. Rewrite paths. Global ~/.claude/ -> ~/.gemini/ (Antigravity global root),
+  //    project .claude/ -> .agent/ (Antigravity project config root).
   result = result
     .replace(/~\/\.claude\//g, "~/.gemini/")
-    .replace(/\.claude\//g, ".gemini/")
+    .replace(/\.claude\//g, ".agent/")
 
   // 3. Transform @agent-name references
   const agentRefPattern = /@([a-z][a-z0-9-]*-(?:agent|reviewer|researcher|analyst|specialist|oracle|sentinel|guardian|strategist))/gi
@@ -114,18 +125,19 @@ export function transformContentForGemini(body: string): string {
 
 function convertMcpServers(
   servers?: Record<string, ClaudeMcpServer>,
-): Record<string, GeminiMcpServer> | undefined {
+): Record<string, AntigravityMcpServer> | undefined {
   if (!servers || Object.keys(servers).length === 0) return undefined
 
-  const result: Record<string, GeminiMcpServer> = {}
+  const result: Record<string, AntigravityMcpServer> = {}
   for (const [name, server] of Object.entries(servers)) {
-    const entry: GeminiMcpServer = {}
+    const entry: AntigravityMcpServer = {}
     if (server.command) {
       entry.command = server.command
       if (server.args && server.args.length > 0) entry.args = server.args
       if (server.env && Object.keys(server.env).length > 0) entry.env = server.env
     } else if (server.url) {
-      entry.url = server.url
+      // Antigravity uses serverUrl (NOT url/httpUrl) for remote MCP servers.
+      entry.serverUrl = server.url
       if (server.headers && Object.keys(server.headers).length > 0) entry.headers = server.headers
     }
     result[name] = entry
@@ -143,58 +155,42 @@ function resolveCommandPath(name: string): string[] {
 }
 
 /**
- * Serialize to TOML command format.
- * Uses multi-line strings (""") for prompt field.
+ * Serialize a command into an Antigravity markdown workflow:
+ * YAML frontmatter with `description`, then numbered markdown steps derived
+ * from the command body. Each top-level line of the body becomes a step.
  */
-export function toToml(description: string, prompt: string): string {
-  const lines: string[] = []
-  lines.push(`description = ${formatTomlString(description)}`)
-
-  // Use multi-line string for prompt
-  const escapedPrompt = prompt.replace(/\\/g, "\\\\").replace(/"""/g, '\\"\\"\\"')
-  lines.push(`prompt = """`)
-  lines.push(escapedPrompt)
-  lines.push(`"""`)
-
-  return lines.join("\n")
+export function toWorkflowMarkdown(description: string, steps: string): string {
+  const frontmatter = formatFrontmatter({ description }, "").trimEnd()
+  const numbered = numberSteps(steps)
+  return `${frontmatter}\n\n## Steps\n\n${numbered}`
 }
 
-function formatTomlString(value: string): string {
-  return JSON.stringify(value)
-}
+/**
+ * Convert body lines into a numbered markdown list. Existing markdown list
+ * markers (-, *, 1.) are normalized into ordered steps; blank lines and
+ * non-list prose are preserved verbatim between steps so multi-line content
+ * (code blocks, paragraphs) survives.
+ */
+function numberSteps(body: string): string {
+  const lines = body.split("\n")
+  const out: string[] = []
+  let stepIndex = 0
 
-// Exported so sibling Gemini-family converters (e.g. Antigravity) can reuse
-// the same name/description normalization without duplicating it.
-export function normalizeName(value: string): string {
-  const trimmed = value.trim()
-  if (!trimmed) return "item"
-  const normalized = trimmed
-    .toLowerCase()
-    .replace(/[\\/]+/g, "-")
-    .replace(/[:\s]+/g, "-")
-    .replace(/[^a-z0-9_-]+/g, "-")
-    .replace(/-+/g, "-")
-    .replace(/^-+|-+$/g, "")
-  return normalized || "item"
-}
-
-export function sanitizeDescription(value: string, maxLength = GEMINI_DESCRIPTION_MAX_LENGTH): string {
-  const normalized = value.replace(/\s+/g, " ").trim()
-  if (normalized.length <= maxLength) return normalized
-  const ellipsis = "..."
-  return normalized.slice(0, Math.max(0, maxLength - ellipsis.length)).trimEnd() + ellipsis
-}
-
-export function uniqueName(base: string, used: Set<string>): string {
-  if (!used.has(base)) {
-    used.add(base)
-    return base
+  for (const line of lines) {
+    const listMatch = line.match(/^\s*(?:[-*]|\d+\.)\s+(.*)$/)
+    if (listMatch) {
+      stepIndex += 1
+      out.push(`${stepIndex}. ${listMatch[1]}`)
+    } else {
+      out.push(line)
+    }
   }
-  let index = 2
-  while (used.has(`${base}-${index}`)) {
-    index += 1
+
+  // No list markers found: treat the whole body as a single step.
+  if (stepIndex === 0) {
+    const trimmed = body.trim()
+    return trimmed ? `1. ${trimmed}` : ""
   }
-  const name = `${base}-${index}`
-  used.add(name)
-  return name
+
+  return out.join("\n")
 }

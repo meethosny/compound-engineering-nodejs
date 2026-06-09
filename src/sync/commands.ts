@@ -4,16 +4,12 @@ import type { ClaudePlugin } from "../types/claude"
 import { backupFile, resolveCommandPath, sanitizePathName, writeText } from "../utils/files"
 import { convertClaudeToCodex } from "../converters/claude-to-codex"
 import { convertClaudeToCopilot } from "../converters/claude-to-copilot"
+import { convertClaudeToCursor } from "../converters/claude-to-cursor"
 import { convertClaudeToDroid } from "../converters/claude-to-droid"
 import { convertClaudeToGemini } from "../converters/claude-to-gemini"
 import { convertClaudeToKiro } from "../converters/claude-to-kiro"
 import { convertClaudeToOpenCode, type ClaudeToOpenCodeOptions } from "../converters/claude-to-opencode"
 import { convertClaudeToPi } from "../converters/claude-to-pi"
-import { convertClaudeToQwen, type ClaudeToQwenOptions } from "../converters/claude-to-qwen"
-import { convertClaudeToWindsurf } from "../converters/claude-to-windsurf"
-import { writeWindsurfBundle } from "../targets/windsurf"
-
-type WindsurfSyncScope = "global" | "workspace"
 
 const HOME_SYNC_PLUGIN_ROOT = path.join(process.cwd(), ".compound-sync-home")
 
@@ -21,11 +17,6 @@ const DEFAULT_SYNC_OPTIONS: ClaudeToOpenCodeOptions = {
   agentMode: "subagent",
   inferTemperature: false,
   permissions: "none",
-}
-
-const DEFAULT_QWEN_SYNC_OPTIONS: ClaudeToQwenOptions = {
-  agentMode: "subagent",
-  inferTemperature: false,
 }
 
 function hasCommands(config: ClaudeHomeConfig): boolean {
@@ -151,48 +142,15 @@ export async function syncKiroCommands(
   }
 }
 
-export async function syncWindsurfCommands(
-  config: ClaudeHomeConfig,
-  outputRoot: string,
-  scope: WindsurfSyncScope = "global",
-): Promise<void> {
-  if (!hasCommands(config)) return
-
-  const plugin = buildClaudeHomePlugin(config)
-  const bundle = convertClaudeToWindsurf(plugin, DEFAULT_SYNC_OPTIONS)
-  await writeWindsurfBundle(outputRoot, {
-    agentSkills: [],
-    commandWorkflows: bundle.commandWorkflows,
-    skillDirs: [],
-    mcpConfig: null,
-  }, scope)
-}
-
-export async function syncQwenCommands(
+export async function syncCursorCommands(
   config: ClaudeHomeConfig,
   outputRoot: string,
 ): Promise<void> {
   if (!hasCommands(config)) return
 
   const plugin = buildClaudeHomePlugin(config)
-  const bundle = convertClaudeToQwen(plugin, DEFAULT_QWEN_SYNC_OPTIONS)
-
-  for (const commandFile of bundle.commandFiles) {
-    const parts = commandFile.name.split(":")
-    if (parts.length > 1) {
-      const nestedDir = path.join(outputRoot, "commands", ...parts.slice(0, -1))
-      await writeText(path.join(nestedDir, `${parts[parts.length - 1]}.md`), commandFile.content + "\n")
-      continue
-    }
-
-    await writeText(path.join(outputRoot, "commands", `${commandFile.name}.md`), commandFile.content + "\n")
+  const bundle = convertClaudeToCursor(plugin, DEFAULT_SYNC_OPTIONS)
+  for (const skill of bundle.generatedSkills) {
+    await writeText(path.join(outputRoot, "skills", sanitizePathName(skill.name), "SKILL.md"), skill.content + "\n")
   }
-}
-
-export function warnUnsupportedOpenClawCommands(config: ClaudeHomeConfig): void {
-  if (!hasCommands(config)) return
-
-  console.warn(
-    "Warning: OpenClaw personal command sync is skipped because this sync target currently has no documented user-level command surface.",
-  )
 }
