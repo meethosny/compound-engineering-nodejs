@@ -16,18 +16,20 @@ Search your session history.
 
 ## Pre-resolved context
 
-**Repo name (pre-resolved):** !`common=$(git rev-parse --git-common-dir 2>/dev/null); if [ "$common" = ".git" ]; then basename "$(git rev-parse --show-toplevel 2>/dev/null)"; else basename "$(dirname "$common")"; fi`
+**Git branch (pre-resolved):** !`git rev-parse --abbrev-ref HEAD 2>/dev/null || true`
 
-**Git branch (pre-resolved):** !`git rev-parse --abbrev-ref HEAD 2>/dev/null`
+If the line above resolved to a plain branch name (like `feat/my-branch`), pass it to the agent for branch filtering. If it is empty or still contains a backtick command string (e.g., the working directory is not a git repository), omit it and let the agent derive the branch at runtime.
 
-If the lines above resolved to plain values (a folder name like `my-repo` and a branch name like `feat/my-branch`), they are ready to pass to the agent. If they still contain backtick command strings or are empty, they did not resolve — omit them from the dispatch and let the agent derive them at runtime.
+**Repo root (pre-resolved):** !`git rev-parse --show-toplevel 2>/dev/null || true`
+
+If the line above resolved to a path, take its last path component as the repo folder name and pass that to the agent for session discovery. If it is empty or still contains a backtick command string (e.g., a non-git working directory), omit it and let the agent derive the repo name at runtime.
 
 ## Execution
 
-If no argument is provided, ask what the user wants to know about their session history. Use the platform's blocking question tool (`AskUserQuestion` in Claude Code, `request_user_input` in Codex, `ask_user` in Gemini). If no question tool is available, ask in plain text and wait for a reply.
+If no argument is provided, ask what the user wants to know about their session history. Use the platform's blocking question tool: `AskUserQuestion` in Claude Code (call `ToolSearch` with `select:AskUserQuestion` first if its schema isn't already loaded — it is a deferred tool and may not be available at session start), `request_user_input` in Codex, `ask_user` in Gemini. Fall back to asking in plain text only when no blocking tool exists in the harness or the call errors (e.g., Codex edit modes) — not because a schema load is required. Never silently skip the question.
 
-Dispatch `js-compound-engineering:research:session-historian` with the user's question as the task prompt. Omit the `mode` parameter so the user's configured permission settings apply. Include in the dispatch prompt:
+Dispatch the `js-ce-session-historian` subagent via the platform's subagent primitive (`Agent`/`Task` in Claude Code, `spawn_agent` in Codex) with the user's question as the task prompt. Omit the `mode` parameter so the user's configured permission settings apply. Include in the dispatch prompt:
 
 - The user's question
 - The current working directory
-- The repo name and git branch from pre-resolved context (only if they resolved to plain values — do not pass literal command strings)
+- The repo folder name (last path component of the pre-resolved repo root) and git branch from pre-resolved context — pass each only if it resolved to a plain value; do not pass literal command strings or empty values

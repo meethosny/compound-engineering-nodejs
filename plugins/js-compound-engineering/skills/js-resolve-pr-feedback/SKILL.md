@@ -46,6 +46,8 @@ Then fetch all feedback using the GraphQL script at [scripts/get-pr-comments](sc
 bash scripts/get-pr-comments PR_NUMBER
 ```
 
+The script paginates every connection (review threads, PR comments, and review bodies), so long-lived PRs with more than one page of feedback are fully fetched. It also fails loudly when owner/repo auto-detection fails -- if it exits with an "Error: could not resolve owner/repo" message, do NOT silently continue or guess. Surface the error to the user and re-run with the repo passed explicitly: `bash scripts/get-pr-comments PR_NUMBER OWNER/REPO`. Continuing past a detection failure risks replying on the wrong repository's PR.
+
 Returns a JSON object with three keys:
 
 | Key | Contents | Has file/line? | Resolvable? |
@@ -142,7 +144,7 @@ Previously-resolved threads (from `cross_invocation.resolved_threads`) participa
 
 #### Individual dispatch (default)
 
-**For review threads** (`review_threads`): Spawn a `js-compound-engineering:workflow:js-pr-comment-resolver` agent for each new thread that is NOT already assigned to a cluster from step 3. Clustered threads are handled by cluster dispatch below -- do not dispatch them individually.
+**For review threads** (`review_threads`): Spawn a `js-ce-pr-comment-resolver` agent for each new thread that is NOT already assigned to a cluster from step 3. Clustered threads are handled by cluster dispatch below -- do not dispatch them individually.
 
 Each agent receives:
 - The thread ID
@@ -151,11 +153,11 @@ Each agent receives:
 - The PR number (for context)
 - The feedback type (`review_thread`)
 
-**For PR comments and review bodies** (`pr_comments`, `review_bodies`): These lack file/line context. Spawn a `js-compound-engineering:workflow:js-pr-comment-resolver` agent for each actionable non-clustered item. The agent receives the comment ID, body text, PR number, and feedback type (`pr_comment` or `review_body`). The agent must identify the relevant files from the comment text and the PR diff.
+**For PR comments and review bodies** (`pr_comments`, `review_bodies`): These lack file/line context. Spawn a `js-ce-pr-comment-resolver` agent for each actionable non-clustered item. The agent receives the comment ID, body text, PR number, and feedback type (`pr_comment` or `review_body`). The agent must identify the relevant files from the comment text and the PR diff.
 
 #### Cluster dispatch
 
-For each cluster identified in step 3, dispatch ONE `js-compound-engineering:workflow:js-pr-comment-resolver` agent that receives:
+For each cluster identified in step 3, dispatch ONE `js-ce-pr-comment-resolver` agent that receives:
 - The `<cluster-brief>` XML block
 - All thread details for threads in the cluster (IDs, file paths, line numbers, comment text)
 - The PR number
@@ -239,10 +241,19 @@ For `needs-human` verdicts, post the reply but do NOT resolve the thread. Leave 
 
 #### Review threads
 
+0. **Verify the thread ID** before replying. GitHub Enterprise can return inconsistent node IDs for the same thread depending on the query path, and replying with a mismatched ID can land the reply on the wrong PR. Always confirm the ID from `get-pr-comments` resolves to the correct thread using [scripts/get-thread-for-comment](scripts/get-thread-for-comment) with the comment's numeric URL ID:
+```bash
+# Extract the numeric comment ID from the comment URL (e.g. discussion_r2589700 -> 2589700)
+GH_REPO=OWNER/REPO gh api repos/{owner}/{repo}/pulls/comments/COMMENT_ID --jq .node_id
+bash scripts/get-thread-for-comment PR_NUMBER COMMENT_NODE_ID OWNER/REPO
+```
+The returned `id` is the authoritative thread ID to use for reply and resolve. If it differs from what `get-pr-comments` returned, use the one from this script.
+
 1. **Reply** using [scripts/reply-to-pr-thread](scripts/reply-to-pr-thread):
 ```bash
 echo "REPLY_TEXT" | bash scripts/reply-to-pr-thread THREAD_ID
 ```
+Check that the returned comment URL contains the correct `OWNER/REPO` and PR number before proceeding to resolve.
 
 2. **Resolve** using [scripts/resolve-pr-thread](scripts/resolve-pr-thread):
 ```bash
@@ -360,7 +371,7 @@ This fetches thread IDs and their first comment IDs (minimal fields, no bodies) 
 
 ### 2. Fix, Reply, Resolve
 
-Spawn a single `js-compound-engineering:workflow:js-pr-comment-resolver` agent for the thread. Then follow the same commit -> push -> reply -> resolve flow as Full Mode steps 6-7.
+Spawn a single `js-ce-pr-comment-resolver` agent for the thread. Then follow the same commit -> push -> reply -> resolve flow as Full Mode steps 6-7.
 
 ---
 

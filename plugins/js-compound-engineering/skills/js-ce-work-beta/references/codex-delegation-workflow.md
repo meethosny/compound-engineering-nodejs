@@ -74,13 +74,13 @@ Present a one-time consent warning using the platform's blocking question tool (
 Present the sandbox mode choice: (1) yolo (recommended), (2) full-auto.
 
 On acceptance:
-- Resolve the repo root: `git rev-parse --show-toplevel`. Write `work_delegate_consent: true` and `work_delegate_sandbox: <chosen-mode>` to `<repo-root>/.compound-engineering/config.local.yaml`
+- Resolve the repo root: `git rev-parse --show-toplevel`. Write `work_delegate_consent: true` and `work_delegate_sandbox: <chosen-mode>` to `<repo-root>/.js-compound-engineering/config.local.yaml`
 - To write: (1) if file or directory does not exist, create `<repo-root>/.compound-engineering/` and write the YAML file; (2) if file exists, merge new keys preserving existing keys
 - Update `consent_granted` and `sandbox_mode` in the resolved state
 
 On decline:
 - Ask whether to disable delegation entirely for this project
-- If yes: write `work_delegate: false` to `<repo-root>/.compound-engineering/config.local.yaml` (using the same repo root resolved above). To write: (1) if file or directory does not exist, create `<repo-root>/.compound-engineering/` and write the YAML file; (2) if file exists, merge new keys preserving existing keys. Set `delegation_active` to false, proceed in standard mode
+- If yes: write `work_delegate: false` to `<repo-root>/.js-compound-engineering/config.local.yaml` (using the same repo root resolved above). To write: (1) if file or directory does not exist, create `<repo-root>/.compound-engineering/` and write the YAML file; (2) if file exists, merge new keys preserving existing keys. Set `delegation_active` to false, proceed in standard mode
 - If no: set `delegation_active` to false for this invocation only, proceed in standard mode
 
 **Headless consent:** If running in a headless or non-interactive context, delegation proceeds only if `work_delegate_consent` is already `true` in the config file. If consent is not recorded, set `delegation_active` to false silently.
@@ -88,6 +88,45 @@ On decline:
 ## Batching
 
 Delegate all units in one batch. If the plan exceeds 5 units, split into batches at the plan's own phase boundaries, or in groups of roughly 5 -- never splitting units that share files. Skip delegation entirely if every unit is trivial.
+
+## Per-Batch Effort
+
+Each batch picks an effort level proportional to its complexity, then resolves against the config floor before invocation.
+
+**Effort levels — guidelines, not predicates**
+
+Pick the level that best fits the batch. These are signals to weigh, not boxes to tick — use judgment.
+
+- **default (no flag)** — trivial work with no behavioral change: a one-line config tweak, a rename, a typo or comment-only fix, a pure documentation update. Defers to the user's `~/.codex/config.toml` default (which is `medium` on a stock Codex install).
+- **`medium`** — small, well-scoped behavioral changes that stay clear of high-risk areas. A handful of files, a single concern, no novel architecture.
+- **`high`** — work that touches a high-risk area (auth/session logic, payments, database migrations, external API contracts, error handling with retries/fallbacks), or work spanning enough surface area that one mistake could cascade.
+- **`xhigh`** — architectural work: cross-cutting refactors, multiple high-risk areas in the same batch, changes that propagate broadly, or anywhere a wrong call meaningfully degrades the project.
+
+When in doubt, lean up one level — under-resourcing risky work costs more than over-resourcing routine work. Briefly note the picked level and the signal that drove it (e.g., "`high` — touches db/migrations") so the choice is auditable.
+
+A few edge cases worth handling explicitly:
+- **Test-only batches:** classify by what the tests *exercise*, not by file paths. Tests for auth flows, payment logic, or migrations get the same level the equivalent implementation work would get.
+- **Mixed-complexity batches:** the batch picks one level. If a single batch combines a typo unit and a payments rewrite, pick the higher level. If the spread feels wasteful, prefer splitting at the batching step (see Batching above) over averaging it out.
+- **Deletion-only batches:** classify by the risk of what is being removed, not by counts of remaining content. Removing an auth module is `high` even if the batch produces zero `Modify` content.
+- **Documentation- or comment-only batches:** `default`.
+
+**Floor and resolution — hard rules**
+
+Effort levels are ordered: `minimal < low < medium < high < xhigh`.
+
+Compute `effective_effort`:
+
+- If `delegate_effort` is unset: `effective_effort = picked_level`.
+- If `delegate_effort` is set: substitute `default` → `medium` in `picked_level`, then `effective_effort = max(picked_level, delegate_effort)`.
+
+Emit based on `effective_effort`:
+
+- `medium`, `high`, or `xhigh` → emit `-c 'model_reasoning_effort="<value>"'`.
+- `default` → omit the flag (defer to `~/.codex/config.toml`). Reachable only when `delegate_effort` is unset and the pick is `default`.
+
+Never pass the literal string `"default"` to `codex exec`.
+
+Store `effective_effort` as a per-batch derived state value (alongside the session-level `delegate_effort`) and use it in place of `delegate_effort` throughout the Execution Loop.
 
 ## Prompt Template
 
@@ -222,19 +261,24 @@ else
 fi
 
 codex exec \
-  -m "<delegate_model>" \
-  -c 'model_reasoning_effort="<delegate_effort>"' \
   $SANDBOX_FLAG \
   --output-schema .context/compound-engineering/codex-delegation/<run-id>/result-schema.json \
   -o .context/compound-engineering/codex-delegation/<run-id>/result-batch-<batch-num>.json \
   - < .context/compound-engineering/codex-delegation/<run-id>/prompt-batch-<batch-num>.md
 ```
 
+**Conditional flags** — only include each line when the corresponding skill-state value is set:
+
+- If `delegate_model` is set, insert `  -m "<delegate_model>" \` as a line before `$SANDBOX_FLAG`.
+- If `effective_effort` is `medium`, `high`, or `xhigh` (resolved via Per-Batch Effort above), insert `  -c 'model_reasoning_effort="<effective_effort>"' \` as a line before `$SANDBOX_FLAG`. When `effective_effort` is `default` (only possible when `delegate_effort` is unset and the pick is `default`), omit the line — never pass the literal string `"default"`.
+
+When either value is unset, omit its line entirely — Codex resolves the default from the user's `~/.codex/config.toml` (and ultimately the CLI's own built-in default). Do not substitute a placeholder string for unset values.
+
 Critical: `run_in_background: true` must be set as a **Bash tool parameter**, not as a shell `&` suffix. The tool parameter is what removes the timeout ceiling. A shell `&` inside a foreground Bash call still hits the 2-minute default timeout.
 
-Quoting is critical for the `-c` flag: use single quotes around the entire key=value and double quotes around the TOML string value inside. Example: `-c 'model_reasoning_effort="high"'`.
+Quoting is critical for the `-c` flag when present: use single quotes around the entire key=value and double quotes around the TOML string value inside. Example: `-c 'model_reasoning_effort="high"'`.
 
-Do not improvise CLI flags or modify this invocation template.
+Do not improvise CLI flags or modify this invocation template beyond the documented conditional insertions.
 
 **Step B — Poll (foreground, separate Bash calls):**
 

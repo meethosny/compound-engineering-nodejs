@@ -1,6 +1,6 @@
 # Persona Catalog
 
-17 reviewer personas organized into always-on, cross-cutting conditional, and stack-specific conditional layers, plus CE-specific agents. The orchestrator uses this catalog to select which reviewers to spawn for each review.
+16 reviewer personas organized into always-on, cross-cutting conditional, and stack-specific conditional layers, plus CE-specific agents. The orchestrator uses this catalog to select which reviewers to spawn for each review.
 
 ## Always-on (4 personas + 2 CE agents)
 
@@ -10,17 +10,17 @@ Spawned on every review regardless of diff content.
 
 | Persona | Agent | Focus |
 |---------|-------|-------|
-| `correctness` | `js-compound-engineering:review:correctness-reviewer` | Logic errors, edge cases, state bugs, error propagation, intent compliance |
-| `testing` | `js-compound-engineering:review:testing-reviewer` | Coverage gaps, weak assertions, brittle tests, missing edge case tests |
-| `maintainability` | `js-compound-engineering:review:maintainability-reviewer` | Coupling, complexity, naming, dead code, premature abstraction |
-| `project-standards` | `js-compound-engineering:review:project-standards-reviewer` | CLAUDE.md and AGENTS.md compliance -- frontmatter, references, naming, cross-platform portability, tool selection |
+| `correctness` | `js-ce-correctness-reviewer` | Logic errors, edge cases, state bugs, error propagation, intent compliance |
+| `testing` | `js-ce-testing-reviewer` | Coverage gaps, weak assertions, brittle tests, missing edge case tests |
+| `maintainability` | `js-ce-maintainability-reviewer` | Structural quality, complexity deletion, 1k-line regressions, coupling, type-boundary leaks, dead code, premature abstraction |
+| `project-standards` | `js-ce-project-standards-reviewer` | CLAUDE.md and AGENTS.md compliance -- frontmatter, references, naming, cross-platform portability, tool selection |
 
 **CE agents (unstructured output, synthesized separately):**
 
 | Agent | Focus |
 |-------|-------|
-| `js-compound-engineering:review:agent-native-reviewer` | Verify new features are agent-accessible |
-| `js-compound-engineering:research:learnings-researcher` | Search docs/solutions/ for past issues related to this PR's modules and patterns |
+| `js-ce-agent-native-reviewer` | Verify new features are agent-accessible |
+| `js-ce-learnings-researcher` | Search docs/solutions/ for past issues related to this PR's modules and patterns |
 
 ## Conditional (8 personas)
 
@@ -28,40 +28,39 @@ Spawned when the orchestrator identifies relevant patterns in the diff. The orch
 
 | Persona | Agent | Select when diff touches... |
 |---------|-------|---------------------------|
-| `security` | `js-compound-engineering:review:security-reviewer` | Auth middleware, public endpoints, user input handling, permission checks, secrets management |
-| `performance` | `js-compound-engineering:review:performance-reviewer` | Database queries, ORM calls, loop-heavy data transforms, caching layers, async/concurrent code |
-| `api-contract` | `js-compound-engineering:review:api-contract-reviewer` | Route definitions, serializer/interface changes, event schemas, exported type signatures, API versioning |
-| `data-migrations` | `js-compound-engineering:review:data-migrations-reviewer` | Migration files, schema changes, backfill scripts, data transformations |
-| `reliability` | `js-compound-engineering:review:reliability-reviewer` | Error handling, retry logic, circuit breakers, timeouts, background jobs, async handlers, health checks |
-| `adversarial` | `js-compound-engineering:review:adversarial-reviewer` | Diff has >=50 changed lines of executable code (not prose/instruction Markdown, JSON schemas, or config), OR touches auth, payments, data mutations, external API integrations, or other high-risk domains regardless of file type |
-| `cli-readiness` | `js-compound-engineering:review:cli-readiness-reviewer` | CLI command definitions, argument parsing, CLI framework usage, command handler implementations |
-| `previous-comments` | `js-compound-engineering:review:previous-comments-reviewer` | **PR-only.** Reviewing a PR that has existing review comments or review threads from prior review rounds. Skip entirely when no PR metadata was gathered in Stage 1. |
+| `security` | `js-ce-security-reviewer` | Auth middleware, public endpoints, user input handling, permission checks, secrets management |
+| `performance` | `js-ce-performance-reviewer` | Database queries, ORM calls, loop-heavy data transforms, caching layers, async/concurrent code |
+| `api-contract` | `js-ce-api-contract-reviewer` | Route definitions, serializer/interface changes, event schemas, exported type signatures, API versioning |
+| `data-migration` | `js-ce-data-migration-reviewer` | Migration files, schema artifacts (`prisma/schema.prisma`, `db/schema.ts`), backfill scripts, data transformations -- **not** model/query-only changes without migration artifacts |
+| `reliability` | `js-ce-reliability-reviewer` | Error handling, retry logic, circuit breakers, timeouts, background jobs, async handlers, health checks |
+| `adversarial` | `js-ce-adversarial-reviewer` | Diff has >=50 changed non-test, non-generated, non-lockfile lines, OR touches auth, payments, data mutations, external API integrations, or other high-risk domains |
+| `cli-readiness` | `js-ce-cli-readiness-reviewer` | CLI command definitions, argument parsing, CLI framework usage, command handler implementations |
+| `previous-comments` | `js-ce-previous-comments-reviewer` | **PR-only AND comment-gated.** Reviewing a PR that has existing review comments or review threads from prior review rounds. Skip entirely when no PR metadata was gathered in Stage 1, OR when Stage 1's `hasPriorComments` flag is false (no `reviews` and no `comments` on the PR). |
 
-## Stack-Specific Conditional (5 personas)
+## Stack-Specific Conditional (4 personas)
 
-These reviewers keep their original opinionated lens. They are additive with the cross-cutting personas above, not replacements for them.
+These reviewers keep their opinionated lens. They cover runtime behavior and stack conventions the always-on personas do not specialize in, and are additive with the cross-cutting personas above -- not replacements for them. Structural and maintainability concerns live in the always-on `maintainability` persona -- do not spawn extra stack reviewers for philosophy or convention-only passes.
 
 | Persona | Agent | Select when diff touches... |
 |---------|-------|---------------------------|
-| `js-modern-nodejs` | `js-compound-engineering:review:js-modern-nodejs-reviewer` | Node.js architecture, service objects, authentication/session choices, Hotwire-vs-SPA boundaries, or abstractions that may fight Node.js conventions |
-| `kieran-typescript` | `js-compound-engineering:review:kieran-typescript-reviewer` | Node.js controllers, models, views, jobs, components, routes, or other application-layer JavaScript/TypeScript code where clarity and conventions matter |
-| `kieran-python` | `js-compound-engineering:review:kieran-python-reviewer` | Python modules, endpoints, services, scripts, or typed domain code |
-| `kieran-typescript` | `js-compound-engineering:review:kieran-typescript-reviewer` | TypeScript components, services, hooks, utilities, or shared types |
-| `julik-frontend-races` | `js-compound-engineering:review:julik-frontend-races-reviewer` | Stimulus/Turbo controllers, DOM event wiring, timers, async UI flows, animations, or frontend state transitions with race potential |
+| `js-modern-nodejs` | `js-ce-modern-nodejs-reviewer` | Node.js architecture, service objects, authentication/session choices, Hotwire-vs-SPA boundaries, or abstractions that may fight Node.js conventions |
+| `kieran-typescript` | `js-ce-kieran-typescript-reviewer` | Node.js/TypeScript application-layer code -- controllers, models, views, jobs, components, routes, services, hooks, utilities, or shared types where clarity and conventions matter |
+| `kieran-python` | `js-ce-kieran-python-reviewer` | Python modules, endpoints, services, scripts, or typed domain code |
+| `julik-frontend-races` | `js-ce-julik-frontend-races-reviewer` | Stimulus/Turbo controllers, DOM event wiring, timers, async UI flows, animations, or frontend state transitions with race potential |
 
 ## CE Conditional Agents (migration-specific)
 
-These CE-native agents provide specialized analysis beyond what the persona agents cover. Spawn them when the diff includes database migrations, schema.rb, or data backfills.
+Spawn `js-ce-deployment-verification-agent` when the migration-artifact gate applies **and** the change is risky (destructive DDL, backfills, NOT NULL without default, column renames/drops). Schema drift and migration safety live in the `data-migration` persona -- not separate CE agents.
 
 | Agent | Focus |
 |-------|-------|
-| `js-compound-engineering:review:schema-drift-detector` | Cross-references schema.rb changes against included migrations to catch unrelated drift |
-| `js-compound-engineering:review:deployment-verification-agent` | Produces Go/No-Go deployment checklist with SQL verification queries and rollback procedures |
+| `js-ce-deployment-verification-agent` | Go/No-Go deployment checklist with SQL verification queries and rollback procedures |
 
 ## Selection rules
 
 1. **Always spawn all 4 always-on personas** plus the 2 CE always-on agents.
 2. **For each cross-cutting conditional persona**, the orchestrator reads the diff and decides whether the persona's domain is relevant. This is a judgment call, not a keyword match.
 3. **For each stack-specific conditional persona**, use file types and changed patterns as a starting point, then decide whether the diff actually introduces meaningful work for that reviewer. Do not spawn language-specific reviewers just because one config or generated file happens to match the extension.
-4. **For CE conditional agents**, spawn when the diff includes migration files (`prisma/migrations/*.ts`, `db/schema.ts`) or data backfill scripts.
-5. **Announce the team** before spawning with a one-line justification per conditional reviewer selected.
+4. **For `data-migration`**, spawn only when the diff includes migration or schema artifacts (`prisma/migrations/*`, `prisma/schema.prisma`, `db/schema.ts`, TypeORM/Knex/Sequelize/Drizzle migration paths, or explicit backfill/data-transform scripts). Do **not** spawn for model-only or query-only changes without those files.
+5. **For CE conditional agents**, spawn `js-ce-deployment-verification-agent` when the migration-artifact gate applies and the change is risky (see above).
+6. **Announce the team** before spawning with a one-line justification per conditional reviewer selected.

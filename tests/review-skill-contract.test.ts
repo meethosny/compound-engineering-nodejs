@@ -7,94 +7,114 @@ async function readRepoFile(relativePath: string): Promise<string> {
   return readFile(path.join(process.cwd(), relativePath), "utf8")
 }
 
-describe("ce-review contract", () => {
-  test("documents explicit modes and orchestration boundaries", async () => {
-    const content = await readRepoFile("plugins/js-compound-engineering/skills/js-ce-review/SKILL.md")
+const SKILL = "plugins/js-compound-engineering/skills/js-ce-review/SKILL.md"
+const REFS = "plugins/js-compound-engineering/skills/js-ce-review/references"
+const AGENTS = "plugins/js-compound-engineering/agents/review"
 
-    expect(content).toContain("## Mode Detection")
-    expect(content).toContain("mode:autofix")
+describe("js-ce-review contract", () => {
+  test("documents explicit modes and orchestration boundaries", async () => {
+    const content = await readRepoFile(SKILL)
+
+    expect(content).toContain("## Argument Parsing")
+    expect(content).toContain("mode:autofix` is no longer supported")
     expect(content).toContain("mode:report-only")
+    expect(content).toContain("mode:agent")
     expect(content).toContain("mode:headless")
-    expect(content).toContain(".context/compound-engineering/js-ce-review/<run-id>/")
-    expect(content).toContain("Do not create residual todos or `.context` artifacts.")
-    expect(content).toContain(
-      "Do not start a mutating review round concurrently with browser testing on the same checkout.",
-    )
-    expect(content).toContain("mode:report-only cannot switch the shared checkout to review a PR target")
-    expect(content).toContain("mode:report-only cannot switch the shared checkout to review another branch")
-    expect(content).toContain("Resolve the base ref from the PR's actual base repository, not by assuming `origin`")
+    expect(content).toContain("/tmp/compound-engineering/js-ce-review/<run-id>/")
+    expect(content).toMatch(/Never push, open PRs, or file tickets/i)
+    expect(content).toContain("run artifact")
+    expect(content).toMatch(/check out (the PR branch|that branch)/i)
+    expect(content).toMatch(/Never run `gh pr checkout`/i)
     expect(content).not.toContain("Which severities should I fix?")
   })
 
-  test("documents headless mode contract for programmatic callers", async () => {
-    const content = await readRepoFile("plugins/js-compound-engineering/skills/js-ce-review/SKILL.md")
+  test("keeps plan requirements completeness compatible with current and legacy unit formats", async () => {
+    const content = await readRepoFile(SKILL)
 
-    // Headless mode has its own rules section
-    expect(content).toContain("### Headless mode rules")
-
-    // No interactive prompts (cross-platform)
-    expect(content).toContain(
-      "Never use the platform question tool",
-    )
-
-    // Structured output format
-    expect(content).toContain("### Headless output format")
-    expect(content).toContain("Code review complete (headless mode).")
-    expect(content).toContain('"Review complete" as the terminal signal')
-
-    // Applies safe_auto fixes but NOT safe for concurrent use
-    expect(content).toContain(
-      "Not safe for concurrent use on a shared checkout.",
-    )
-
-    // Writes artifacts but no todos, no commit/push/PR
-    expect(content).toContain("Do not create todo files.")
-    expect(content).toContain(
-      "Never commit, push, or create a PR",
-    )
-
-    // Single-pass fixing, no bounded re-review rounds
-    expect(content).toContain("No bounded re-review rounds")
-
-    // Checkout guard — headless shares report-only's guard
-    expect(content).toMatch(/mode:headless.*must run in an isolated checkout\/worktree or stop/)
-
-    // Conflicting mode flags
-    expect(content).toContain("**Conflicting mode flags:**")
-
-    // Structured error for missing scope
-    expect(content).toContain("Review failed (headless mode). Reason: no diff scope detected.")
-
-    // Degraded signal when all reviewers fail
-    expect(content).toContain("Code review degraded (headless mode).")
+    expect(content).toContain("current numeric subsections")
+    expect(content).toContain("`### U1.`")
+    expect(content).toContain("`### Unit 1:`")
+    expect(content).toContain("legacy bullet or checkbox unit entries")
+    expect(content).toContain("unaddressed requirements or implementation units")
   })
 
-  test("documents policy-driven routing and residual handoff", async () => {
-    const content = await readRepoFile("plugins/js-compound-engineering/skills/js-ce-review/SKILL.md")
+  test("documents agent mode contract for programmatic callers", async () => {
+    const content = await readRepoFile(SKILL)
 
+    // mode:agent is report-only (skips Stage 5c apply); same reviewer pipeline as default
+    expect(content).toContain("## Operating principles")
+    expect(content).toMatch(/`mode:agent` is \*\*report-only\*\*/i)
+    expect(content).toMatch(/does not change reviewer selection, merge logic, or scope rules/i)
+
+    // No blocking prompts (cross-platform)
+    expect(content).toContain("Never use `AskUserQuestion`")
+
+    // JSON output format
+    expect(content).toContain("### JSON output format")
+    expect(content).toContain('"status": "complete"')
+    expect(content).toContain("review.json")
+
+    // mode:agent never mutates; default mode applies safe fixes (this test owns the mutate-contract assertions)
+    expect(content).toMatch(/never mutates the tree/i)
+    expect(content).toMatch(/default \(interactive\).{0,4}mode the review applies/i)
+
+    // Never checkout — explicit mutations only
+    expect(content).toMatch(/Never run `gh pr checkout`/i)
+    expect(content).toMatch(/Do \*\*not\*\* check out/i)
+
+    // Conflicting arguments
+    expect(content).toContain("**Conflicting arguments:**")
+
+    // Structured failure JSON
+    expect(content).toContain('{"status":"failed","reason":"..."}')
+
+    // Deprecated alias preserved
+    expect(content).toContain("**Deprecated alias**")
+  })
+
+  test("documents policy-driven routing and actionable handoff", async () => {
+    const content = await readRepoFile(SKILL)
+
+    // Action Routing: autofix_class is signal only; mode:agent never mutates, default applies
     expect(content).toContain("## Action Routing")
-    expect(content).toContain("Only `safe_auto -> review-fixer` enters the in-skill fixer queue automatically.")
-    expect(content).toContain(
-      "Only include `gated_auto` findings in the fixer queue after the user explicitly approves the specific items.",
-    )
-    expect(content).toContain(
-      "If no `gated_auto` or `manual` findings remain after safe fixes, skip the policy question entirely",
-    )
-    expect(content).toContain(
-      "In autofix mode, create durable todo files only for unresolved actionable findings whose final owner is `downstream-resolver`.",
-    )
-    expect(content).toContain("If only advisory outputs remain, create no todos.")
-    expect(content).toContain("**On the resolved review base/default branch:**")
-    expect(content).toContain("git push --set-upstream origin HEAD")
-    expect(content).not.toContain("**On main/master:**")
+    expect(content).toMatch(/this skill does not mutate the checkout/i)
+    expect(content).toContain("references/action-class-rubric.md")
+
+    // No post-review triage — report is the complete handoff
+    expect(content).toContain("Do not run post-review triage")
+    expect(content).not.toContain("references/walkthrough.md")
+    expect(content).not.toContain("references/bulk-preview.md")
+    expect(content).not.toContain("references/tracker-defer.md")
+    expect(content).not.toMatch(/Review each finding one by one/)
+    expect(content).not.toMatch(/File a \[TRACKER\] ticket per finding/)
+
+    expect(content).not.toContain("What should I do with the remaining findings?")
+    expect(content).not.toContain("What should I do?")
+
+    expect(content).toContain("Actionable Findings")
+    expect(content).toContain("Actionable findings: none.")
+
+    expect(content).not.toContain("js-todo-create")
+    expect(content).not.toContain("create durable todo files")
+    expect(content).not.toMatch(/harness task primitive|task-tracking primitive/)
+
+    // Subagent template carries the why_it_matters framing guidance that replaces the
+    // rejected synthesis-time rewrite pass. Assert presence of the observable-behavior
+    // rule and the required-field reminder without pinning exact prose.
+    const subagentTemplate = await readRepoFile(`${REFS}/subagent-template.md`)
+    expect(subagentTemplate).toMatch(/observable behavior/i)
+    expect(subagentTemplate).toMatch(/required/i)
+
+    expect(content).toContain("Do not offer push/PR/create-branch next steps from this skill.")
   })
 
   test("keeps findings schema and downstream docs aligned", async () => {
-    const rawSchema = await readRepoFile(
-      "plugins/js-compound-engineering/skills/js-ce-review/references/findings-schema.json",
-    )
+    const rawSchema = await readRepoFile(`${REFS}/findings-schema.json`)
     const schema = JSON.parse(rawSchema) as {
-      _meta: { confidence_thresholds: { suppress: string } }
+      _meta: {
+        confidence_thresholds: { suppress: string; report: string }
+        confidence_anchors: Record<string, string>
+      }
       properties: {
         findings: {
           items: {
@@ -102,6 +122,7 @@ describe("ce-review contract", () => {
               autofix_class: { enum: string[] }
               owner: { enum: string[] }
               requires_verification: { type: string }
+              confidence: { type: string; enum: number[] }
             }
             required: string[]
           }
@@ -113,43 +134,348 @@ describe("ce-review contract", () => {
       expect.arrayContaining(["autofix_class", "owner", "requires_verification"]),
     )
     expect(schema.properties.findings.items.properties.autofix_class.enum).toEqual([
-      "safe_auto",
       "gated_auto",
       "manual",
       "advisory",
     ])
     expect(schema.properties.findings.items.properties.owner.enum).toEqual([
-      "review-fixer",
       "downstream-resolver",
       "human",
       "release",
     ])
     expect(schema.properties.findings.items.properties.requires_verification.type).toBe("boolean")
-    expect(schema._meta.confidence_thresholds.suppress).toContain("0.60")
 
-    const fileTodos = await readRepoFile("plugins/js-compound-engineering/skills/js-todo-create/SKILL.md")
-    expect(fileTodos).toContain("/js-ce:review mode:autofix")
-    expect(fileTodos).toContain("/js-todo-resolve")
+    // Anchored confidence: integer enum, no floats
+    expect(schema.properties.findings.items.properties.confidence.type).toBe("integer")
+    expect(schema.properties.findings.items.properties.confidence.enum).toEqual([0, 25, 50, 75, 100])
 
-    const resolveTodos = await readRepoFile("plugins/js-compound-engineering/skills/js-todo-resolve/SKILL.md")
-    expect(resolveTodos).toContain("js-ce:review mode:autofix")
-    expect(resolveTodos).toContain("safe_auto")
+    // Threshold: anchor 75 (P0 escape at anchor 50)
+    expect(schema._meta.confidence_thresholds.suppress).toContain("anchor 75")
+    expect(schema._meta.confidence_thresholds.suppress).toContain("anchor 50")
+    expect(schema._meta.confidence_thresholds.suppress).toMatch(/P0/)
+
+    // Behavioral anchors documented for personas
+    expect(schema._meta.confidence_anchors).toBeDefined()
+    expect(schema._meta.confidence_anchors["0"]).toBeDefined()
+    expect(schema._meta.confidence_anchors["25"]).toBeDefined()
+    expect(schema._meta.confidence_anchors["50"]).toBeDefined()
+    expect(schema._meta.confidence_anchors["75"]).toBeDefined()
+    expect(schema._meta.confidence_anchors["100"]).toBeDefined()
+  })
+
+  test("subagent template carries verbatim 5-anchor rubric and lint-ignore suppression", async () => {
+    const template = await readRepoFile(`${REFS}/subagent-template.md`)
+
+    // Anchored rubric: each anchor named with behavioral criterion
+    expect(template).toMatch(/`0`.*Not confident/)
+    expect(template).toMatch(/`25`.*Somewhat confident/)
+    expect(template).toMatch(/`50`.*Moderately confident/)
+    expect(template).toMatch(/`75`.*Highly confident/)
+    expect(template).toMatch(/`100`.*Absolutely certain/)
+
+    // Schema conformance hard constraints reject floats
+    expect(template).toContain("`0`, `25`, `50`, `75`, or `100`")
+    expect(template).toMatch(/0\.85.*validation failure/i)
+
+    // Lint-ignore rule in false-positive catalog
+    expect(template).toMatch(/lint.ignore|lint disable|eslint-disable/i)
+    expect(template).toMatch(/suppress unless the suppression itself violates/i)
+
+    // Advisory routing rule preserved
+    expect(template).toMatch(/Advisory observations.*route to advisory/i)
+
+    // Personas never produce anchors 0 or 25 (suppress silently)
+    expect(template).toMatch(/personas never produce/i)
+  })
+
+  test("subagent template points to action-class rubric without safe_auto", async () => {
+    const template = await readRepoFile(`${REFS}/subagent-template.md`)
+
+    expect(template).toContain("references/action-class-rubric.md")
+    expect(template).not.toContain("safe_auto")
+    expect(template).not.toContain("review-fixer")
+    expect(template).toMatch(/gated_auto[\s\S]*manual[\s\S]*advisory/)
+  })
+
+  test("action-class rubric defines caller routing without safe_auto", async () => {
+    const rubric = await readRepoFile(`${REFS}/action-class-rubric.md`)
+
+    expect(rubric).toContain("gated_auto")
+    expect(rubric).toContain("manual")
+    expect(rubric).toContain("advisory")
+    expect(rubric).toMatch(/Do \*\*not\*\* emit `safe_auto`/)
+    expect(rubric).toMatch(/Do not use `review-fixer`/i)
+  })
+
+  test("Stage 4 spawning restates model-override imperative at point of action", async () => {
+    const content = await readRepoFile(SKILL)
+
+    // Model tiering subsection still enumerates the three session-model exceptions
+    expect(content).toMatch(/js-ce-correctness-reviewer[\s\S]*js-ce-security-reviewer[\s\S]*js-ce-adversarial-reviewer/)
+
+    // Imperative lives inside the Spawning subsection, not only in the rationale block.
+    // Extract the Spawning subsection and assert the model-override directive appears there
+    // with cross-platform dispatch primitives named at the call site.
+    const spawningMatch = content.match(/#### Spawning\n([\s\S]*?)(?=\n####|\n### )/)
+    expect(spawningMatch).not.toBeNull()
+    const spawning = spawningMatch![1]
+
+    expect(spawning).toMatch(/Model override at dispatch time/)
+    expect(spawning).toContain('model: "sonnet"')
+    expect(spawning).toContain("Agent")
+    expect(spawning).toContain("spawn_agent")
+    expect(spawning).toContain("subagent")
+    expect(spawning).toMatch(/Bounded parallel dispatch/)
+    expect(spawning).toMatch(/active-subagent limit/)
+    expect(spawning).toMatch(/spawn errors as backpressure, not reviewer failure/)
+    expect(spawning).toMatch(/fill freed slots/)
+    // Exceptions are restated at point of action so the agent does not have to recall them
+    // from the Model tiering subsection above during a 12-agent parallel dispatch.
+    expect(spawning).toContain("js-ce-correctness-reviewer")
+    expect(spawning).toContain("js-ce-security-reviewer")
+    expect(spawning).toContain("js-ce-adversarial-reviewer")
+  })
+
+  test("Stage 5 synthesis uses anchor gate and one-anchor promotion", async () => {
+    const content = await readRepoFile(SKILL)
+
+    // Confidence value constraint is integer enum
+    expect(content).toMatch(/confidence:\s*integer in \{0, 25, 50, 75, 100\}/)
+
+    // Confidence gate at anchor 75 with P0 exception at 50
+    expect(content).toMatch(/suppress remaining findings below anchor 75/i)
+    expect(content).toMatch(/P0 findings at anchor 50\+ survive/)
+
+    // Confidence gate runs AFTER dedup, promotion, and demotion so anchor-50 findings
+    // can be promoted by cross-reviewer agreement or rerouted to soft buckets first.
+    // This is a load-bearing ordering — if the gate runs early, promotion/demotion become unreachable.
+    expect(content).toMatch(/gate runs late deliberately/i)
+
+    // One-anchor promotion replaces +0.10 boost
+    expect(content).toMatch(/one anchor step.*50 -> 75.*75 -> 100/)
+    expect(content).not.toContain("boost the merged confidence by 0.10")
+
+    // Sort by anchor descending, not "confidence (descending)"
+    expect(content).toMatch(/anchor \(descending\)/)
+  })
+
+  test("Stage 5b validation pass dispatches conditionally and bounds parallelism", async () => {
+    const content = await readRepoFile(SKILL)
+    const validatorTemplate = await readRepoFile(`${REFS}/validator-template.md`)
+
+    // Stage 5b exists between Stage 5 and Stage 6
+    expect(content).toContain("### Stage 5b: Validation pass")
+
+    // Stage 5b runs whenever at least one finding survives; same in default and agent
+    expect(content).toContain("Same rule for default and `mode:agent`")
+    expect(content).toMatch(/do \*\*not\*\* skip the stage/i)
+
+    // Per-finding bounded dispatch (not batched)
+    expect(content).toMatch(/per.finding bounded dispatch/i)
+    expect(content).toMatch(/Independence is the point/i)
+    expect(content).toMatch(/same bounded scheduler from Stage 4/i)
+    expect(content).toMatch(/active-subagent limit/i)
+
+    // Budget cap of 15 — validate highest-severity first; P0/P1 are never dropped for budget
+    expect(content).toMatch(/exceeds 15 findings/i)
+    expect(content).toMatch(/highest-severity 15/i)
+    expect(content).toMatch(/Never drop a P0 or P1 from validation/i)
+    expect(content).toMatch(/raise the cap to (cover|include) all of them/i)
+
+    // Validator template exists and is read-only
+    expect(validatorTemplate).toContain("independent validator")
+    expect(validatorTemplate).toContain("operationally read-only")
+    expect(validatorTemplate).toContain('"validated": true | false')
+    expect(validatorTemplate).toMatch(/introduced by THIS diff/i)
+    expect(validatorTemplate).toMatch(/handled elsewhere/i)
+  })
+
+  test("Stage 5c applies safe fixes in default mode, report-only in mode:agent, no deny-list", async () => {
+    const content = await readRepoFile(SKILL)
+    const template = await readRepoFile(`${REFS}/review-output-template.md`)
+
+    // New act stage, default-mode only; mode:agent stays report-only
+    expect(content).toContain("### Stage 5c: Act on findings")
+    expect(content).toMatch(/Skip entirely in `mode:agent`/i)
+    expect(content).toMatch(/`mode:agent` does not apply fixes/i)
+
+    // Bias to act, push back if wrong, no deny-list
+    expect(content).toMatch(/bias to act/i)
+    expect(content).toMatch(/Push back.*do not apply.*reviewer is wrong/i)
+    expect(content).toMatch(/There is no deny-list/i)
+
+    // Scope invariant + verify-then-keep + commit-on-clean-tree, never push
+    expect(content).toMatch(/Apply only when the working tree \*?is\*? what was reviewed/i)
+    expect(content).toMatch(/revert that fix and report it/i)
+    expect(content).toMatch(/Commit when the pre-review tree was clean/i)
+    expect(content).toMatch(/Never push, open a PR, or file tickets/i)
+
+    // Applied reporting (skill + template)
+    expect(content).toMatch(/Applied \(default mode only\)/i)
+    expect(template).toContain("### Applied")
+
+    // No apply mode revived
+    expect(content).toMatch(/there is no apply \*?mode\*?/i)
+  })
+
+  test("findings use terse cell + keyed detail line, mirror the template, stay consistent across severities", async () => {
+    const content = await readRepoFile(SKILL)
+    const template = await readRepoFile(`${REFS}/review-output-template.md`)
+
+    // Render-time load of the canonical skeleton (not just "see the template")
+    expect(content).toContain("load `references/review-output-template.md` and mirror")
+    expect(template).toContain("canonical skeleton")
+
+    // Terse cell + keyed detail line is the sanctioned home for depth
+    expect(content).toMatch(/keyed detail line/i)
+    expect(template).toMatch(/Detail line \(per finding/i)
+    expect(template).toMatch(/\*\*#N\*\*/)
+
+    // Terse-cell discipline carries a concrete named test (not just "terse")
+    expect(content).toMatch(/one short clause/i)
+    expect(template).toMatch(/one short clause/i)
+
+    // Consistency across severities is enforced (the failure seen in the wild: P1 blocks vs P2/P3 tables)
+    expect(content).toMatch(/Inconsistent treatment across severities/i)
+
+    // Multi-file applied fix is one row with one number (no duplicate #)
+    expect(template).toMatch(/one row with one `#`/i)
+  })
+
+  test("PR-mode skip-condition pre-check stops without dispatching reviewers", async () => {
+    const content = await readRepoFile(SKILL)
+
+    // Skip-check section exists
+    expect(content).toContain("**Skip-condition pre-check.**")
+
+    // gh pr view fetches state and file list for trivial judgment
+    expect(content).toMatch(/gh pr view.*--json state,title,body,files/)
+
+    // Hard skip rules
+    expect(content).toMatch(/state.*CLOSED.*MERGED/)
+
+    // Draft PRs are explicitly NOT skipped
+    expect(content).not.toMatch(/isDraft.*true.*stop/)
+    expect(content).toMatch(/Draft PRs are reviewed normally/)
+
+    // Trivial-PR judgment uses lightweight model, not a regex
+    expect(content).toMatch(/lightweight sub-agent/)
+    expect(content).toMatch(/model.*haiku/i)
+    expect(content).not.toMatch(/chore\\?\(deps\\?\)/)
+
+    // Skip cleanly without dispatching reviewers
+    expect(content).toMatch(/stop without dispatching reviewers/)
+
+    // Standalone, base:, and branch-remote paths unaffected by PR skip rules
+    expect(content).toMatch(/Standalone.*`base:`.*branch-remote/)
+  })
+
+  test("remote scope modes forbid workspace inspection on wrong tree", async () => {
+    const skill = await readRepoFile(SKILL)
+    const diffScope = await readRepoFile(`${REFS}/diff-scope.md`)
+    const validator = await readRepoFile(`${REFS}/validator-template.md`)
+
+    expect(skill).toContain("<pr-scope-mode>branch-remote</pr-scope-mode>")
+    expect(skill).toContain("<branch-head-ref>")
+    expect(skill).toMatch(/local-aligned.*local tree diff/i)
+    expect(skill).not.toMatch(/append.*`DIFF:`.*unpushed/i)
+    expect(skill).toMatch(/Do \*\*not\*\* call `gh pr diff` or append remote hunks/)
+
+    expect(diffScope).toContain("branch-remote")
+    expect(diffScope).toContain("pr-remote")
+
+    expect(validator).toContain("branch-remote")
+  })
+
+  test("mode-aware demotion routes weak general-quality findings to soft buckets", async () => {
+    const content = await readRepoFile(SKILL)
+
+    // Mode-aware demotion step exists (sub-step within Stage 5; numbering may shift if steps reorder)
+    expect(content).toMatch(/Mode-aware demotion of weak general-quality findings/i)
+
+    // Conservative scope: testing + maintainability personas only
+    expect(content).toContain("`testing` or `maintainability`")
+
+    // Severity P2 or P3 only (P0/P1 always stay primary)
+    expect(content).toMatch(/Severity is P2 or P3/)
+
+    // autofix_class is advisory
+    expect(content).toMatch(/`autofix_class` is `advisory`/)
+
+    // Route demoted findings to soft buckets
+    expect(content).toMatch(/`testing_gaps`/)
+    expect(content).toMatch(/`residual_risks`/)
+
+    // Demotion entry uses title-only (compact return omits why_it_matters)
+    expect(content).toMatch(/append `<file:line> -- <title>` to/)
+    expect(content).toMatch(/compact return omits/i)
+
+    // Coverage section reports demotion count
+    expect(content).toMatch(/mode-aware demotion/)
+  })
+
+  test("personas use anchored rubric language and no float references remain", async () => {
+    // Fork-specific persona roster: js-<name> filenames under agents/review/. The structured
+    // JSON-pipeline personas all carry the anchored rubric. swift-ios uses the js-ce- prefix;
+    // the Node/Python/CLI stack personas are fork additions that follow the same contract.
+    const personas = [
+      "js-correctness-reviewer",
+      "js-testing-reviewer",
+      "js-maintainability-reviewer",
+      "js-project-standards-reviewer",
+      "js-security-reviewer",
+      "js-performance-reviewer",
+      "js-api-contract-reviewer",
+      "js-data-migrations-reviewer",
+      "js-reliability-reviewer",
+      "js-adversarial-reviewer",
+      "js-previous-comments-reviewer",
+      "js-julik-frontend-races-reviewer",
+      "js-modern-nodejs-reviewer",
+      "js-kieran-typescript-reviewer",
+      "js-kieran-python-reviewer",
+      "js-cli-readiness-reviewer",
+      "js-agent-native-reviewer",
+      "js-ce-swift-ios-reviewer",
+    ]
+
+    for (const persona of personas) {
+      const content = await readRepoFile(`${AGENTS}/${persona}.md`)
+
+      // Anchored language appears
+      expect(content).toMatch(/Anchor (75|100)/)
+      expect(content).toMatch(/Anchor 25 or below.*suppress/i)
+
+      // No float confidence references
+      expect(content).not.toMatch(/0\.\d{2}\+/)
+      expect(content).not.toMatch(/0\.60-0\.79/)
+      expect(content).not.toMatch(/below 0\.60/)
+    }
   })
 
   test("documents stack-specific conditional reviewers for the JSON pipeline", async () => {
-    const content = await readRepoFile("plugins/js-compound-engineering/skills/js-ce-review/SKILL.md")
-    const catalog = await readRepoFile(
-      "plugins/js-compound-engineering/skills/js-ce-review/references/persona-catalog.md",
-    )
+    const content = await readRepoFile(SKILL)
+    const catalog = await readRepoFile(`${REFS}/persona-catalog.md`)
 
+    // Fork stack-specific roster: modern-nodejs / kieran-typescript / kieran-python /
+    // julik-frontend-races (replaces upstream's dhh/kieran-rails personas).
     for (const agent of [
-      "js-compound-engineering:review:js-modern-nodejs-reviewer",
-      "js-compound-engineering:review:kieran-python-reviewer",
-      "js-compound-engineering:review:kieran-typescript-reviewer",
-      "js-compound-engineering:review:julik-frontend-races-reviewer",
+      "js-ce-modern-nodejs-reviewer",
+      "js-ce-kieran-typescript-reviewer",
+      "js-ce-kieran-python-reviewer",
+      "js-ce-julik-frontend-races-reviewer",
     ]) {
       expect(content).toContain(agent)
       expect(catalog).toContain(agent)
+    }
+
+    // Rails-specific personas from upstream are not part of the Node/TS fork.
+    for (const removed of [
+      "js-ce-dhh-rails-reviewer",
+      "js-ce-kieran-rails-reviewer",
+    ]) {
+      expect(content).not.toContain(removed)
+      expect(catalog).not.toContain(removed)
     }
 
     expect(content).toContain("## Language-Aware Conditionals")
@@ -157,23 +483,13 @@ describe("ce-review contract", () => {
   })
 
   test("stack-specific reviewer agents follow the structured findings contract", async () => {
+    // Fork stack personas: file lives at agents/review/js-<name>.md; the JSON `reviewer`
+    // field uses the bare persona name (no js- prefix).
     const reviewers = [
-      {
-        path: "plugins/js-compound-engineering/agents/review/js-modern-nodejs-reviewer.md",
-        reviewer: "modern-nodejs",
-      },
-      {
-        path: "plugins/js-compound-engineering/agents/review/js-kieran-python-reviewer.md",
-        reviewer: "kieran-python",
-      },
-      {
-        path: "plugins/js-compound-engineering/agents/review/js-kieran-typescript-reviewer.md",
-        reviewer: "kieran-typescript",
-      },
-      {
-        path: "plugins/js-compound-engineering/agents/review/js-julik-frontend-races-reviewer.md",
-        reviewer: "julik-frontend-races",
-      },
+      { path: `${AGENTS}/js-modern-nodejs-reviewer.md`, reviewer: "modern-nodejs" },
+      { path: `${AGENTS}/js-kieran-typescript-reviewer.md`, reviewer: "kieran-typescript" },
+      { path: `${AGENTS}/js-kieran-python-reviewer.md`, reviewer: "kieran-python" },
+      { path: `${AGENTS}/js-julik-frontend-races-reviewer.md`, reviewer: "julik-frontend-races" },
     ]
 
     for (const reviewer of reviewers) {
@@ -193,18 +509,62 @@ describe("ce-review contract", () => {
     }
   })
 
-  test("leaves data-migration-expert as the unstructured review format", async () => {
-    const content = await readRepoFile(
-      "plugins/js-compound-engineering/agents/review/js-data-migration-expert.md",
-    )
+  test("JSON-pipeline persona agents grant Write so they can save run artifacts", async () => {
+    // The js-ce-review subagent template instructs each persona to write its full
+    // analysis to /tmp/compound-engineering/js-ce-review/{run_id}/{reviewer}.json.
+    // Without Write in tools, that "one permitted write" cannot happen and headless
+    // detail enrichment loses its why_it_matters/evidence source (upstream issue #733).
+    const personas = [
+      "js-correctness-reviewer",
+      "js-testing-reviewer",
+      "js-maintainability-reviewer",
+      "js-project-standards-reviewer",
+      "js-security-reviewer",
+      "js-performance-reviewer",
+      "js-api-contract-reviewer",
+      "js-data-migrations-reviewer",
+      "js-reliability-reviewer",
+      "js-adversarial-reviewer",
+      "js-previous-comments-reviewer",
+      "js-julik-frontend-races-reviewer",
+      "js-modern-nodejs-reviewer",
+      "js-kieran-typescript-reviewer",
+      "js-kieran-python-reviewer",
+      "js-cli-readiness-reviewer",
+      "js-ce-swift-ios-reviewer",
+    ]
 
-    expect(content).toContain("## Reviewer Checklist")
-    expect(content).toContain("Refuse approval until there is a written verification + rollback plan.")
-    expect(content).not.toContain("Return your findings as JSON matching the findings schema.")
+    for (const persona of personas) {
+      const content = await readRepoFile(`${AGENTS}/${persona}.md`)
+      const parsed = parseFrontmatter(content)
+      const tools = String(parsed.data.tools ?? "")
+
+      expect(tools).toContain("Write")
+    }
   })
 
-  test("fails closed when merge-base is unresolved instead of falling back to git diff HEAD", async () => {
-    const content = await readRepoFile("plugins/js-compound-engineering/skills/js-ce-review/SKILL.md")
+  test("data-migration reviewer emits structured findings; expert stays unstructured", async () => {
+    // Fork reality: js-data-migrations-reviewer is the structured JSON persona
+    // (reviewer "data-migrations"); js-data-migration-expert is the unstructured checklist.
+    const structured = await readRepoFile(`${AGENTS}/js-data-migrations-reviewer.md`)
+    const expert = await readRepoFile(`${AGENTS}/js-data-migration-expert.md`)
+    const skill = await readRepoFile(SKILL)
+
+    expect(structured).toContain('"reviewer": "data-migrations"')
+    expect(structured).toContain("Return your findings as JSON matching the findings schema.")
+    expect(structured).toContain("## Confidence calibration")
+
+    // The unstructured expert keeps its checklist format and refuses without a rollback plan.
+    expect(expert).toContain("## Reviewer Checklist")
+    expect(expert).toContain("Refuse approval until there is a written verification + rollback plan.")
+    expect(expert).not.toContain("Return your findings as JSON matching the findings schema.")
+
+    // The skill gates the structured persona behind the migration-artifact spawn gate.
+    expect(skill).toContain("data-migration` spawn gate")
+  })
+
+  test("PR mode uses gh pr diff without checkout; branch/standalone fail closed on missing base", async () => {
+    const content = await readRepoFile(SKILL)
 
     // No scope path should fall back to `git diff HEAD` or `git diff --cached` — those only
     // show uncommitted changes and silently produce empty diffs on clean feature branches.
@@ -212,33 +572,130 @@ describe("ce-review contract", () => {
     expect(content).not.toContain("git diff -U10 HEAD")
     expect(content).not.toContain("git diff --cached")
 
-    // PR mode still has an inline error for unresolved base
-    expect(content).toContain('echo "ERROR: Unable to resolve PR base branch')
+    // PR mode uses remote diff API, not checkout
+    expect(content).toContain("gh pr diff")
+    expect(content).toMatch(/Do not fall back to checkout/i)
 
-    // Branch and standalone modes delegate to resolve-base.sh and check its ERROR: output.
-    // The script itself emits ERROR: when the base is unresolved.
-    expect(content).toContain("references/resolve-base.sh")
-    const resolveScript = await readRepoFile(
-      "plugins/js-compound-engineering/skills/js-ce-review/references/resolve-base.sh",
-    )
-    expect(resolveScript).toContain("ERROR:")
-
-    // Branch and standalone modes must stop on script error, not fall back
-    expect(content).toContain(
-      "If the script outputs an error, stop instead of falling back to `git diff HEAD`",
-    )
+    // Branch and standalone modes must stop when no base can be resolved
+    const stopGuardMatches = content.match(/Do not fall back to `git diff HEAD`/g)
+    expect(stopGuardMatches?.length).toBeGreaterThanOrEqual(1)
   })
 
-  test("orchestration callers pass explicit mode flags", async () => {
-    const lfg = await readRepoFile("plugins/js-compound-engineering/skills/js-lfg/SKILL.md")
-    expect(lfg).toContain("/js-ce:review mode:autofix")
+  test("orchestration callers invoke review with explicit mode flags", async () => {
+    // js-ce-work is the synced orchestration caller; Tier 2 runs review-only review then applies.
+    const work = await readRepoFile("plugins/js-compound-engineering/skills/js-ce-work/SKILL.md")
+    expect(work).toMatch(/js-ce-review[^\n]*review-only|review-only[^\n]*js-ce-review/i)
+    expect(work).toContain("review-findings-followup.md")
+    expect(work).toMatch(/batch.*file|batch applicable findings by file/i)
+  })
 
+  test("js-ce-work documents review-findings followup after Tier 2", async () => {
+    const followup = await readRepoFile(
+      "plugins/js-compound-engineering/skills/js-ce-work/references/review-findings-followup.md",
+    )
+    expect(followup).toContain("review-only")
+    expect(followup).toContain("suggested_fix")
+    // The apply followup consumes the review the caller already ran; re-invocation is a
+    // cold-caller fallback only (it must not start a second review in the js-ce-work Tier 2 path).
+    expect(followup).toMatch(/consume[s]? (the completed review|that output)/i)
+    expect(followup).toMatch(/cold caller/i)
+    expect(followup).toMatch(/does not investigate findings/i)
+    expect(followup).toMatch(/Group by `file`/i)
+    expect(followup).toMatch(/batch/i)
+    expect(followup).toContain("mode:agent")
+    // Deprecated apply mode is explicitly forbidden in the followup contract.
+    expect(followup).toMatch(/Do \*\*not\*\* pass deprecated `mode:autofix`/i)
+  })
+
+  test("js-ce-work shipping-workflow enforces a residual-work gate after Tier 2 review", async () => {
+    const workflow = await readRepoFile(
+      "plugins/js-compound-engineering/skills/js-ce-work/references/shipping-workflow.md",
+    )
+    await expect(
+      readRepoFile("plugins/js-compound-engineering/skills/js-ce-work/references/tracker-defer.md"),
+    ).resolves.toContain("Non-interactive mode")
+    await expect(
+      readRepoFile("plugins/js-compound-engineering/skills/js-ce-work/references/tracker-defer.md"),
+    ).resolves.not.toMatch(/no-sink/)
+
+    // Gate step is explicitly labeled and required after Tier 2.
+    expect(workflow).toContain("**Residual Work Gate**")
+    expect(workflow).toMatch(/do not proceed to Final Validation/i)
+
+    // Three forward options + one abort; labels are self-contained.
+    expect(workflow).toContain("Apply/fix now")
+    expect(workflow).toContain("File tickets via project tracker")
+    expect(workflow).toContain("Accept and proceed")
+    expect(workflow).toContain("Stop — do not ship")
+
+    // Accept-and-proceed path threads findings into the PR description.
+    expect(workflow).toContain("Known Residuals")
+    expect(workflow).toContain("docs/residual-review-findings/<branch-or-head-sha>.md")
+    // Fork uses the js-git-commit no-PR path instead of upstream's ce-commit.
+    expect(workflow).toContain("If the user later chooses the no-PR `js-git-commit` path")
+    expect(workflow).toContain("must not live only in the transient session")
+  })
+
+  test("js-ce-review emits actionable findings summary for callers", async () => {
+    const content = await readRepoFile(SKILL)
+    expect(content).toContain("### Emit actionable findings summary")
+    expect(content).toContain("Actionable Findings")
+    expect(content).toContain("with stable `#`, severity, file:line, title, `autofix_class`")
+    expect(content).toContain("Actionable findings: none.")
+  })
+
+  test("js-ce-review uses stable sequential finding numbers across grouped output", async () => {
+    const content = await readRepoFile(SKILL)
+    const template = await readRepoFile(`${REFS}/review-output-template.md`)
+    const fixture = await readRepoFile("tests/fixtures/js-ce-review-stable-numbering.md")
+
+    const stage5 = content.split("### Stage 5b:")[0].split("### Stage 5:")[1]
+    expect(stage5).toMatch(/Sort and number/)
+    expect(stage5).toMatch(/Do not restart numbering inside each severity table or autofix\/routing bucket/)
+    expect(stage5).toMatch(/reuse the same stable `#`/)
+    expect(stage5).toMatch(/downstream workflows/)
+
+    const stage6 = content
+      .split("### Stage 6: Synthesize and present")[1]
+      .split("### JSON output format (`mode:agent` only)")[0]
+    expect(stage6).toContain("Finding numbers come from the stable assignment in Stage 5")
+    expect(stage6).toContain("never re-derive them per severity table")
+    expect(template).toContain("Stable sequential finding numbers")
+    expect(template).toContain("reuse those same numbers when findings are repeated in Actionable Findings")
+
+    // Per-severity tables are 5-column (# | File | Issue | Reviewer | Confidence);
+    // Route lives in the Actionable Findings table + JSON, not the scannable tables.
+    const primaryFindingIds = Array.from(
+      fixture.matchAll(/^\| (\d+) \| `[^`]+` \| .* \| .* \| \d+ \|$/gm),
+      ([, id]) => Number(id),
+    )
+    expect(primaryFindingIds).toEqual([1, 2, 3])
+
+    // Applied findings keep their stable # and appear only in the Applied section (default mode), not severity tables
+    const appliedSection = fixture.split("### Applied")[1].split("\n### ")[0]
+    const appliedIds = Array.from(
+      appliedSection.matchAll(/^\| (\d+) \| `[^`]+` \| .* \| .* \|$/gm),
+      ([, id]) => Number(id),
+    )
+    expect(appliedIds).toEqual([4])
+    expect(appliedIds.every((id) => !primaryFindingIds.includes(id))).toBe(true)
+
+    // Keyed detail lines under a table are supplements, not findings — they reuse a # and never add one
+    expect(fixture).toMatch(/^- \*\*#1\*\*/m)
+
+    const residualSection = fixture.split("### Actionable Findings")[1]
+    const residualIds = Array.from(
+      residualSection.matchAll(/^\| (\d+) \| `[^`]+` \| .* \| `.*` \| .* \|$/gm),
+      ([, id]) => Number(id),
+    )
+    expect(residualIds).toEqual([2, 3])
+    expect(residualIds.every((id) => primaryFindingIds.includes(id))).toBe(true)
   })
 })
 
 describe("testing-reviewer contract", () => {
   test("includes behavioral-changes-with-no-test-additions check", async () => {
-    const content = await readRepoFile("plugins/js-compound-engineering/agents/review/js-testing-reviewer.md")
+    const content = await readRepoFile(`${AGENTS}/js-testing-reviewer.md`)
 
     // New check exists in "What you're hunting for" section
     expect(content).toContain("Behavioral changes with no test additions")

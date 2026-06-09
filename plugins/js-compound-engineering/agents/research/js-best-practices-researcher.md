@@ -31,7 +31,6 @@ Before going online, check if curated knowledge already exists in skills:
    - Documentation → `js-compound-docs`, `js-every-style-editor`
    - File operations → `js-rclone`, `js-git-worktree`
    - Image generation → `js-gemini-imagegen`
-   - LLM applications → `js-dspy-python`
    - Multi-agent → `js-orchestrating-swarms`
 
 3. **Extract Patterns from Skills**:
