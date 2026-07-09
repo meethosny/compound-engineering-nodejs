@@ -1,7 +1,7 @@
 {
   "name": "js-compound-engineering",
   "displayName": "Compound Engineering (Node.js)",
-  "version": "3.11.2",
+  "version": "3.19.0",
   "description": "AI-powered development tools for code review, research, design, and workflow automation.",
   "author": {
     "name": "Hosni Mohamed",
