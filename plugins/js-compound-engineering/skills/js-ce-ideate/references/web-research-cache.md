@@ -1,6 +1,6 @@
 # Web Research Cache (V15)
 
-Read this when checking the V15 cache before dispatching `js-ce-web-researcher`, or when appending fresh research to the cache after dispatch. The behavior here is conditional — most invocations either hit the cache or write to it once and move on.
+Read this when checking the V15 cache before dispatching `web-researcher`, or when appending fresh research to the cache after dispatch. The behavior here is conditional — most invocations either hit the cache or write to it once and move on.
 
 ## Cache file shape
 
@@ -12,7 +12,7 @@ Read this when checking the V15 cache before dispatching `js-ce-web-researcher`,
       "focus_hint_normalized": "<lowercase, whitespace-collapsed focus hint or empty string>",
       "topic_surface_hash": "<short hash of the user-supplied topic surface>"
     },
-    "result": "<js-ce-web-researcher output as plain text>",
+    "result": "<web-researcher output as plain text>",
     "ts": "<iso8601>"
   }
 ]
@@ -22,7 +22,7 @@ Files live under `<scratch-dir>/web-research-cache.json`, where `<scratch-dir>` 
 
 ## Reuse check
 
-Before dispatching `js-ce-web-researcher`, resolve the scratch root (the parent of `<scratch-dir>`) in bash and list sibling run-id directories — refinement loops within a session may legitimately reuse another run's cache by topic, not run-id:
+Before dispatching `web-researcher`, resolve the scratch root (the parent of `<scratch-dir>`) in bash and list sibling run-id directories — refinement loops within a session may legitimately reuse another run's cache by topic, not run-id:
 
 ```bash
 SCRATCH_ROOT="/tmp/compound-engineering/js-ce-ideate"

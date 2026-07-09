@@ -4,7 +4,7 @@
 <head>
   <meta charset="utf-8" />
   <title>Skill Reference - Compounding Engineering</title>
-  <meta content="Complete reference for all 47 skills in the js-compound-engineering plugin." name="description" />
+  <meta content="Complete reference for all 29 skills in the js-compound-engineering plugin." name="description" />
   <meta content="width=device-width, initial-scale=1" name="viewport" />
 
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
@@ -33,9 +33,9 @@
         <div class="nav-section">
           <h3>Reference</h3>
           <ul>
-            <li><a href="agents.html">Agents (51)</a></li>
-            <li><a href="skills.html" class="active">Skills (47)</a></li>
-            <li><a href="mcp-servers.html">MCP Servers (1)</a></li>
+            <li><a href="agents.html">Agentless</a></li>
+            <li><a href="skills.html" class="active">Skills (29)</a></li>
+            <li><a href="mcp-servers.html">MCP Servers (0)</a></li>
           </ul>
         </div>
         <div class="nav-section">
@@ -47,15 +47,15 @@
         <div class="nav-section">
           <h3>On This Page</h3>
           <ul>
-            <li><a href="#core-workflow">Core Workflow (14)</a></li>
-            <li><a href="#research-context">Research & Context (3)</a></li>
-            <li><a href="#git-workflow">Git Workflow (4)</a></li>
-            <li><a href="#review-quality">Review & Quality (3)</a></li>
-            <li><a href="#todos">Todos & Tracking (4)</a></li>
-            <li><a href="#dev-frameworks">Development & Design (4)</a></li>
-            <li><a href="#testing">Testing (2)</a></li>
-            <li><a href="#product-content">Product & Content (8)</a></li>
-            <li><a href="#project-ops">Project & Plugin Ops (5)</a></li>
+            <li><a href="#core-loop">Core Loop (5)</a></li>
+            <li><a href="#review-refinement">Review & Refinement (5)</a></li>
+            <li><a href="#on-demand">On-Demand (3)</a></li>
+            <li><a href="#around-the-loop">Around the Loop (3)</a></li>
+            <li><a href="#git-workflow">Git Workflow (3)</a></li>
+            <li><a href="#autonomous-pipeline">Autonomous Pipeline (1)</a></li>
+            <li><a href="#frontend-browser">Frontend & Browser (3)</a></li>
+            <li><a href="#collaboration-feedback">Collaboration & Feedback (4)</a></li>
+            <li><a href="#setup-health">Setup & Health (2)</a></li>
           </ul>
         </div>
       </nav>
@@ -78,21 +78,22 @@
       <article class="docs-article">
         <h1><i class="fa-solid fa-wand-magic-sparkles color-accent"></i> Skill Reference</h1>
         <p class="lead">
-          47 skills package the plugin's workflows and domain knowledge. The core workflow skills double as
-          slash commands -- type <code>/js-ce:plan</code> or <code>/js-ce:review</code> to run them. The rest are
-          invoked by name (<code>skill: js-ce-&lt;name&gt;</code>) or triggered automatically by Claude when relevant.
+          29 self-contained skills are the plugin's entire surface area — the plugin is agentless, so every reviewer and
+          researcher lives inside the skill that uses it. Seven core-loop skills double as slash commands — type
+          <code>/js-ce:plan</code> or <code>/js-ce:code-review</code> to run them. The rest are invoked by name
+          (<code>skill: js-ce-&lt;name&gt;</code>) or triggered automatically by Claude when relevant.
         </p>
 
         <div class="usage-box">
           <h3>How to Use Skills</h3>
           <div class="card-code-block">
-            <pre><code># Workflow skills run as colon-namespaced slash commands
+            <pre><code># Core-loop skills run as colon-namespaced slash commands
 /js-ce:plan "Add user authentication"
-/js-ce:review 123
+/js-ce:code-review 123
 
 # Other skills are referenced by their hyphenated name
-skill: js-ce-modern-nodejs-style
-skill: js-ce-gemini-imagegen</code></pre>
+skill: js-ce-debug
+skill: js-ce-simplify-code</code></pre>
           </div>
         </div>
 
@@ -102,16 +103,16 @@ skill: js-ce-gemini-imagegen</code></pre>
             <h4>Commands are skills now</h4>
             <p>
               There is no separate "commands" list. The workflow commands you may remember -- <code>/js-ce:plan</code>,
-              <code>/js-ce:review</code>, <code>/js-ce:work</code>, <code>/js-ce:compound</code>, and the rest -- were
-              migrated to skills. They live under <code>skills/&lt;name&gt;/SKILL.md</code> and work identically as
+              <code>/js-ce:code-review</code>, <code>/js-ce:work</code>, <code>/js-ce:compound</code>, and the rest --
+              were migrated to skills. They live under <code>skills/&lt;name&gt;/SKILL.md</code> and work identically as
               slash commands in Claude Code.
             </p>
           </div>
         </div>
 
-        <section id="core-workflow">
-          <h2><i class="fa-solid fa-arrows-spin"></i> Core Workflow (14)</h2>
-          <p>The primary entry points for engineering work. The eight workflow skills below are invoked as colon-namespaced slash commands (e.g. <code>/js-ce:plan</code>); the rest are invoked by their hyphenated name.</p>
+        <section id="core-loop">
+          <h2><i class="fa-solid fa-arrows-spin"></i> Core Loop (5)</h2>
+          <p>The primary compounding-engineering loop. All five are invoked as colon-namespaced slash commands.</p>
 
           <div class="skill-detail" id="js-ce-ideate">
             <div class="skill-detail-header">
@@ -119,7 +120,7 @@ skill: js-ce-gemini-imagegen</code></pre>
               <span class="skill-badge highlight">slash command</span>
             </div>
             <p class="skill-detail-description">
-              Generate and critically evaluate grounded ideas about a topic. Use when asking what to improve, requesting idea generation, exploring surprising directions, or wanting the AI to proactively suggest strong options before brainstorming one in depth. Triggers on phrases like 'what should I improve', 'give me ideas', 'ideate on X', 'surprise me', 'what would you change', or any request for AI-generated suggestions rather than refining the user's own idea.
+              Generate and evaluate grounded ideas before choosing one to develop.
             </p>
             <div class="card-code-block">
               <pre><code>/js-ce:ideate</code></pre>
@@ -132,7 +133,7 @@ skill: js-ce-gemini-imagegen</code></pre>
               <span class="skill-badge highlight">slash command</span>
             </div>
             <p class="skill-detail-description">
-              Explore requirements and approaches through collaborative dialogue, then write a right-sized requirements document. Use when the user says "let's brainstorm", "what should we build", or "help me think through X", presents a vague or ambitious feature request, or seems unsure about scope or direction -- even without explicitly asking to brainstorm.
+              Explore a vague or ambitious idea into a right-sized requirements document.
             </p>
             <div class="card-code-block">
               <pre><code>/js-ce:brainstorm</code></pre>
@@ -145,23 +146,10 @@ skill: js-ce-gemini-imagegen</code></pre>
               <span class="skill-badge highlight">slash command</span>
             </div>
             <p class="skill-detail-description">
-              Create structured plans for any multi-step task -- software features, research workflows, events, study plans, or any goal that benefits from structured breakdown. Also deepen existing plans with interactive review of sub-agent findings. Use for plan creation when the user says 'plan this', 'create a plan', 'write a tech plan', 'plan the implementation', 'how should we build', 'what's the approach for', 'break this down', 'plan a trip', 'create a study plan', or when a brainstorm/requirements document is ready for planning. Use for plan deepening when the user says 'deepen the plan', 'deepen my plan', 'deepening pass', or uses 'deepen' in reference to a plan. For exploratory or ambiguous requests where the user is unsure what to do, prefer js-ce:brainstorm first.
+              Create structured plans for any multi-step task, with automatic confidence checking.
             </p>
             <div class="card-code-block">
               <pre><code>/js-ce:plan</code></pre>
-            </div>
-          </div>
-
-          <div class="skill-detail" id="js-ce-review">
-            <div class="skill-detail-header">
-              <h3>js-ce-review</h3>
-              <span class="skill-badge highlight">slash command</span>
-            </div>
-            <p class="skill-detail-description">
-              Structured code review using tiered persona agents, confidence-gated findings, and a merge/dedup pipeline. In interactive mode it applies safe, verified fixes and commits them when the working tree is clean (it never pushes); in mode:agent it reports only and the caller applies. Use when reviewing code changes before creating a PR.
-            </p>
-            <div class="card-code-block">
-              <pre><code>/js-ce:review</code></pre>
             </div>
           </div>
 
@@ -171,36 +159,10 @@ skill: js-ce-gemini-imagegen</code></pre>
               <span class="skill-badge highlight">slash command</span>
             </div>
             <p class="skill-detail-description">
-              Execute work efficiently while maintaining quality and finishing features
+              Execute a plan or concrete work prompt end-to-end.
             </p>
             <div class="card-code-block">
               <pre><code>/js-ce:work</code></pre>
-            </div>
-          </div>
-
-          <div class="skill-detail" id="js-ce-work-beta">
-            <div class="skill-detail-header">
-              <h3>js-ce-work-beta</h3>
-              <span class="skill-badge highlight">slash command</span>
-            </div>
-            <p class="skill-detail-description">
-              [BETA] Execute work with external delegate support. Same as js-ce:work but includes experimental Codex delegation mode for token-conserving code implementation.
-            </p>
-            <div class="card-code-block">
-              <pre><code>/js-ce:work-beta</code></pre>
-            </div>
-          </div>
-
-          <div class="skill-detail" id="js-ce-debug">
-            <div class="skill-detail-header">
-              <h3>js-ce-debug</h3>
-              
-            </div>
-            <p class="skill-detail-description">
-              Systematically find root causes and fix bugs. Use when debugging errors, investigating test failures, reproducing bugs from issue trackers (GitHub, Linear, Jira), or when stuck on a problem after failed fix attempts. Also use when the user says 'debug this', 'why is this failing', 'fix this bug', 'trace this error', or pastes stack traces, error messages, or issue references.
-            </p>
-            <div class="card-code-block">
-              <pre><code>skill: js-ce-debug</code></pre>
             </div>
           </div>
 
@@ -210,10 +172,64 @@ skill: js-ce-gemini-imagegen</code></pre>
               <span class="skill-badge highlight">slash command</span>
             </div>
             <p class="skill-detail-description">
-              Document a recently solved problem to compound your team's knowledge or CONCEPTS.md, the project's shared domain vocabulary.
+              Document a solved problem or durable vocabulary to compound team knowledge.
             </p>
             <div class="card-code-block">
               <pre><code>/js-ce:compound</code></pre>
+            </div>
+          </div>
+        </section>
+
+        <section id="review-refinement">
+          <h2><i class="fa-solid fa-clipboard-check"></i> Review & Refinement (5)</h2>
+          <p>Review code and documents, then refine what you shipped. <code>/js-ce:code-review</code> and <code>/js-ce:compound-refresh</code> run as slash commands; the rest are invoked by name.</p>
+
+          <div class="skill-detail" id="js-ce-code-review">
+            <div class="skill-detail-header">
+              <h3>js-ce-code-review</h3>
+              <span class="skill-badge highlight">slash command</span>
+            </div>
+            <p class="skill-detail-description">
+              Structured code review with dynamically selected reviewer personas, confidence gating, and a dedup pipeline.
+            </p>
+            <div class="card-code-block">
+              <pre><code>/js-ce:code-review</code></pre>
+            </div>
+          </div>
+
+          <div class="skill-detail" id="js-ce-simplify-code">
+            <div class="skill-detail-header">
+              <h3>js-ce-simplify-code</h3>
+            </div>
+            <p class="skill-detail-description">
+              Simplify recently changed code for clarity, reuse, quality, and efficiency while preserving behavior.
+            </p>
+            <div class="card-code-block">
+              <pre><code>skill: js-ce-simplify-code</code></pre>
+            </div>
+          </div>
+
+          <div class="skill-detail" id="js-ce-doc-review">
+            <div class="skill-detail-header">
+              <h3>js-ce-doc-review</h3>
+            </div>
+            <p class="skill-detail-description">
+              Review requirements, plans, or specs with role-specific persona lenses.
+            </p>
+            <div class="card-code-block">
+              <pre><code>skill: js-ce-doc-review</code></pre>
+            </div>
+          </div>
+
+          <div class="skill-detail" id="js-ce-optimize">
+            <div class="skill-detail-header">
+              <h3>js-ce-optimize</h3>
+            </div>
+            <p class="skill-detail-description">
+              Run metric-driven optimization loops with parallel experiments and LLM-as-judge scoring.
+            </p>
+            <div class="card-code-block">
+              <pre><code>skill: js-ce-optimize</code></pre>
             </div>
           </div>
 
@@ -223,349 +239,176 @@ skill: js-ce-gemini-imagegen</code></pre>
               <span class="skill-badge highlight">slash command</span>
             </div>
             <p class="skill-detail-description">
-              Refresh stale learning and pattern docs under docs/solutions/ by reviewing them against the current codebase, then updating, consolidating, or deleting drifted ones, and reconcile the project's shared vocabulary in CONCEPTS.md. Use when the user asks to "refresh my learnings", "audit docs/solutions/", "clean up stale learnings", "consolidate overlapping docs", "create a CONCEPTS.md", or when js-ce:compound flags an older doc as superseded. Do not trigger for general refactor, debugging, or code-review work unless the user has explicitly pointed at docs/solutions/.
+              Refresh stale or drifting learnings and decide whether to keep, update, replace, or archive them.
             </p>
             <div class="card-code-block">
               <pre><code>/js-ce:compound-refresh</code></pre>
             </div>
           </div>
+        </section>
 
-          <div class="skill-detail" id="js-ce-optimize">
+        <section id="on-demand">
+          <h2><i class="fa-solid fa-bolt"></i> On-Demand (3)</h2>
+          <p>Reach for these whenever you're stuck, need something explained, or want a verdict.</p>
+
+          <div class="skill-detail" id="js-ce-debug">
             <div class="skill-detail-header">
-              <h3>js-ce-optimize</h3>
-              
+              <h3>js-ce-debug</h3>
             </div>
             <p class="skill-detail-description">
-              Run metric-driven iterative optimization loops. Define a measurable goal, build measurement scaffolding, then run parallel experiments that try many approaches, measure each against hard gates and/or LLM-as-judge quality scores, keep improvements, and converge toward the best solution. Use when optimizing clustering quality, search relevance, build performance, prompt quality, or any measurable outcome that benefits from systematic experimentation. Inspired by Karpathy's autoresearch, generalized for multi-file code changes and non-ML domains.
+              Diagnosis loop for bugs and failing behavior -- traces causal chains and implements test-first fixes.
             </p>
             <div class="card-code-block">
-              <pre><code>skill: js-ce-optimize</code></pre>
+              <pre><code>skill: js-ce-debug</code></pre>
             </div>
           </div>
 
-          <div class="skill-detail" id="js-ce-simplify-code">
+          <div class="skill-detail" id="js-ce-explain">
             <div class="skill-detail-header">
-              <h3>js-ce-simplify-code</h3>
-              
+              <h3>js-ce-explain</h3>
             </div>
             <p class="skill-detail-description">
-              Simplify and refine recently changed code for clarity, reuse, quality, and efficiency while preserving behavior.
+              Turn a concept, diff, or window of recent work into a dense, visual explainer.
             </p>
             <div class="card-code-block">
-              <pre><code>skill: js-ce-simplify-code</code></pre>
+              <pre><code>skill: js-ce-explain</code></pre>
             </div>
           </div>
 
-          <div class="skill-detail" id="js-ce-lfg">
+          <div class="skill-detail" id="js-ce-pov">
             <div class="skill-detail-header">
-              <h3>js-ce-lfg</h3>
-              
+              <h3>js-ce-pov</h3>
             </div>
             <p class="skill-detail-description">
-              Full autonomous engineering workflow
+              Give a decisive, project-grounded verdict on an external technology, library, or pattern.
             </p>
             <div class="card-code-block">
-              <pre><code>skill: js-ce-lfg</code></pre>
-            </div>
-          </div>
-
-          <div class="skill-detail" id="js-ce-dogfood-beta">
-            <div class="skill-detail-header">
-              <h3>js-ce-dogfood-beta</h3>
-              
-            </div>
-            <p class="skill-detail-description">
-              [BETA] Dogfood the active branch end-to-end as a QA engineer. Diffs the branch against main, builds an exhaustive browser test matrix of every change (full user journeys, not just features), drives the app with agent-browser, then auto-fixes issues, adds regression tests, and commits each fix until the matrix is green. Use when you want a hands-off 'test everything we just built and make it actually work' pass before shipping.
-            </p>
-            <div class="card-code-block">
-              <pre><code>skill: js-ce-dogfood-beta</code></pre>
-            </div>
-          </div>
-
-          <div class="skill-detail" id="js-ce-polish">
-            <div class="skill-detail-header">
-              <h3>js-ce-polish</h3>
-              
-            </div>
-            <p class="skill-detail-description">
-              Start the dev server, open the feature in a browser, and iterate on improvements together. Manual invocation only — type /js-ce-polish to run it.
-            </p>
-            <div class="card-code-block">
-              <pre><code>skill: js-ce-polish</code></pre>
+              <pre><code>skill: js-ce-pov</code></pre>
             </div>
           </div>
         </section>
 
-        <section id="research-context">
-          <h2><i class="fa-solid fa-magnifying-glass"></i> Research & Context (3)</h2>
-          <p>Pull in organizational and historical context before and during work.</p>
-
-          <div class="skill-detail" id="js-ce-sessions">
-            <div class="skill-detail-header">
-              <h3>js-ce-sessions</h3>
-              
-            </div>
-            <p class="skill-detail-description">
-              Search and ask questions about your coding agent session history. Use when asking what you worked on, what was tried before, how a problem was investigated across sessions, what happened recently, or any question about past agent sessions. Also use when the user references prior sessions, previous attempts, or past investigations — even without saying 'sessions' explicitly.
-            </p>
-            <div class="card-code-block">
-              <pre><code>skill: js-ce-sessions</code></pre>
-            </div>
-          </div>
-
-          <div class="skill-detail" id="js-ce-slack-research">
-            <div class="skill-detail-header">
-              <h3>js-ce-slack-research</h3>
-              
-            </div>
-            <p class="skill-detail-description">
-              Search Slack for interpreted organizational context -- decisions, constraints, and discussion arcs that shape the current task. Produces a research digest with cross-cutting analysis and research-value assessment, not raw message lists. Use when searching Slack for context during planning, brainstorming, or any task where organizational knowledge matters. Trigger phrases: 'search slack for', 'what did we discuss about', 'slack context for', 'organizational context about', 'what does the team think about', 'any slack discussions on'. Differs from slack:find-discussions which returns individual message results without synthesis.
-            </p>
-            <div class="card-code-block">
-              <pre><code>skill: js-ce-slack-research</code></pre>
-            </div>
-          </div>
+        <section id="around-the-loop">
+          <h2><i class="fa-solid fa-compass-drafting"></i> Around the Loop (3)</h2>
+          <p>Set direction and keep a read on the product around the core loop.</p>
 
           <div class="skill-detail" id="js-ce-strategy">
             <div class="skill-detail-header">
               <h3>js-ce-strategy</h3>
-              
             </div>
             <p class="skill-detail-description">
-              Create or maintain STRATEGY.md - the product's target problem, approach, users, key metrics, and tracks of work. Use when starting a new product, updating direction, or when prompts like 'write our strategy', 'update the roadmap', 'what are we working on', or 'set up the strategy doc' come up. Also triggers when js-ce-ideate, js-ce-brainstorm, or js-ce-plan need upstream grounding and no strategy doc exists yet.
+              Create or maintain <code>STRATEGY.md</code> -- target problem, approach, users, key metrics, and tracks of work.
             </p>
             <div class="card-code-block">
               <pre><code>skill: js-ce-strategy</code></pre>
             </div>
           </div>
+
+          <div class="skill-detail" id="js-ce-product-pulse">
+            <div class="skill-detail-header">
+              <h3>js-ce-product-pulse</h3>
+            </div>
+            <p class="skill-detail-description">
+              Generate a time-windowed pulse report from configured signals.
+            </p>
+            <div class="card-code-block">
+              <pre><code>skill: js-ce-product-pulse</code></pre>
+            </div>
+          </div>
+
+          <div class="skill-detail" id="js-ce-sweep">
+            <div class="skill-detail-header">
+              <h3>js-ce-sweep</h3>
+            </div>
+            <p class="skill-detail-description">
+              Sweep configured feedback sources (Slack, GitHub Issues) for new items and emit an lfg-ready plan.
+            </p>
+            <div class="card-code-block">
+              <pre><code>skill: js-ce-sweep</code></pre>
+            </div>
+          </div>
         </section>
 
         <section id="git-workflow">
-          <h2><i class="fa-solid fa-code-branch"></i> Git Workflow (4)</h2>
-          <p>Commit, branch, and PR hygiene.</p>
+          <h2><i class="fa-solid fa-code-branch"></i> Git Workflow (3)</h2>
+          <p>Commit, PR, and worktree hygiene.</p>
 
-          <div class="skill-detail" id="js-ce-git-commit">
+          <div class="skill-detail" id="js-ce-commit">
             <div class="skill-detail-header">
-              <h3>js-ce-git-commit</h3>
-              
+              <h3>js-ce-commit</h3>
             </div>
             <p class="skill-detail-description">
-              Create a git commit with a clear, value-communicating message. Use when the user says "commit", "commit this", "save my changes", "create a commit", or wants to commit staged or unstaged work. Produces well-structured commit messages that follow repo conventions when they exist, and defaults to conventional commit format otherwise.
+              Create a git commit with a clear, value-communicating message.
             </p>
             <div class="card-code-block">
-              <pre><code>skill: js-ce-git-commit</code></pre>
+              <pre><code>skill: js-ce-commit</code></pre>
             </div>
           </div>
 
-          <div class="skill-detail" id="js-ce-git-commit-push-pr">
+          <div class="skill-detail" id="js-ce-commit-push-pr">
             <div class="skill-detail-header">
-              <h3>js-ce-git-commit-push-pr</h3>
-              
+              <h3>js-ce-commit-push-pr</h3>
             </div>
             <p class="skill-detail-description">
-              Commit, push, and open a PR with an adaptive, value-first description. Use when the user says "commit and PR", "push and open a PR", "ship this", "create a PR", "open a pull request", "commit push PR", or wants to go from working changes to an open pull request in one step. Also use when the user says "update the PR description", "refresh the PR description", "freshen the PR", or wants to rewrite an existing PR description. Produces PR descriptions that scale in depth with the complexity of the change, avoiding cookie-cutter templates.
+              Commit, push, and open a PR with an adaptive description.
             </p>
             <div class="card-code-block">
-              <pre><code>skill: js-ce-git-commit-push-pr</code></pre>
+              <pre><code>skill: js-ce-commit-push-pr</code></pre>
             </div>
           </div>
 
-          <div class="skill-detail" id="js-ce-git-worktree">
+          <div class="skill-detail" id="js-ce-worktree">
             <div class="skill-detail-header">
-              <h3>js-ce-git-worktree</h3>
-              
+              <h3>js-ce-worktree</h3>
             </div>
             <p class="skill-detail-description">
-              This skill manages Git worktrees for isolated parallel development. It handles creating, listing, switching, and cleaning up worktrees with a simple interactive interface, following KISS principles.
+              Set up isolated git worktrees for parallel development.
             </p>
             <div class="card-code-block">
-              <pre><code>skill: js-ce-git-worktree</code></pre>
-            </div>
-          </div>
-
-          <div class="skill-detail" id="js-ce-git-clean-gone-branches">
-            <div class="skill-detail-header">
-              <h3>js-ce-git-clean-gone-branches</h3>
-              
-            </div>
-            <p class="skill-detail-description">
-              Clean up local branches whose remote tracking branch is gone. Use when the user says "clean up branches", "delete gone branches", "prune local branches", "clean gone", or wants to remove stale local branches that no longer exist on the remote. Also handles removing associated worktrees for branches that have them.
-            </p>
-            <div class="card-code-block">
-              <pre><code>skill: js-ce-git-clean-gone-branches</code></pre>
+              <pre><code>skill: js-ce-worktree</code></pre>
             </div>
           </div>
         </section>
 
-        <section id="review-quality">
-          <h2><i class="fa-solid fa-clipboard-check"></i> Review & Quality (3)</h2>
-          <p>Document review and agent-native auditing.</p>
+        <section id="autonomous-pipeline">
+          <h2><i class="fa-solid fa-robot"></i> Autonomous Pipeline (1)</h2>
+          <p>Hands-off, end-to-end engineering.</p>
 
-          <div class="skill-detail" id="js-ce-document-review">
+          <div class="skill-detail" id="js-ce-lfg">
             <div class="skill-detail-header">
-              <h3>js-ce-document-review</h3>
-              
+              <h3>js-ce-lfg</h3>
             </div>
             <p class="skill-detail-description">
-              Review requirements or plan documents using parallel persona agents that surface role-specific issues. Use when a requirements document or plan document exists and the user wants to improve it.
+              Run the full hands-off engineering pipeline from planning through a green PR.
             </p>
             <div class="card-code-block">
-              <pre><code>skill: js-ce-document-review</code></pre>
-            </div>
-          </div>
-
-          <div class="skill-detail" id="js-ce-agent-native-audit">
-            <div class="skill-detail-header">
-              <h3>js-ce-agent-native-audit</h3>
-              
-            </div>
-            <p class="skill-detail-description">
-              Run comprehensive agent-native architecture review with scored principles
-            </p>
-            <div class="card-code-block">
-              <pre><code>skill: js-ce-agent-native-audit</code></pre>
-            </div>
-          </div>
-
-          <div class="skill-detail" id="js-ce-agent-native-architecture">
-            <div class="skill-detail-header">
-              <h3>js-ce-agent-native-architecture</h3>
-              
-            </div>
-            <p class="skill-detail-description">
-              Build applications where agents are first-class citizens. Use this skill when designing autonomous agents, creating MCP tools, implementing self-modifying systems, or building apps where features are outcomes achieved by agents operating in a loop.
-            </p>
-            <div class="card-code-block">
-              <pre><code>skill: js-ce-agent-native-architecture</code></pre>
+              <pre><code>skill: js-ce-lfg</code></pre>
             </div>
           </div>
         </section>
 
-        <section id="todos">
-          <h2><i class="fa-solid fa-list-check"></i> Todos & Tracking (4)</h2>
-          <p>File-based todo lifecycle: create, triage, resolve.</p>
+        <section id="frontend-browser">
+          <h2><i class="fa-solid fa-window-maximize"></i> Frontend & Browser (3)</h2>
+          <p>Polish in a real browser and verify changes on the web or an iOS simulator.</p>
 
-          <div class="skill-detail" id="js-ce-todo-create">
+          <div class="skill-detail" id="js-ce-polish">
             <div class="skill-detail-header">
-              <h3>js-ce-todo-create</h3>
-              
+              <h3>js-ce-polish</h3>
             </div>
             <p class="skill-detail-description">
-              Use when creating durable work items, managing todo lifecycle, or tracking findings across sessions in the file-based todo system
+              Start the dev server, inspect the feature in a browser, and iterate on polish.
             </p>
             <div class="card-code-block">
-              <pre><code>skill: js-ce-todo-create</code></pre>
+              <pre><code>skill: js-ce-polish</code></pre>
             </div>
           </div>
-
-          <div class="skill-detail" id="js-ce-todo-triage">
-            <div class="skill-detail-header">
-              <h3>js-ce-todo-triage</h3>
-              
-            </div>
-            <p class="skill-detail-description">
-              Use when reviewing pending todos for approval, prioritizing code review findings, or interactively categorizing work items
-            </p>
-            <div class="card-code-block">
-              <pre><code>skill: js-ce-todo-triage</code></pre>
-            </div>
-          </div>
-
-          <div class="skill-detail" id="js-ce-todo-resolve">
-            <div class="skill-detail-header">
-              <h3>js-ce-todo-resolve</h3>
-              
-            </div>
-            <p class="skill-detail-description">
-              Use when batch-resolving approved todos, especially after code review or triage sessions
-            </p>
-            <div class="card-code-block">
-              <pre><code>skill: js-ce-todo-resolve</code></pre>
-            </div>
-          </div>
-
-          <div class="skill-detail" id="js-ce-resolve-pr-feedback">
-            <div class="skill-detail-header">
-              <h3>js-ce-resolve-pr-feedback</h3>
-              
-            </div>
-            <p class="skill-detail-description">
-              Resolve PR review feedback by evaluating validity and fixing issues in parallel. Use when addressing PR review comments, resolving review threads, or fixing code review feedback.
-            </p>
-            <div class="card-code-block">
-              <pre><code>skill: js-ce-resolve-pr-feedback</code></pre>
-            </div>
-          </div>
-        </section>
-
-        <section id="dev-frameworks">
-          <h2><i class="fa-solid fa-code"></i> Development & Design (4)</h2>
-          <p>Coding-style and design skills that teach Claude a particular philosophy.</p>
-
-          <div class="skill-detail" id="js-ce-modern-nodejs-style">
-            <div class="skill-detail-header">
-              <h3>js-ce-modern-nodejs-style</h3>
-              
-            </div>
-            <p class="skill-detail-description">
-              Write Node.js code following modern, pragmatic patterns inspired by TJ Holowaychuk, Matteo Collina, and Sindre Sorhus. Use when writing Node.js applications, Express/Fastify/Hono APIs, creating modules, or any JavaScript/TypeScript server-side code. Triggers on Node.js code generation, refactoring requests, code review, or when the user wants clean, minimal, production-ready server-side JavaScript/TypeScript.
-            </p>
-            <div class="card-code-block">
-              <pre><code>skill: js-ce-modern-nodejs-style</code></pre>
-            </div>
-          </div>
-
-          <div class="skill-detail" id="js-ce-sindre-sorhus-package-writer">
-            <div class="skill-detail-header">
-              <h3>js-ce-sindre-sorhus-package-writer</h3>
-              
-            </div>
-            <p class="skill-detail-description">
-              Write npm packages following Sindre Sorhus's proven patterns and philosophy. Use when creating new npm packages, Node.js libraries, CLI tools, or when the user wants clean, minimal, production-ready JavaScript/TypeScript library code. Triggers on requests like "create a package", "write an npm library", "design a module API", or mentions of Sindre Sorhus's style.
-            </p>
-            <div class="card-code-block">
-              <pre><code>skill: js-ce-sindre-sorhus-package-writer</code></pre>
-            </div>
-          </div>
-
-          <div class="skill-detail" id="js-ce-frontend-design">
-            <div class="skill-detail-header">
-              <h3>js-ce-frontend-design</h3>
-              
-            </div>
-            <p class="skill-detail-description">
-              Build web interfaces with genuine design quality, not AI slop. Use for any frontend work - landing pages, web apps, dashboards, admin panels, components, interactive experiences. Activates for both greenfield builds and modifications to existing applications. Detects existing design systems and respects them. Covers composition, typography, color, motion, and copy. Verifies results via screenshots before declaring done.
-            </p>
-            <div class="card-code-block">
-              <pre><code>skill: js-ce-frontend-design</code></pre>
-            </div>
-          </div>
-
-          <div class="skill-detail" id="js-ce-gemini-imagegen">
-            <div class="skill-detail-header">
-              <h3>js-ce-gemini-imagegen</h3>
-              
-            </div>
-            <p class="skill-detail-description">
-              This skill should be used when generating and editing images using the Gemini API (Nano Banana Pro). It applies when creating images from text prompts, editing existing images, applying style transfers, generating logos with text, creating stickers, product mockups, or any image generation/manipulation task. Supports text-to-image, image editing, multi-turn refinement, and composition from multiple reference images.
-            </p>
-            <div class="card-code-block">
-              <pre><code>skill: js-ce-gemini-imagegen</code></pre>
-            </div>
-          </div>
-        </section>
-
-        <section id="testing">
-          <h2><i class="fa-solid fa-vial"></i> Testing (2)</h2>
-          <p>Verify changes in a browser or on an iOS simulator.</p>
 
           <div class="skill-detail" id="js-ce-test-browser">
             <div class="skill-detail-header">
               <h3>js-ce-test-browser</h3>
-              
             </div>
             <p class="skill-detail-description">
-              Run browser tests on pages affected by current PR or branch
+              Run browser tests for pages affected by the current branch or PR.
             </p>
             <div class="card-code-block">
               <pre><code>skill: js-ce-test-browser</code></pre>
@@ -575,10 +418,9 @@ skill: js-ce-gemini-imagegen</code></pre>
           <div class="skill-detail" id="js-ce-test-xcode">
             <div class="skill-detail-header">
               <h3>js-ce-test-xcode</h3>
-              
             </div>
             <p class="skill-detail-description">
-              Build and test iOS apps on simulator using XcodeBuildMCP. Use after making iOS code changes, before creating a PR, or when verifying app behavior and checking for crashes on simulator.
+              Build and test iOS apps on simulator with XcodeBuildMCP.
             </p>
             <div class="card-code-block">
               <pre><code>skill: js-ce-test-xcode</code></pre>
@@ -586,181 +428,84 @@ skill: js-ce-gemini-imagegen</code></pre>
           </div>
         </section>
 
-        <section id="product-content">
-          <h2><i class="fa-solid fa-bullhorn"></i> Product & Content (8)</h2>
-          <p>Ship-and-tell: announcements, release notes, pulse reports, feedback analysis, and copy editing.</p>
+        <section id="collaboration-feedback">
+          <h2><i class="fa-solid fa-bullhorn"></i> Collaboration & Feedback (4)</h2>
+          <p>Share work, promote what shipped, and turn feedback into action.</p>
+
+          <div class="skill-detail" id="js-ce-proof">
+            <div class="skill-detail-header">
+              <h3>js-ce-proof</h3>
+            </div>
+            <p class="skill-detail-description">
+              Publish, read, comment on, or edit markdown in Proof.
+            </p>
+            <div class="card-code-block">
+              <pre><code>skill: js-ce-proof</code></pre>
+            </div>
+          </div>
 
           <div class="skill-detail" id="js-ce-promote">
             <div class="skill-detail-header">
               <h3>js-ce-promote</h3>
-              
             </div>
             <p class="skill-detail-description">
-              Draft user-facing announcement and marketing copy for a feature that just shipped — an X post or thread, a changelog blurb, a LinkedIn post, an email, a blog intro, or a short demo script. Works standalone by default; voice-matched via an optional brand-voice CLI when one is installed and authed. Use when the user says 'promote this', 'draft the announcement', 'write the launch copy', 'market this feature', 'announce this feature', 'write the release tweet', or 'js-ce-promote'.
+              Draft launch or promotion copy for a shipped feature.
             </p>
             <div class="card-code-block">
               <pre><code>skill: js-ce-promote</code></pre>
             </div>
           </div>
 
-          <div class="skill-detail" id="js-ce-release-notes">
+          <div class="skill-detail" id="js-ce-resolve-pr-feedback">
             <div class="skill-detail-header">
-              <h3>js-ce-release-notes</h3>
-              
+              <h3>js-ce-resolve-pr-feedback</h3>
             </div>
             <p class="skill-detail-description">
-              Summarize recent js-compound-engineering plugin releases, or answer a specific question about a past release with a version citation. Use when the user types `/js-ce-release-notes` or asks "what changed in js-compound-engineering recently?" or "what happened to `&lt;skill-name&gt;`?".
+              Resolve PR review feedback in parallel.
             </p>
             <div class="card-code-block">
-              <pre><code>skill: js-ce-release-notes</code></pre>
-            </div>
-          </div>
-
-          <div class="skill-detail" id="js-ce-changelog">
-            <div class="skill-detail-header">
-              <h3>js-ce-changelog</h3>
-              
-            </div>
-            <p class="skill-detail-description">
-              Create engaging changelogs for recent merges to main branch
-            </p>
-            <div class="card-code-block">
-              <pre><code>skill: js-ce-changelog</code></pre>
-            </div>
-          </div>
-
-          <div class="skill-detail" id="js-ce-demo-reel">
-            <div class="skill-detail-header">
-              <h3>js-ce-demo-reel</h3>
-              
-            </div>
-            <p class="skill-detail-description">
-              Capture a visual demo reel (GIF, terminal recording, screenshots) for PR descriptions. Use when shipping UI changes, CLI features, or any work with observable behavior that benefits from visual proof. Also use when asked to add a demo, record a GIF, screenshot a feature, show what changed visually, create a demo reel, capture evidence, add proof to a PR, or create a before/after comparison.
-            </p>
-            <div class="card-code-block">
-              <pre><code>skill: js-ce-demo-reel</code></pre>
-            </div>
-          </div>
-
-          <div class="skill-detail" id="js-ce-product-pulse">
-            <div class="skill-detail-header">
-              <h3>js-ce-product-pulse</h3>
-              
-            </div>
-            <p class="skill-detail-description">
-              Generate a time-windowed pulse report on what users experienced and how the product performed - usage, quality, errors, signals worth investigating. Use when the user says 'run a pulse', 'show me the pulse', 'how are we doing', 'weekly recap', 'launch-day check', or passes a time window like '24h' or '7d'. Configures via .js-compound-engineering/config.local.yaml and saves reports to docs/pulse-reports/.
-            </p>
-            <div class="card-code-block">
-              <pre><code>skill: js-ce-product-pulse</code></pre>
+              <pre><code>skill: js-ce-resolve-pr-feedback</code></pre>
             </div>
           </div>
 
           <div class="skill-detail" id="js-ce-riffrec-feedback-analysis">
             <div class="skill-detail-header">
               <h3>js-ce-riffrec-feedback-analysis</h3>
-              
             </div>
             <p class="skill-detail-description">
-              Product-feedback capture workflow. ALWAYS load when the user posts a session-bundle `.zip` (a recorder bundle with `session.json` + `events.json` + `recording.webm` + `voice.webm`), a video/audio recording for product feedback, or asks how to capture and share recorded feedback sessions. Routes between setup, quick bug report, and extensive analysis.
+              Analyze Riffrec feedback captures from recorded session bundles.
             </p>
             <div class="card-code-block">
               <pre><code>skill: js-ce-riffrec-feedback-analysis</code></pre>
             </div>
           </div>
-
-          <div class="skill-detail" id="js-ce-every-style-editor">
-            <div class="skill-detail-header">
-              <h3>js-ce-every-style-editor</h3>
-              
-            </div>
-            <p class="skill-detail-description">
-              This skill should be used when reviewing or editing copy to ensure adherence to Every's style guide. It provides a systematic line-by-line review process for grammar, punctuation, mechanics, and style guide compliance.
-            </p>
-            <div class="card-code-block">
-              <pre><code>skill: js-ce-every-style-editor</code></pre>
-            </div>
-          </div>
-
-          <div class="skill-detail" id="js-ce-proof">
-            <div class="skill-detail-header">
-              <h3>js-ce-proof</h3>
-              
-            </div>
-            <p class="skill-detail-description">
-              Create, edit, comment on, and share markdown documents via Proof's web API and local bridge. Use when asked to "proof", "share a doc", "create a proof doc", "comment on a document", "suggest edits", "review in proof", or when given a proofeditor.ai URL.
-            </p>
-            <div class="card-code-block">
-              <pre><code>skill: js-ce-proof</code></pre>
-            </div>
-          </div>
         </section>
 
-        <section id="project-ops">
-          <h2><i class="fa-solid fa-screwdriver-wrench"></i> Project & Plugin Ops (5)</h2>
-          <p>Set up, onboard, document, and maintain the plugin and your project.</p>
+        <section id="setup-health">
+          <h2><i class="fa-solid fa-screwdriver-wrench"></i> Setup & Health (2)</h2>
+          <p>Bootstrap the environment and QA the branch before shipping.</p>
 
           <div class="skill-detail" id="js-ce-setup">
             <div class="skill-detail-header">
               <h3>js-ce-setup</h3>
-              
             </div>
             <p class="skill-detail-description">
-              Diagnose and configure compound-engineering environment. Checks CLI dependencies, plugin version, and repo-local config. Offers guided installation for missing tools. Use when troubleshooting missing tools, verifying setup, or before onboarding.
+              Diagnose environment, install missing tools, and bootstrap project config.
             </p>
             <div class="card-code-block">
               <pre><code>skill: js-ce-setup</code></pre>
             </div>
           </div>
 
-          <div class="skill-detail" id="js-ce-onboarding">
+          <div class="skill-detail" id="js-ce-dogfood">
             <div class="skill-detail-header">
-              <h3>js-ce-onboarding</h3>
-              
+              <h3>js-ce-dogfood</h3>
             </div>
             <p class="skill-detail-description">
-              Generate or regenerate ONBOARDING.md to help new contributors understand a codebase. Use when the user asks to 'create onboarding docs', 'generate ONBOARDING.md', 'document this project for new developers', 'write onboarding documentation', 'vonboard', 'vonboarding', 'prepare this repo for a new contributor', 'refresh the onboarding doc', or 'update ONBOARDING.md'. Also use when someone needs to onboard a new team member and wants a written artifact, or when a codebase lacks onboarding documentation and the user wants to generate one.
+              Hands-off, diff-scoped browser QA of the active branch, with autonomous small fixes and a durable report.
             </p>
             <div class="card-code-block">
-              <pre><code>skill: js-ce-onboarding</code></pre>
-            </div>
-          </div>
-
-          <div class="skill-detail" id="js-ce-update">
-            <div class="skill-detail-header">
-              <h3>js-ce-update</h3>
-              
-            </div>
-            <p class="skill-detail-description">
-              Check if the compound-engineering plugin is up to date and fix stale cache if not. Use when the user says "update compound engineering", "check compound engineering version", "ce update", "is compound engineering up to date", "update ce plugin", or reports issues that might stem from a stale compound-engineering plugin version. This skill only works in Claude Code — it relies on the plugin harness cache layout.
-            </p>
-            <div class="card-code-block">
-              <pre><code>skill: js-ce-update</code></pre>
-            </div>
-          </div>
-
-          <div class="skill-detail" id="js-ce-deploy-docs">
-            <div class="skill-detail-header">
-              <h3>js-ce-deploy-docs</h3>
-              
-            </div>
-            <p class="skill-detail-description">
-              Validate and prepare documentation for GitHub Pages deployment
-            </p>
-            <div class="card-code-block">
-              <pre><code>skill: js-ce-deploy-docs</code></pre>
-            </div>
-          </div>
-
-          <div class="skill-detail" id="js-ce-report-bug">
-            <div class="skill-detail-header">
-              <h3>js-ce-report-bug</h3>
-              
-            </div>
-            <p class="skill-detail-description">
-              Report a bug in the js-compound-engineering plugin
-            </p>
-            <div class="card-code-block">
-              <pre><code>skill: js-ce-report-bug</code></pre>
+              <pre><code>skill: js-ce-dogfood</code></pre>
             </div>
           </div>
         </section>
@@ -768,7 +513,7 @@ skill: js-ce-gemini-imagegen</code></pre>
         <nav class="docs-nav-footer">
           <a href="agents.html" class="nav-prev">
             <span class="nav-label">Previous</span>
-            <span class="nav-title"><i class="fa-solid fa-arrow-left"></i> Agents</span>
+            <span class="nav-title"><i class="fa-solid fa-arrow-left"></i> Agentless</span>
           </a>
           <a href="mcp-servers.html" class="nav-next">
             <span class="nav-label">Next</span>

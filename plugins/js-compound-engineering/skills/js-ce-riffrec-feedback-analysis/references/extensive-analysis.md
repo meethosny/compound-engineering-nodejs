@@ -1,16 +1,17 @@
 # Extensive analysis path
 
-Use this path when the input is a longer recording (over ~60 seconds), contains multiple issues, requirements, or workflow walkthroughs, or the user explicitly wants requirements material. The goal is a full Compound Engineering-compatible artifact set that feeds the `js-ce-brainstorm` skill.
+Use this path when the input is a longer recording (over ~60 seconds), contains multiple issues, requirements, or workflow walkthroughs, or the user explicitly wants requirements material. The goal is a full Compound Engineering-compatible artifact set that feeds `js-ce-brainstorm`.
 
 ## Workflow
 
-1. Run the analyzer:
+1. Run the analyzer (`SKILL_DIR` is the directory containing the `js-ce-riffrec-feedback-analysis` SKILL.md; set it in the same command — shell state does not persist between Bash calls):
 
    ```bash
-   python scripts/analyze_riffrec_zip.py /path/to/input
+   SKILL_DIR="<absolute path of the directory containing the js-ce-riffrec-feedback-analysis SKILL.md>"
+   python "$SKILL_DIR/scripts/analyze_riffrec_zip.py" /path/to/input
    ```
 
-   Use `--output-dir <dir>` when the artifact should live somewhere specific. In a repo with `docs/brainstorms/`, the default output goes under `docs/brainstorms/feedback-analysis/`.
+   Use `--output-dir <dir>` when the artifact should live somewhere specific. In a repo with `docs/brainstorms/`, the default output goes under `docs/brainstorms/riffrec-feedback/` as an evidence/kickoff-artifact exception, not as the durable brainstorm output convention.
 
 2. Read the generated `analysis.md`, `problem-analysis.md`, `review-prompt.md`, and `requirements-kickoff.md`.
 
@@ -33,7 +34,7 @@ Use this path when the input is a longer recording (over ~60 seconds), contains 
    - **Inferences:** likely user intent, likely broken control, suspected missing state.
    - **Requirements:** product behavior needed to resolve the problem.
 
-7. When the current workspace contains the product source code, run a source-mapping pass before or during brainstorm. Use the transcript language, visible UI labels, screenshot paths, route names, and generated requirements to search the codebase for likely components, route handlers, services, modules, tests, and state stores (e.g. React/Next.js components, Express/Fastify/Nest route handlers, service modules, and client-side stores). For larger sessions, split this mapping by product area and use sub-agents when available so independent areas can be inspected in parallel.
+7. When the current workspace contains the product source code, run a source-mapping pass before or during brainstorm. Use the transcript language, visible UI labels, screenshot paths, route names, and generated requirements to search the codebase for likely components, controllers, services, models, tests, and state stores. For larger sessions, split this mapping by product area and use sub-agents when available so independent areas can be inspected in parallel.
 
 8. Add source mapping to the brainstorm material as suspected implementation surfaces, not as proven root cause unless the code clearly proves it. Include confidence levels and short evidence notes explaining why each file or component is relevant.
 
@@ -50,7 +51,7 @@ Do not end the workflow after extraction in normal use. The intended sequence is
 3. Inspect or refine `problem-analysis.md` when the evidence needs human-visible interpretation.
 4. Load the `js-ce-brainstorm` skill with `requirements-kickoff.md`.
 5. Ask the user to confirm, correct, or regroup the captured requirements.
-6. Let the `js-ce-brainstorm` skill produce the durable requirements doc under `docs/brainstorms/`.
+6. Let `js-ce-brainstorm` produce the durable requirements-only unified plan under `docs/plans/`.
 
 Only stop after step 1 or 2 when the user asks specifically for raw artifacts, transcript, screenshots, or analysis without brainstorming.
 
@@ -62,7 +63,7 @@ When analyzing a feedback source:
 
 - Capture every distinct problem, bug, request, expectation, confusion point, and "note to self" that appears in the transcript or frames.
 - Include concrete examples from the source material for each issue when possible: timestamp, transcript phrase, screenshot path, clicked UI element, email/thread ID, or observed state.
-- Include concrete source-code mapping when possible: likely component/service/route-handler/module/test files, route or API endpoint names, relevant state variables, and confidence level. This mapping should make it obvious where a later implementation agent should start looking.
+- Include concrete source-code mapping when possible: likely component/service/controller/model/test files, route or API endpoint names, relevant state variables, and confidence level. This mapping should make it obvious where a later implementation agent should start looking.
 - If only video is available, infer likely screens and components from visible UI labels, layout, URLs, route names, copied text, screenshots, and transcript references. Mark uncertain mappings explicitly instead of omitting them.
 - If only audio or notes are available, map from product terminology and workflow descriptions to likely code areas when the repo is present, and label the mapping as transcript-derived.
 - Do not drop lower-priority items during analysis. Mark them as lower priority or secondary if needed, but keep them represented.
@@ -75,7 +76,7 @@ When analyzing a feedback source:
 When mapping feedback to source code, classify each mapping as one of:
 
 - **Likely buggy surface:** the code path exists and directly handles the observed behavior.
-- **Missing or incomplete surface:** the feedback names a behavior, but the repo has no clear UI, route, route handler, or component implementing it yet.
+- **Missing or incomplete surface:** the feedback names a behavior, but the repo has no clear UI, route, controller action, or component implementing it yet.
 - **Indirect surface:** the code is adjacent to the behavior, but the exact interaction may happen through rendered email content, third-party UI, generated HTML, or another layer.
 - **Unknown:** no grounded source mapping found yet.
 
@@ -86,7 +87,7 @@ Every source mapping should include:
 - A short evidence note from code, not just a file guess.
 - Confidence: `High`, `Medium`, `Low`, or `Unknown`.
 
-Prefer saying "I did not find a current implementation for this surface" over forcing a speculative mapping. Missing surfaces are useful product findings and should stay in the brainstorm.
+Prefer saying "I did not find a current inbox implementation for this surface" over forcing a speculative mapping. Missing surfaces are useful product findings and should stay in the brainstorm.
 
 ## Output shape
 

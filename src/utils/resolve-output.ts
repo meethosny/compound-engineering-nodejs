@@ -19,14 +19,6 @@ export function resolveTargetOutputRoot(options: {
     const base = hasExplicitOutput ? outputRoot : process.cwd()
     return path.join(base, ".cursor")
   }
-  if (targetName === "gemini") {
-    const base = hasExplicitOutput ? outputRoot : process.cwd()
-    return path.join(base, ".gemini")
-  }
-  if (targetName === "copilot") {
-    const base = hasExplicitOutput ? outputRoot : process.cwd()
-    return path.join(base, ".github")
-  }
   if (targetName === "kiro") {
     const base = hasExplicitOutput ? outputRoot : process.cwd()
     return path.join(base, ".kiro")

@@ -1,9 +1,14 @@
-// Antigravity (Google's Gemini-based agentic IDE) shares Gemini's SKILL.md
-// and MCP-server shapes, so we re-export those types directly.
-import type { GeminiSkill, GeminiSkillDir } from "./gemini"
+// Antigravity (Google's Gemini-based agentic IDE) generates SKILL.md files
+// and pass-through skill directories.
+export type AntigravitySkill = {
+  name: string
+  content: string // Full SKILL.md with YAML frontmatter
+}
 
-export type AntigravitySkill = GeminiSkill
-export type AntigravitySkillDir = GeminiSkillDir
+export type AntigravitySkillDir = {
+  name: string
+  sourceDir: string
+}
 
 // Antigravity commands become markdown workflows (NOT Gemini's TOML).
 export type AntigravityWorkflow = {

@@ -38,7 +38,7 @@
           <h3>Core Concepts</h3>
           <ul>
             <li><a href="#philosophy">Philosophy</a></li>
-            <li><a href="#agents">Using Agents</a></li>
+            <li><a href="#agents">The Agentless Model</a></li>
             <li><a href="#commands">Using Commands</a></li>
             <li><a href="#skills">Using Skills</a></li>
           </ul>
@@ -47,14 +47,14 @@
           <h3>Guides</h3>
           <ul>
             <li><a href="#code-review">Code Review Workflow</a></li>
-            <li><a href="#creating-agents">Creating Custom Agents</a></li>
+            <li><a href="#creating-agents">Adding Specialists</a></li>
             <li><a href="#creating-skills">Creating Custom Skills</a></li>
           </ul>
         </div>
         <div class="nav-section">
           <h3>Reference</h3>
           <ul>
-            <li><a href="agents.html">Agent Reference</a></li>
+            <li><a href="agents.html">Agentless Architecture</a></li>
             <li><a href="commands.html">Command Reference</a></li>
             <li><a href="skills.html">Skill Reference</a></li>
             <li><a href="mcp-servers.html">MCP Servers</a></li>
@@ -80,7 +80,7 @@
       <article class="docs-article">
         <h1>Getting Started with Compounding Engineering</h1>
         <p class="lead">
-          Five minutes from now, you'll run a single command that spins up a tiered set of AI review agents—each with a different specialty—to review your pull request in parallel. Security, performance, architecture, correctness, all happening at once. That's the plugin: 51 specialized agents, 47 skills, and 1 MCP server. Let's get you set up.
+          Five minutes from now, you'll run a single command that spins up a tiered set of reviewer personas—each with a different specialty—to review your pull request in parallel. Security, performance, architecture, correctness, all happening at once. That's the plugin: 29 self-contained skills, no standalone agents to manage, and no MCP servers to configure. Let's get you set up.
         </p>
 
         <!-- Installation Section -->
@@ -116,9 +116,9 @@
           <div class="callout callout-info">
             <div class="callout-icon"><i class="fa-solid fa-circle-info"></i></div>
             <div class="callout-content">
-              <h4>Known Issue: MCP Servers</h4>
+              <h4>One-step setup</h4>
               <p>
-                The bundled MCP server (Context7 for docs) doesn't always auto-load. If you need it, there's a manual config step below. Otherwise, ignore this—everything else works fine.
+                The plugin bundles no MCP servers and no standalone agents, so there's nothing extra to wire up. Run <code>/js-ce-setup</code> once in any project and it checks your environment, installs recommended tools, and bootstraps config.
               </p>
             </div>
           </div>
@@ -131,39 +131,39 @@
           <p>Let's see what this thing can actually do. I'll show you three workflows you'll use constantly:</p>
 
           <h3>Run a Code Review</h3>
-          <p>This is the big one. Type <code>/js-ce:review</code> and watch the pipeline spawn its always-on and conditional reviewers:</p>
+          <p>This is the big one. Type <code>/js-ce:code-review</code> and watch the skill spawn its always-on and conditional reviewer personas:</p>
           <div class="card-code-block">
             <pre><code># Review a PR by number
-/js-ce:review 123
+/js-ce:code-review 123
 
 # Review the current branch
-/js-ce:review
+/js-ce:code-review
 
 # Review a specific branch
-/js-ce:review feature/my-feature</code></pre>
+/js-ce:code-review feature/my-feature</code></pre>
           </div>
 
-          <h3>Use a Specialized Agent</h3>
-          <p>Sometimes you just need one expert. Call them directly with the bare <code>js-ce-</code> name:</p>
+          <h3>Point a Skill at a Focused Task</h3>
+          <p>The plugin is agentless—specialists run <em>inside</em> skills, not as separate agents you call. Scope a skill to one problem and it dispatches the right persona for you:</p>
           <div class="card-code-block">
-            <pre><code># Node.js code review with strict conventions
-claude agent js-ce-kieran-nodejs-reviewer "Review the UserController"
+            <pre><code># Diagnose a failing test with the debug loop
+skill: js-ce-debug "The checkout total test is flaky"
 
-# Security review
-claude agent js-ce-security-reviewer "Audit authentication flow"
+# Simplify code you just wrote
+skill: js-ce-simplify-code
 
-# Research best practices
-claude agent js-ce-best-practices-researcher "Find pagination patterns for Express"</code></pre>
+# Get a decisive verdict on a library or pattern
+skill: js-ce-pov "Should we adopt Drizzle over Prisma here?"</code></pre>
           </div>
 
           <h3>Invoke a Skill</h3>
-          <p>Skills package the plugin's workflows and domain knowledge. When you need deep knowledge in a specific domain:</p>
+          <p>Skills package the plugin's workflows and domain knowledge. When you need a specific workflow:</p>
           <div class="card-code-block">
-            <pre><code># Generate images with Gemini
-skill: js-ce-gemini-imagegen
+            <pre><code># Explain a concept or a window of recent work
+skill: js-ce-explain
 
-# Write Node.js in modern style
-skill: js-ce-modern-nodejs-style
+# Turn a vague idea into a requirements doc
+/js-ce:brainstorm
 
 # Plan a multi-step task
 /js-ce:plan "Add OAuth integration"</code></pre>
@@ -174,44 +174,15 @@ skill: js-ce-modern-nodejs-style
         <section id="configuration">
           <h2><i class="fa-solid fa-gear"></i> Configuration</h2>
 
-          <h3 id="mcp-configuration">MCP Server Configuration</h3>
+          <h3 id="mcp-configuration">MCP Servers</h3>
           <p>
-            If the MCP server didn't load automatically, paste this into <code>.claude/settings.json</code>:
+            Nothing to configure. The plugin ships zero MCP servers, so there's no endpoint to wire up and nothing that can fail to auto-load. If you want to add your own server—say, a documentation service—see the <a href="mcp-servers.html">MCP Servers</a> page for a copy-paste config.
           </p>
-          <div class="card-code-block">
-            <pre><code>{
-  "mcpServers": {
-    "context7": {
-      "type": "http",
-      "url": "https://mcp.context7.com/mcp"
-    }
-  }
-}</code></pre>
-          </div>
 
-          <h3>Environment Variables</h3>
-          <p>Right now, only one skill needs an API key. If you use Gemini's image generation:</p>
-          <table class="docs-table">
-            <thead>
-              <tr>
-                <th>Variable</th>
-                <th>Required For</th>
-                <th>Description</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td><code>GEMINI_API_KEY</code></td>
-                <td>js-ce-gemini-imagegen</td>
-                <td>Google Gemini API key for image generation</td>
-              </tr>
-              <tr>
-                <td><code>CONTEXT7_API_KEY</code></td>
-                <td>context7 MCP</td>
-                <td>Optional: avoids anonymous rate limits on documentation lookups</td>
-              </tr>
-            </tbody>
-          </table>
+          <h3>Environment Variables &amp; Secrets</h3>
+          <p>
+            Most skills need no API keys. Skills that integrate an external service (Slack, GitHub, Proof, and similar) read their settings from a repo-local <code>.js-compound-engineering/config.local.yaml</code> and prompt you when something is missing. Run <code>/js-ce-setup</code> to check what a given project needs.
+          </p>
         </section>
 
         <!-- Philosophy Section -->
@@ -256,71 +227,48 @@ skill: js-ce-modern-nodejs-style
           </div>
         </section>
 
-        <!-- Using Agents Section -->
+        <!-- Agentless Model Section -->
         <section id="agents">
-          <h2><i class="fa-solid fa-users-gear"></i> Using Agents</h2>
+          <h2><i class="fa-solid fa-users-gear"></i> The Agentless Model</h2>
 
           <p>
-            Think of agents as coworkers with different job titles. You wouldn't ask your security engineer to design your UI, right? Same concept here—each agent has a specialty, and you call the one you need.
+            There are no standalone agents to install or call. The specialists you'd expect—security reviewer, performance reviewer, framework-docs researcher—live inside the skills that use them, as prompt-only personas. When a skill needs an expert opinion, it dispatches a generic subagent with that persona's prompt.
           </p>
 
-          <h3>Invoking Agents</h3>
-          <div class="card-code-block">
-            <pre><code># Basic syntax -- always the bare js-ce- name
-claude agent js-ce-&lt;agent-name&gt; "[optional message]"
+          <h3>Why agentless?</h3>
+          <ul>
+            <li><strong>Self-contained skills.</strong> Each skill carries its own personas under <code>references/personas/</code>, so there's no separate agent registry to keep in sync.</li>
+            <li><strong>Portable.</strong> A skill converts to other agent tools as a single unit—no agent-registration step.</li>
+            <li><strong>Nothing to memorize.</strong> You run a skill; it selects and dispatches the right specialists for you.</li>
+          </ul>
 
-# Examples
-claude agent js-ce-correctness-reviewer
-claude agent js-ce-security-reviewer "Audit the payment flow"
-claude agent js-ce-git-history-analyzer "Show changes to user model"</code></pre>
-          </div>
-
-          <h3>Agent Categories</h3>
+          <h3>Where specialists get dispatched</h3>
           <table class="docs-table">
             <thead>
               <tr>
-                <th>Category</th>
-                <th>Count</th>
-                <th>Purpose</th>
+                <th>Skill</th>
+                <th>Specialists it dispatches</th>
               </tr>
             </thead>
             <tbody>
               <tr>
-                <td>Review</td>
-                <td>29</td>
-                <td>Code review, security, performance, correctness, conditional personas</td>
+                <td><code>/js-ce:code-review</code></td>
+                <td>correctness, maintainability, testing, and project-standards reviewers, plus conditional personas (security, performance, migrations, CLI, async-UI, Swift) chosen by what the diff touches</td>
               </tr>
               <tr>
-                <td>Research</td>
-                <td>9</td>
-                <td>Best practices, docs, git history, issues, sessions, Slack, web</td>
+                <td><code>js-ce-doc-review</code></td>
+                <td>coherence, feasibility, design, product, scope, security, and adversarial document review lenses</td>
               </tr>
               <tr>
-                <td>Document Review</td>
-                <td>7</td>
-                <td>Plan and requirements review lenses</td>
-              </tr>
-              <tr>
-                <td>Design</td>
-                <td>3</td>
-                <td>UI iteration, Figma sync, design review</td>
-              </tr>
-              <tr>
-                <td>Workflow</td>
-                <td>2</td>
-                <td>PR feedback resolution, spec flow analysis</td>
-              </tr>
-              <tr>
-                <td>Docs</td>
-                <td>1</td>
-                <td>README generation</td>
+                <td><code>/js-ce:plan</code></td>
+                <td>research personas for framework docs, git history, prior learnings, and the open web</td>
               </tr>
             </tbody>
           </table>
 
           <p>
             <a href="agents.html" class="button secondary">
-              <i class="fa-solid fa-arrow-right"></i> View All Agents
+              <i class="fa-solid fa-arrow-right"></i> How the agentless model works
             </a>
           </p>
         </section>
@@ -344,22 +292,22 @@ claude agent js-ce-git-history-analyzer "Show changes to user model"</code></pre
           <div class="card-code-block">
             <pre><code># Core workflow (colon-namespaced slash commands)
 /js-ce:plan
-/js-ce:review 123
+/js-ce:code-review 123
 /js-ce:work
 /js-ce:compound
 
 # Other skills (hyphenated names)
-/js-ce-changelog
-/js-ce-todo-triage
-/js-ce-debug</code></pre>
+/js-ce-debug
+/js-ce-commit
+/js-ce-strategy</code></pre>
           </div>
 
           <h3>The Review Workflow</h3>
-          <p>Let me show you what happens when you run <code>/js-ce:review</code>. Here's the sequence:</p>
+          <p>Let me show you what happens when you run <code>/js-ce:code-review</code>. Here's the sequence:</p>
           <ol>
             <li><strong>Detection</strong> - Figures out what you want reviewed (PR number, branch name, or current changes)</li>
             <li><strong>Persona selection</strong> - Runs always-on reviewers (correctness, maintainability, testing, project standards) plus conditional personas chosen by what the diff touches</li>
-            <li><strong>Parallel execution</strong> - Launches the selected agents simultaneously</li>
+            <li><strong>Parallel execution</strong> - Dispatches the selected reviewer personas as subagents simultaneously</li>
             <li><strong>Merge &amp; dedup</strong> - Combines findings, removes duplicates, and confidence-gates them</li>
             <li><strong>Synthesis</strong> - Sorts findings by severity (P1 = blocks merge, P2 = should fix, P3 = nice-to-have)</li>
             <li><strong>Summary</strong> - Hands you a readable report with action items</li>
@@ -383,10 +331,10 @@ claude agent js-ce-git-history-analyzer "Show changes to user model"</code></pre
           <h3>Invoking Skills</h3>
           <div class="card-code-block">
             <pre><code># In your prompt, reference the skill by its hyphenated name
-skill: js-ce-gemini-imagegen
+skill: js-ce-debug
 
 # Or ask Claude to use it
-"Use the js-ce-modern-nodejs-style skill to refactor this code"</code></pre>
+"Use the js-ce-simplify-code skill to clean up this module"</code></pre>
           </div>
 
           <h3>Skill Structure</h3>
@@ -417,10 +365,10 @@ skill: js-ce-gemini-imagegen
           <h3>Basic Review</h3>
           <div class="card-code-block">
             <pre><code># Review a PR
-/review 123
+/js-ce:code-review 123
 
 # Review current branch
-/review</code></pre>
+/js-ce:code-review</code></pre>
           </div>
 
           <h3>Understanding Findings</h3>
@@ -431,61 +379,46 @@ skill: js-ce-gemini-imagegen
             <li><span class="badge badge-nice">P3 Nice-to-Have</span> - Would be better, but ship without it if you need to. Documentation, minor cleanup, style issues.</li>
           </ul>
 
-          <h3>Working with Todo Files</h3>
-          <p>After a review, you'll have a <code>todos/</code> directory full of markdown files. Each one is a single issue to fix:</p>
+          <h3>Acting on Findings</h3>
+          <p>
+            In interactive mode, <code>/js-ce:code-review</code> applies safe, verified fixes for you and commits them when the working tree is clean (it never pushes). In <code>mode:agent</code> it reports findings only and leaves the changes to you. For refinement passes after the bugs are gone, reach for the quality-focused skills:
+          </p>
           <div class="card-code-block">
-            <pre><code># List all pending todos
-ls todos/*-pending-*.md
+            <pre><code># Simplify recently changed code without altering behavior
+skill: js-ce-simplify-code
 
-# Triage findings
-/js-ce-todo-triage
-
-# Resolve todos in parallel
-/js-ce-todo-resolve</code></pre>
+# Resolve open PR review threads in parallel
+skill: js-ce-resolve-pr-feedback</code></pre>
           </div>
         </section>
 
-        <!-- Creating Custom Agents -->
+        <!-- Adding Specialists -->
         <section id="creating-agents">
-          <h2><i class="fa-solid fa-plus"></i> Creating Custom Agents</h2>
+          <h2><i class="fa-solid fa-plus"></i> Adding Specialists</h2>
 
           <p>
-            The built-in agents cover a lot of ground, but every team has unique needs. Maybe you want a "nodejs-api-reviewer" that enforces your company's API standards. That's 10 minutes of work.
+            Because the plugin is agentless, you don't create a standalone agent file—you extend the <em>skill</em> that needs the specialist. Say you want <code>/js-ce:code-review</code> to run a house "api-conventions" reviewer: add its prompt as a persona inside the code-review skill.
           </p>
 
-          <h3>Agent File Structure</h3>
+          <h3>Persona File</h3>
+          <p>Drop a plain prompt—no YAML frontmatter, unprefixed filename—under the calling skill's <code>references/</code> directory:</p>
           <div class="card-code-block">
-            <pre><code>---
-name: my-custom-agent
-description: Brief description of what this agent does
----
+            <pre><code>skills/js-ce-code-review/references/personas/api-conventions-reviewer.md
 
-# Agent Instructions
-
-You are [role description].
-
-## Your Responsibilities
-1. First responsibility
-2. Second responsibility
-
-## Guidelines
-- Guideline one
-- Guideline two</code></pre>
+# You are an API-conventions reviewer.
+# Review the diff for breaking changes to public
+# routes, response shapes, and versioning...</code></pre>
           </div>
-
-          <h3>Agent Location</h3>
-          <p>Drop your agent file in one of these directories:</p>
-          <ul>
-            <li><code>.claude/agents/</code> - Just for this project (committed to git)</li>
-            <li><code>~/.claude/agents/</code> - Available in all your projects (stays on your machine)</li>
-          </ul>
+          <p>
+            Then have the skill dispatch a generic subagent with that prompt. Personas are internal to the skill, so there's no agent count to update and no registry to touch. Keep each skill self-contained: if two skills need the same specialist, give each its own copy.
+          </p>
 
           <div class="callout callout-tip">
             <div class="callout-icon"><i class="fa-solid fa-lightbulb"></i></div>
             <div class="callout-content">
-              <h4>Heads up</h4>
+              <h4>Prefer a personal, reusable agent?</h4>
               <p>
-                When you remove a component, update the cleanup registry so stale artifacts get backed up on the next install -- the <code>cleanup</code> CLI subcommand reads it. Keeping it current is part of removing any agent or skill.
+                That's a Claude Code feature, separate from this plugin: drop a definition in <code>.claude/agents/</code> (this project) or <code>~/.claude/agents/</code> (all your projects). The plugin itself stays agentless.
               </p>
             </div>
           </div>

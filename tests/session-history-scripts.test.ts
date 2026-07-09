@@ -3,7 +3,7 @@ import path from "path"
 
 const SCRIPTS_DIR = path.join(
   __dirname,
-  "../plugins/js-compound-engineering/agents/research/session-history-scripts"
+  "../plugins/js-compound-engineering/skills/js-ce-compound/scripts/session-history"
 )
 const FIXTURES_DIR = path.join(__dirname, "fixtures/session-history")
 

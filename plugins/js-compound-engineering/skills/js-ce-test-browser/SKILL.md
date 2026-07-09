@@ -1,6 +1,6 @@
 ---
 name: js-ce-test-browser
-description: Run browser tests on pages affected by current PR or branch
+description: Run browser tests for pages affected by the current branch or PR.
 argument-hint: "[PR number, branch name, 'current', or --port PORT]"
 ---
 
@@ -8,58 +8,31 @@ argument-hint: "[PR number, branch name, 'current', or --port PORT]"
 
 Run end-to-end browser tests on pages affected by a PR or branch changes using the `agent-browser` CLI.
 
-## Use `agent-browser` Only For Browser Automation
+## Modes
 
-This workflow uses the `agent-browser` CLI exclusively. Do not use any alternative browser automation system, browser MCP integration, or built-in browser-control tool. If the platform offers multiple ways to control a browser, always choose `agent-browser`.
+- **Manual (default):** the user controls the dev server. Follow the steps below as written, including the headed/headless question.
+- **Pipeline (`mode:pipeline`):** invoked by LFG or another automated runner. The run is unattended — never block on a question. Read `references/pipeline-orchestration.md` from this skill's directory and follow it; it overrides the free-port scan (step 4), dev-server startup (step 5), and the headed/headless question (step 6). It still uses the preferred port that step 4 computes.
 
-Use `agent-browser` for: opening pages, clicking elements, filling forms, taking screenshots, and scraping rendered content.
+## Use `agent-browser` Only
 
-Platform-specific hints:
-- In Claude Code, do not use Chrome MCP tools (`mcp__claude-in-chrome__*`).
-- In Codex, do not substitute unrelated browsing tools.
+Use the `agent-browser` CLI for every browser action in this skill — opening pages, clicking, filling forms, snapshots, screenshots — and use it exclusively. Do not use any other browser-automation tool, including a browser MCP integration, a built-in browser-control tool, Playwright, or Puppeteer. If the host offers several ways to drive a browser, always choose `agent-browser`.
 
-## Prerequisites
-
-- Local development server running (e.g., `npm run dev`, `npx next dev`, `bunx vite`)
-- `agent-browser` CLI installed (see Setup below)
-- Git repository with changes to test
-
-## Setup
-
-Check whether `agent-browser` is installed:
-
-```bash
-command -v agent-browser >/dev/null 2>&1 && echo "Installed" || echo "NOT INSTALLED"
-```
-
-If not installed, inform the user: "`agent-browser` is not installed. Run `/js-ce-setup` to install required dependencies." Then stop -- this skill cannot function without agent-browser.
+- Claude Code: do not use Chrome MCP tools (`mcp__claude-in-chrome__*`).
+- Codex: do not substitute unrelated browsing tools.
 
 ## Workflow
 
-### 1. Verify Installation
-
-Before starting, verify `agent-browser` is available:
+### 1. Verify `agent-browser` Is Installed
 
 ```bash
 command -v agent-browser >/dev/null 2>&1 && echo "Ready" || echo "NOT INSTALLED"
 ```
 
-If not installed, inform the user: "`agent-browser` is not installed. Run `/js-ce-setup` to install required dependencies." Then stop.
+If not installed, tell the user: "`agent-browser` is not installed. Run `/js-ce-setup` for the current install command, then install agent-browser and retry." Then stop — this skill cannot function without it.
 
-### 2. Ask Browser Mode
+This also requires a git repository with changes to test.
 
-Ask the user whether to run headed or headless (using the platform's question tool -- e.g., `AskUserQuestion` in Claude Code, `request_user_input` in Codex, `ask_user` in Gemini -- or present options and wait for a reply):
-
-```
-Do you want to watch the browser tests run?
-
-1. Headed (watch) - Opens visible browser window so you can see tests run
-2. Headless (faster) - Runs in background, faster but invisible
-```
-
-Store the choice and use the `--headed` flag when the user selects option 1.
-
-### 3. Determine Test Scope
+### 2. Determine Test Scope
 
 **If PR number provided:**
 ```bash
@@ -76,42 +49,35 @@ git diff --name-only main...HEAD
 git diff --name-only main...[branch]
 ```
 
-### 4. Map Files to Routes
+### 3. Map Changed Files to Routes
 
-Map changed files to testable routes:
+Map each changed file to the route(s) that render it, then build the list of URLs to test. The table below is a starting point of common patterns, not an exhaustive rule set — apply judgment for the project's actual layout:
 
 | File Pattern | Route(s) |
 |-------------|----------|
+| `app/users/page.tsx`, `pages/users/*` | `/users`, `/users/[id]`, `/users/new` |
+| `app/settings/page.tsx` | `/settings` |
+| `hooks/*.ts`, client components | Pages importing that hook/component |
+| `components/*` | Pages rendering that component |
+| `app/**/layout.tsx` | All pages under that segment (test homepage at minimum) |
+| `**/*.css`, `**/*.scss`, `tailwind.config.*` | Visual regression on key pages |
+| `lib/*`, `utils/*` | Pages using that helper |
 | `src/app/*` (Next.js) | Corresponding routes |
-| `src/pages/*` | Corresponding routes |
 | `src/components/*` | Pages using those components |
-| `src/routes/*` | Corresponding route paths |
-| `app/routes/*` (Remix) | Corresponding routes |
-| `src/views/*` | Pages rendering those views |
-| `public/*` | Static asset pages |
-| `src/layouts/*` | All pages (test homepage at minimum) |
-| `src/styles/*`, `src/css/*` | Visual regression on key pages |
 
-Build a list of URLs to test based on the mapping.
+### 4. Determine the Dev Server Port
 
-### 5. Detect Dev Server Port
+Determine the preferred port using this priority:
 
-Determine the dev server port using this priority:
-
-1. **Explicit argument** -- if the user passed `--port 5000`, use that directly
-2. **Project instructions** -- check `AGENTS.md`, `CLAUDE.md`, or other instruction files for port references
-3. **package.json** -- check dev/start scripts for `--port` flags
-4. **Environment files** -- check `.env`, `.env.local`, `.env.development` for `PORT=`
-5. **Default** -- fall back to `3000`
+1. **Explicit argument** — if the user passed `--port 5000`, use that directly.
+2. **In-context project instructions** — if your active project instructions already in context explicitly state the dev-server port, use it. Don't grep instruction files for a port: prose mentions (docs, examples, troubleshooting) are unreliable and false-positive-prone — config files and `.env` are the trustworthy sources.
+3. **package.json** — check dev/start scripts for `--port` flags.
+4. **Environment files** — check `.env`, `.env.local`, `.env.development` for `PORT=`.
+5. **Default** — fall back to `3000`.
 
 ```bash
+# If your in-context project instructions state the dev-server port, set EXPLICIT_PORT first.
 PORT="${EXPLICIT_PORT:-}"
-if [ -z "$PORT" ]; then
-  PORT=$(grep -Eio '(port\s*[:=]\s*|localhost:)([0-9]{4,5})' AGENTS.md 2>/dev/null | grep -Eo '[0-9]{4,5}' | head -1)
-  if [ -z "$PORT" ]; then
-    PORT=$(grep -Eio '(port\s*[:=]\s*|localhost:)([0-9]{4,5})' CLAUDE.md 2>/dev/null | grep -Eo '[0-9]{4,5}' | head -1)
-  fi
-fi
 if [ -z "$PORT" ]; then
   PORT=$(grep -Eo '\-\-port[= ]+[0-9]{4,5}' package.json 2>/dev/null | grep -Eo '[0-9]{4,5}' | head -1)
 fi
@@ -119,28 +85,47 @@ if [ -z "$PORT" ]; then
   PORT=$(grep -h '^PORT=' .env .env.local .env.development 2>/dev/null | tail -1 | cut -d= -f2)
 fi
 PORT="${PORT:-3000}"
-echo "Using dev server port: $PORT"
+echo "Preferred dev server port: $PORT"
 ```
 
-### 6. Verify Server is Running
+Manual mode uses this preferred port as-is — the user controls their own server, so do not scan for alternatives. In pipeline mode, `references/pipeline-orchestration.md` takes the preferred port value printed here and scans upward to a genuinely free port.
+
+### 5. Verify the Dev Server Is Running
+
+Confirm the server is up before asking the headed/headless question — a manual run with no server stops here, so asking first would waste the question.
+
+```bash
+if lsof -i ":${PORT}" -sTCP:LISTEN -t >/dev/null 2>&1; then
+  echo "Server running on port ${PORT}"
+else
+  echo "Server not running on port ${PORT}"
+  echo "Start your dev server, then re-run:"
+  echo "  Node/Next.js: npm run dev"
+  echo "  Custom port: run this skill again with --port <your-port>"
+  exit 0
+fi
+```
+
+In pipeline mode, do not stop here — `references/pipeline-orchestration.md` auto-starts the server in the background instead.
+
+### 6. Choose Headed or Headless
+
+Manual mode only — in pipeline mode, skip this step (see Modes; it defaults to headless).
+
+Ask the user whether to run headed or headless using the platform's blocking question tool: `AskUserQuestion` in Claude Code (call `ToolSearch` with `select:AskUserQuestion` first if its schema isn't loaded), `request_user_input` in Codex, `ask_question` in Antigravity CLI (`agy`), `ask_user` in Pi (requires the `pi-ask-user` extension). Fall back to presenting options in chat only when no blocking tool exists in the harness or the call errors (e.g., Codex edit modes) — not because a schema load is required. Never silently skip the question:
+
+```
+Do you want to watch the browser tests run?
+
+1. Headed (watch) - Opens visible browser window so you can see tests run
+2. Headless (faster) - Runs in background, faster but invisible
+```
+
+Store the choice and use the `--headed` flag when the user selects option 1. Then confirm the server serves the root before iterating (add `--headed` if the user chose headed):
 
 ```bash
 agent-browser open http://localhost:${PORT}
 agent-browser snapshot -i
-```
-
-If the server is not running, inform the user:
-
-```
-Server not running on port ${PORT}
-
-Please start your development server:
-- Next.js: `npm run dev` or `npx next dev`
-- Vite: `npm run dev` or `npx vite`
-- Express: `npm start` or `node src/server.ts`
-- Custom port: run this skill again with `--port <your-port>`
-
-Then re-run this skill.
 ```
 
 ### 7. Test Each Affected Page
@@ -180,7 +165,7 @@ agent-browser screenshot --full page-name-full.png
 
 ### 8. Human Verification (When Required)
 
-Pause for human input when testing touches flows that require external interaction:
+Pause for human input when testing touches flows that require external interaction. **Pipeline mode:** do not pause — log each such flow as Skip with the reason and continue.
 
 | Flow Type | What to Ask |
 |-----------|-------------|
@@ -206,7 +191,7 @@ Did it work correctly?
 
 ### 9. Handle Failures
 
-When a test fails:
+When a test fails (**pipeline mode:** do not ask how to proceed — capture the error screenshot and repro steps, log the failure, and continue):
 
 1. **Document the failure:**
    - Screenshot the error state: `agent-browser screenshot error.png`
@@ -221,14 +206,12 @@ When a test fails:
    Console errors: [if any]
 
    How to proceed?
-   1. Fix now - I'll help debug and fix
-   2. Create todo - Add a todo for later (using the js-ce-todo-create skill)
-   3. Skip - Continue testing other pages
+   1. Fix now - debug and fix the failing test
+   2. Skip - continue testing other pages
    ```
 
 3. **If "Fix now":** investigate, propose a fix, apply, re-run the failing test
-4. **If "Create todo":** load the `js-ce-todo-create` skill and create a todo with priority p1 and description `browser-test-{description}`, continue
-5. **If "Skip":** log as skipped, continue
+4. **If "Skip":** log as skipped, continue
 
 ### 10. Test Summary
 
@@ -258,9 +241,6 @@ After all tests complete, present a summary:
 
 ### Failures: [count]
 - `/dashboard` - [issue description]
-
-### Created Todos: [count]
-- `005-pending-p1-browser-test-dashboard-error.md`
 
 ### Result: [PASS / FAIL / PARTIAL]
 ```

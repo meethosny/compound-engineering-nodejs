@@ -1,28 +1,28 @@
-# Apply Code Review Findings (after `js-ce-review`)
+# Apply Code Review Findings (after `js-ce-code-review`)
 
-Load this reference when Tier 2 `js-ce-review` has finished and **js-ce-work** (or another caller) should apply fixes before the Residual Work Gate.
+Load this reference when `js-ce-code-review` has finished and **js-ce-work** (or another caller) should apply fixes before the Residual Work Gate.
 
-`js-ce-review` is invoked here with `mode:agent`, so it is **review-only** in this context — it reports findings and writes artifacts and does not mutate the checkout, commit, push, or file tickets. **The caller owns apply/fix policy.** (In its own default/interactive mode the review applies safe fixes itself; that path does not apply here.)
+`js-ce-code-review` is invoked here with `mode:agent`, so it is **review-only** in this context — it reports findings and writes artifacts and does not mutate the checkout, commit, push, or file tickets. **The caller owns apply/fix policy.** (In its own default/interactive mode the review applies safe fixes itself; that path does not apply here.)
 
 ## Consume the completed review (do not re-run it)
 
-This reference loads **after** review has run. In the js-ce-work Tier 2 path, step 2a already invoked `js-ce-review`; this apply step **consumes that output** — do not start a second review, which would waste reviewer dispatches and risk overwriting the artifact the Residual Work Gate reconciles.
+This reference loads **after** review has run. In the js-ce-work shipping flow, step 3a already invoked `js-ce-code-review`; this apply step **consumes that output** — do not start a second review, which would waste reviewer dispatches and risk overwriting the artifact the Residual Work Gate reconciles.
 
 Reuse the review output already in hand:
 
 - Parsed JSON (`status`, `actionable_findings`, `findings`, `artifact_path`, `run_id`) **or** the markdown Actionable Findings summary captured by the caller
-- Run artifact dir: `/tmp/compound-engineering/js-ce-review/<run-id>/` (`review.json`, per-reviewer JSON for `why_it_matters`)
+- Run artifact dir: `/tmp/compound-engineering/js-ce-code-review/<run-id>/` (`review.json`, per-reviewer JSON for `why_it_matters`)
 
 If `status` is `failed`, stop shipping and surface `reason`. If `degraded`, note partial reviewer coverage before applying anything.
 
 ### Fallback — invoke review only for cold callers
 
-Only when the caller reached this file **without** already running review (no review output in hand): invoke `js-ce-review` once, then proceed to apply. Do not invoke when the caller already ran review (e.g., js-ce-work Tier 2 step 2a).
+Only when the caller reached this file **without** already running review (no review output in hand): invoke `js-ce-code-review` once, then proceed to apply. Do not invoke when the caller already ran review (e.g., js-ce-work shipping step 3a).
 
-Invoke the skill explicitly — do not treat a casual "review my changes" prompt as a substitute unless the harness routed it to `js-ce-review`.
+Invoke the skill explicitly — do not treat a casual "review my changes" prompt as a substitute unless the harness routed it to `js-ce-code-review`.
 
 ```
-js-ce-review mode:agent plan:<plan-path> base:<merge-base-or-ref>
+js-ce-code-review mode:agent plan:<plan-path> base:<merge-base-or-ref>
 ```
 
 - `mode:agent` — JSON output (`review.json` + primary JSON response) for programmatic parsing; same review pipeline as default.
@@ -30,7 +30,7 @@ js-ce-review mode:agent plan:<plan-path> base:<merge-base-or-ref>
 - `base:` — when the diff base is already resolved on the current checkout; omit when reviewing a PR number/URL or standalone current branch.
 - Do **not** pass deprecated `mode:autofix`.
 
-For human / interactive shipping, invoke `js-ce-review` without `mode:agent` if markdown tables are preferred. Capture the same JSON / Actionable Findings and artifact dir listed above before applying.
+For human / interactive shipping, invoke `js-ce-code-review` without `mode:agent` if markdown tables are preferred. Capture the same JSON / Actionable Findings and artifact dir listed above before applying.
 
 ## Inputs for apply
 
@@ -81,7 +81,7 @@ After eligibility filtering, **dispatch subagents for all remaining applicable f
 **Subagent prompt (per batch):** the assigned findings only (`#`, severity, file, line, title, `suggested_fix`, `requires_verification`; add `why_it_matters` from `{reviewer}.json` in the run artifact when useful), plus:
 - Work through assigned `#` in severity order; at each `file:line`, skip with a one-line reason if evidence no longer matches
 - Apply the mechanical bar from § What to apply / What not to apply — skip anything that needs design judgment
-- Do not re-run `js-ce-review`
+- Do not re-run `js-ce-code-review`
 - Shared-directory fallback: do not stage or commit — return which `#` were applied or skipped and which files changed
 
 **After each wave:** orchestrator reviews diffs (scope = assigned `#` only), runs tests (`requires_verification: true` on any applied finding → at least targeted tests; multi-file → broader suite), commits (`fix(review): apply findings #…`) unless worktree-isolated subagents merge per Phase 1. Repeat until all batches complete.
@@ -101,4 +101,4 @@ Report: batches dispatched, `#` applied vs skipped (with reasons from subagents)
 
 ## Handoff to Residual Work Gate
 
-Any actionable finding not applied in this pass is **residual work** — proceed to the Residual Work Gate with an updated count. Do not re-invoke `js-ce-review` solely to re-apply the same findings unless the diff changed materially after fixes.
+Any actionable finding not applied in this pass is **residual work** — proceed to the Residual Work Gate with an updated count. Do not re-invoke `js-ce-code-review` solely to re-apply the same findings unless the diff changed materially after fixes.

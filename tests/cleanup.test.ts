@@ -78,17 +78,10 @@ describe("cleanupStaleSkillDirs", () => {
     expect(await findBackup(skillsRoot, "js-proof")).toBe(true)
   })
 
-  test("moves a stale agent-as-skill dir when its description matches the current CE agent", async () => {
-    const skillsRoot = await fs.mkdtemp(path.join(os.tmpdir(), "cleanup-agent-"))
-    const desc = await currentAgentDescription("js-ce-learnings-researcher")
-    await writeSkillDir(skillsRoot, "js-learnings-researcher", desc)
-
-    const moved = await cleanupStaleSkillDirs(skillsRoot)
-
-    expect(moved).toBe(1)
-    expect(await exists(path.join(skillsRoot, "js-learnings-researcher"))).toBe(false)
-    expect(await findBackup(skillsRoot, "js-learnings-researcher")).toBe(true)
-  })
+  // NOTE (agentless migration): the former "stale agent-as-skill dir matches the current CE
+  // agent" scenario no longer applies -- there are no standalone agents to source a live
+  // description from. Sweeping former-agent artifacts now relies on hardcoded legacy
+  // descriptions (LEGACY_ONLY_AGENT_DESCRIPTIONS), covered separately.
 
   test("leaves a stale-named dir with a NON-matching (user-authored) description untouched", async () => {
     const skillsRoot = await fs.mkdtemp(path.join(os.tmpdir(), "cleanup-foreign-"))

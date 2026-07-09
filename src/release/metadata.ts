@@ -61,7 +61,14 @@ function resolveExpectedVersion(
 }
 
 export async function countMarkdownFiles(root: string): Promise<number> {
-  const entries = await fs.readdir(root, { withFileTypes: true })
+  let entries
+  try {
+    entries = await fs.readdir(root, { withFileTypes: true })
+  } catch (err: unknown) {
+    // Agentless plugins have no agents/ dir; a missing root counts as zero.
+    if ((err as NodeJS.ErrnoException).code === "ENOENT") return 0
+    throw err
+  }
   let total = 0
 
   for (const entry of entries) {

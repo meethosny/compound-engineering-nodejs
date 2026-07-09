@@ -119,11 +119,108 @@ const STALE_VARIANT_DIR_NAMES = [
   "js-ce-work-beta",
 ]
 
+/**
+ * v3.11 -> agentless (3.19-parity) migration. The prior release shipped `js-ce-*`
+ * skill dirs plus 51 standalone `js-ce-*` agents (converted to skill dirs on
+ * non-Claude targets). The agentless refactor removed the standalone agents
+ * entirely (personas now live inside each skill's `references/`) and renamed or
+ * removed several skills, so their old `js-ce-*` dirs are stale. None of these
+ * collide with a CURRENT skill dir, so sweeping them on upgrade is safe.
+ */
+const STALE_JS_CE_SKILL_DIRS = [
+  // Renamed skills (old dir -> current dir)
+  "js-ce-review", // -> js-ce-code-review
+  "js-ce-git-commit", // -> js-ce-commit
+  "js-ce-git-commit-push-pr", // -> js-ce-commit-push-pr
+  "js-ce-document-review", // -> js-ce-doc-review
+  "js-ce-git-worktree", // -> js-ce-worktree
+  "js-ce-dogfood-beta", // -> js-ce-dogfood
+  // Removed skills (no replacement)
+  "js-ce-agent-native-architecture",
+  "js-ce-agent-native-audit",
+  "js-ce-changelog",
+  "js-ce-demo-reel",
+  "js-ce-deploy-docs",
+  "js-ce-every-style-editor",
+  "js-ce-frontend-design",
+  "js-ce-gemini-imagegen",
+  "js-ce-git-clean-gone-branches",
+  "js-ce-modern-nodejs-style",
+  "js-ce-onboarding",
+  "js-ce-release-notes",
+  "js-ce-report-bug",
+  "js-ce-sessions",
+  "js-ce-sindre-sorhus-package-writer",
+  "js-ce-slack-research",
+  "js-ce-todo-create",
+  "js-ce-todo-resolve",
+  "js-ce-todo-triage",
+  "js-ce-update",
+  "js-ce-work-beta",
+]
+
+/** 51 standalone `js-ce-*` agents removed by the agentless refactor; personas now live inside skills. */
+const STALE_JS_CE_AGENT_NAMES = [
+  "js-ce-adversarial-document-reviewer",
+  "js-ce-adversarial-reviewer",
+  "js-ce-agent-native-reviewer",
+  "js-ce-api-contract-reviewer",
+  "js-ce-architecture-strategist",
+  "js-ce-best-practices-researcher",
+  "js-ce-cli-agent-readiness-reviewer",
+  "js-ce-cli-readiness-reviewer",
+  "js-ce-code-simplicity-reviewer",
+  "js-ce-coherence-reviewer",
+  "js-ce-correctness-reviewer",
+  "js-ce-data-integrity-guardian",
+  "js-ce-data-migration-expert",
+  "js-ce-data-migrations-reviewer",
+  "js-ce-deployment-verification-agent",
+  "js-ce-design-implementation-reviewer",
+  "js-ce-design-iterator",
+  "js-ce-design-lens-reviewer",
+  "js-ce-feasibility-reviewer",
+  "js-ce-figma-design-sync",
+  "js-ce-framework-docs-researcher",
+  "js-ce-git-history-analyzer",
+  "js-ce-issue-intelligence-analyst",
+  "js-ce-julik-frontend-races-reviewer",
+  "js-ce-kieran-nodejs-reviewer",
+  "js-ce-kieran-python-reviewer",
+  "js-ce-kieran-typescript-reviewer",
+  "js-ce-learnings-researcher",
+  "js-ce-maintainability-reviewer",
+  "js-ce-modern-nodejs-reviewer",
+  "js-ce-pattern-recognition-specialist",
+  "js-ce-performance-oracle",
+  "js-ce-performance-reviewer",
+  "js-ce-pr-comment-resolver",
+  "js-ce-previous-comments-reviewer",
+  "js-ce-product-lens-reviewer",
+  "js-ce-project-standards-reviewer",
+  "js-ce-reliability-reviewer",
+  "js-ce-repo-research-analyst",
+  "js-ce-schema-drift-detector",
+  "js-ce-scope-guardian-reviewer",
+  "js-ce-security-lens-reviewer",
+  "js-ce-security-reviewer",
+  "js-ce-security-sentinel",
+  "js-ce-session-historian",
+  "js-ce-slack-researcher",
+  "js-ce-sorhus-readme-writer",
+  "js-ce-spec-flow-analyzer",
+  "js-ce-swift-ios-reviewer",
+  "js-ce-testing-reviewer",
+  "js-ce-web-researcher",
+]
+
 const ALL_STALE_SKILL_DIRS = [
   ...new Set([
     ...STALE_SKILL_DIR_NAMES,
     ...STALE_AGENT_DIR_NAMES,
     ...STALE_VARIANT_DIR_NAMES,
+    ...STALE_JS_CE_SKILL_DIRS,
+    ...STALE_JS_CE_AGENT_NAMES,
   ]),
 ].sort()
 
@@ -132,7 +229,7 @@ const EXTRA_LEGACY_ARTIFACTS_BY_PLUGIN: Record<string, LegacyPluginArtifacts> = 
     // Agents are emitted as skill dirs, so the stale skill-dir sweep is the
     // union of old skill dirs and old agent names (+ historical variants).
     skills: ALL_STALE_SKILL_DIRS,
-    agents: [...STALE_AGENT_DIR_NAMES].sort(),
+    agents: [...STALE_AGENT_DIR_NAMES, ...STALE_JS_CE_AGENT_NAMES].sort(),
     commands: [],
   },
 }
