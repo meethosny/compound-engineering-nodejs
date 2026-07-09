@@ -33,9 +33,9 @@
         <div class="nav-section">
           <h3>Reference</h3>
           <ul>
-            <li><a href="agents.html">Agents (51)</a></li>
-            <li><a href="skills.html">Skills (47)</a></li>
-            <li><a href="mcp-servers.html">MCP Servers (1)</a></li>
+            <li><a href="agents.html">Agentless</a></li>
+            <li><a href="skills.html">Skills (29)</a></li>
+            <li><a href="mcp-servers.html">MCP Servers (0)</a></li>
           </ul>
         </div>
         <div class="nav-section">
@@ -75,8 +75,8 @@
           <div class="callout-content">
             <h4>Nothing changes for you at the keyboard</h4>
             <p>
-              You still type <code>/js-ce:plan</code>, <code>/js-ce:review</code>, and <code>/js-ce:work</code> exactly
-              as before. The difference is internal: these are defined as skills, so they're documented on the
+              You still type <code>/js-ce:plan</code>, <code>/js-ce:code-review</code>, and <code>/js-ce:work</code>
+              exactly as before. The difference is internal: these are defined as skills, so they're documented on the
               <a href="skills.html">Skills</a> page rather than a standalone commands page.
             </p>
           </div>
@@ -85,7 +85,7 @@
         <section id="workflow-commands">
           <h2><i class="fa-solid fa-arrows-spin"></i> Core Workflow Commands</h2>
           <p>
-            The eight core workflow skills keep the colon namespace (<code>js-ce:</code>) so they read as slash commands
+            The seven core workflow skills keep the colon namespace (<code>js-ce:</code>) so they read as slash commands
             and don't collide with Claude Code's built-in <code>/plan</code> and <code>/review</code>.
           </p>
           <table class="docs-table">
@@ -99,10 +99,9 @@
               <tr><td><code>/js-ce:ideate</code></td><td>Generate and critically evaluate grounded ideas before brainstorming one in depth</td></tr>
               <tr><td><code>/js-ce:brainstorm</code></td><td>Explore requirements and approaches through dialogue, then write a requirements doc</td></tr>
               <tr><td><code>/js-ce:plan</code></td><td>Create structured plans for any multi-step task; also deepen existing plans</td></tr>
-              <tr><td><code>/js-ce:review</code></td><td>Structured code review with tiered persona agents, confidence gating, and dedup</td></tr>
               <tr><td><code>/js-ce:work</code></td><td>Execute work efficiently while maintaining quality and finishing features</td></tr>
-              <tr><td><code>/js-ce:work-beta</code></td><td>Same as work, with experimental Codex delegation mode</td></tr>
               <tr><td><code>/js-ce:compound</code></td><td>Document a recently solved problem to compound team knowledge</td></tr>
+              <tr><td><code>/js-ce:code-review</code></td><td>Structured code review with dynamically selected reviewer personas, confidence gating, and dedup</td></tr>
               <tr><td><code>/js-ce:compound-refresh</code></td><td>Refresh stale learning docs under <code>docs/solutions/</code></td></tr>
             </tbody>
           </table>

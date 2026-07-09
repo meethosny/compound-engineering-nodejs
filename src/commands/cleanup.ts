@@ -14,12 +14,9 @@ const cleanupTargets = [
   "codex",
   "pi",
   "droid",
-  "copilot",
-  "gemini",
   "kiro",
   "cursor",
   "antigravity",
-  "agents",
 ] as const
 type CleanupTarget = (typeof cleanupTargets)[number]
 
@@ -40,10 +37,6 @@ function defaultSkillsRoots(target: CleanupTarget, overrides: Record<string, unk
       return [resolveTargetHome(overrides.piHome, path.join(home, ".pi", "agent", "skills"))]
     case "droid":
       return [resolveTargetHome(overrides.droidHome, path.join(home, ".factory", "skills"))]
-    case "copilot":
-      return [resolveTargetHome(overrides.copilotHome, path.join(home, ".copilot", "skills"))]
-    case "gemini":
-      return [resolveTargetHome(overrides.geminiHome, path.join(home, ".gemini", "skills"))]
     case "kiro":
       return [resolveTargetHome(overrides.kiroHome, path.join(home, ".kiro", "skills"))]
     case "cursor":
@@ -53,10 +46,6 @@ function defaultSkillsRoots(target: CleanupTarget, overrides: Record<string, unk
     case "antigravity":
       return overrides.antigravityHome
         ? [resolveTargetHome(overrides.antigravityHome, "")]
-        : [path.join(home, ".agents", "skills"), path.join(process.cwd(), ".agents", "skills")]
-    case "agents":
-      return overrides.agentsHome
-        ? [resolveTargetHome(overrides.agentsHome, "")]
         : [path.join(home, ".agents", "skills"), path.join(process.cwd(), ".agents", "skills")]
   }
 }
@@ -81,12 +70,9 @@ export default defineCommand({
     codexHome: { type: "string", alias: "codex-home", description: "Codex skills root override" },
     piHome: { type: "string", alias: "pi-home", description: "Pi skills root override" },
     droidHome: { type: "string", alias: "droid-home", description: "Droid skills root override" },
-    copilotHome: { type: "string", alias: "copilot-home", description: "Copilot skills root override" },
-    geminiHome: { type: "string", alias: "gemini-home", description: "Gemini skills root override" },
     kiroHome: { type: "string", alias: "kiro-home", description: "Kiro skills root override" },
     cursorHome: { type: "string", alias: "cursor-home", description: "Cursor skills root override" },
     antigravityHome: { type: "string", alias: "antigravity-home", description: "Antigravity skills root override" },
-    agentsHome: { type: "string", alias: "agents-home", description: "Shared .agents skills root override" },
   },
   async run({ args }) {
     const pluginPath = await resolveCleanupPluginPath(args.plugin ? String(args.plugin) : FORK_PLUGIN_NAME)
@@ -101,12 +87,9 @@ export default defineCommand({
       codexHome: args.codexHome,
       piHome: args.piHome,
       droidHome: args.droidHome,
-      copilotHome: args.copilotHome,
-      geminiHome: args.geminiHome,
       kiroHome: args.kiroHome,
       cursorHome: args.cursorHome,
       antigravityHome: args.antigravityHome,
-      agentsHome: args.agentsHome,
     }
 
     let total = 0

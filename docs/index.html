@@ -5,7 +5,7 @@
   <meta charset="utf-8" />
   <title>Compounding Engineering - AI-Powered Development Tools for Claude Code</title>
   <meta
-    content="Your code reviews just got a committee of expert opinions in one command. 51 specialized agents, 47 skills, and 1 MCP server that make today's work easier than yesterday's."
+    content="Your code reviews just got a committee of expert opinions in one command. 29 self-contained, agentless skills that make today's work easier than yesterday's."
     name="description" />
   <meta content="width=device-width, initial-scale=1" name="viewport" />
 
@@ -15,7 +15,7 @@
   <meta property="og:locale" content="en_US" />
   <meta property="og:title" content="Compounding Engineering - AI Development Tools" />
   <meta property="og:description"
-    content="Get a committee of expert code reviews in one command. 51 specialized agents that make today's work easier than yesterday's." />
+    content="Get a committee of expert code reviews in one command. 29 agentless skills that make today's work easier than yesterday's." />
   <meta name="twitter:card" content="summary_large_image" />
   <meta name="twitter:title" content="Compounding Engineering" />
   <meta name="twitter:description"
@@ -159,7 +159,7 @@
         <span class="logo-text">Compounding Engineering</span>
       </a>
       <nav role="navigation" class="nav-menu" data-navigation>
-        <a href="#agents" class="nav-link">Agents</a>
+        <a href="#agents" class="nav-link">Agentless</a>
         <a href="#skills" class="nav-link">Skills</a>
         <a href="#mcp-servers" class="nav-link">MCP Servers</a>
         <a href="pages/getting-started.html" class="nav-link">Docs</a>
@@ -189,8 +189,9 @@
           <p class="paragraph m secondary balanced" style="margin-bottom: 32px;">
             Here's what happens when you ship: correctness, security, performance, maintainability, testing, and a stack
             of conditional reviewers selected by what your diff touches—all running in parallel, merged and
-            de-duplicated. No meetings. No waiting. Just answers. That's compounding engineering: 51 specialized agents,
-            47 skills, and 1 MCP server that make today's work easier than yesterday's.
+            de-duplicated. No meetings. No waiting. Just answers. That's compounding engineering: 29 self-contained,
+            agentless skills—with reviewer and research specialists built right into each skill—that make today's work
+            easier than yesterday's.
           </p>
           <div class="button-group margin-paragraph centered">
             <a href="#install" class="button primary">
@@ -207,23 +208,23 @@
       <section class="stats-section">
         <div class="stats-container">
           <div class="stat-card">
-            <div class="stat-icon"><i class="fa-solid fa-users-gear"></i></div>
-            <div class="stat-number">51</div>
-            <div class="stat-label">Specialized Agents</div>
-          </div>
-          <div class="stat-card">
             <div class="stat-icon"><i class="fa-solid fa-wand-magic-sparkles"></i></div>
-            <div class="stat-number">47</div>
+            <div class="stat-number">29</div>
             <div class="stat-label">Intelligent Skills</div>
           </div>
           <div class="stat-card">
+            <div class="stat-icon"><i class="fa-solid fa-users-gear"></i></div>
+            <div class="stat-number">0</div>
+            <div class="stat-label">Standalone Agents</div>
+          </div>
+          <div class="stat-card">
             <div class="stat-icon"><i class="fa-solid fa-server"></i></div>
-            <div class="stat-number">1</div>
-            <div class="stat-label">MCP Server</div>
+            <div class="stat-number">0</div>
+            <div class="stat-label">MCP Servers</div>
           </div>
           <div class="stat-card">
             <div class="stat-icon"><i class="fa-solid fa-arrows-turn-to-dots"></i></div>
-            <div class="stat-number">10</div>
+            <div class="stat-number">7</div>
             <div class="stat-label">CLI Convert Targets</div>
           </div>
         </div>
@@ -288,10 +289,10 @@
                 standards—every single time.
               </p>
               <div class="pillar-tools">
-                <span class="tool-tag">51 specialized agents</span>
+                <span class="tool-tag">agentless skills</span>
                 <span class="tool-tag">/js-ce:work</span>
-                <span class="tool-tag">js-ce-modern-nodejs-style</span>
-                <span class="tool-tag">js-ce-git-worktree</span>
+                <span class="tool-tag">js-ce-simplify-code</span>
+                <span class="tool-tag">js-ce-worktree</span>
               </div>
             </div>
           </div>
@@ -302,7 +303,7 @@
               <h3>Assess</h3>
               <p class="pillar-tagline">Get twelve opinions without twelve meetings</p>
               <p class="pillar-description">
-                Type <code>/js-ce:review 123</code> and go get coffee. When you come back, you'll have a security review
+                Type <code>/js-ce:code-review 123</code> and go get coffee. When you come back, you'll have a security review
                 (did you sanitize that user input?), performance analysis (N+1 spotted on line 47), correctness and
                 maintainability checks, a data-migration safety review (that migration will fail in production), and
                 more specialized reviews. All running in parallel. Merged, de-duplicated, and categorized by severity as
@@ -332,7 +333,7 @@
               <div class="pillar-tools">
                 <span class="tool-tag">/js-ce:compound</span>
                 <span class="tool-tag">/js-ce:compound-refresh</span>
-                <span class="tool-tag">js-ce-todo-create</span>
+                <span class="tool-tag">CONCEPTS.md</span>
               </div>
             </div>
           </div>
@@ -344,264 +345,70 @@
       <section id="agents">
         <div class="heading">
           <h2 class="no-top-margin">
-            <i class="fa-solid fa-users-gear color-accent"></i> 51 Specialized Agents
+            <i class="fa-solid fa-users-gear color-accent"></i> Agentless by Design
           </h2>
           <p class="paragraph m secondary">
-            Think of them as coworkers who never quit. The js-ce-security-reviewer has seen every SQL injection variant.
-            The js-ce-modern-nodejs-reviewer enforces conventions with zero compromise. The js-ce-performance-reviewer
-            spots N+1 queries while you're still reading the PR. Most are dispatched automatically by the review and
-            plan workflows; you can also run any of them solo with <code>claude agent js-ce-&lt;agent-name&gt;</code>.
-            Here's a sampling—see the <a href="pages/agents.html">full reference</a> for all 51.
+            There are <strong>zero</strong> standalone agents to install or call. The specialists you'd expect—security
+            reviewer, performance reviewer, framework-docs researcher—live <em>inside</em> the skills that use them, as
+            prompt-only personas. When a skill needs an expert opinion, it dispatches a generic subagent with that
+            persona's prompt, then merges and de-duplicates the findings. Every skill stays self-contained and portable.
+            Here are a couple of examples—see the <a href="pages/agents.html">agentless architecture</a> explainer for
+            how it works.
           </p>
         </div>
 
-        <!-- Review Agents -->
+        <!-- Example: reviewer personas -->
         <div class="agent-category">
-          <h3><i class="fa-solid fa-code-pull-request"></i> Review Agents (29)</h3>
+          <h3><i class="fa-solid fa-code-pull-request"></i> Reviewer personas inside <code>/js-ce:code-review</code></h3>
           <div class="grid columns-2">
             <div class="agent-card">
               <div class="agent-header">
-                <span class="agent-name">js-ce-modern-nodejs-reviewer</span>
-                <span class="agent-badge">Node.js</span>
+                <span class="agent-name">correctness-reviewer</span>
+                <span class="agent-badge">always-on</span>
               </div>
-              <p class="agent-description">Modern Node.js review with minimalist, pragmatic approach. TJ Holowaychuk +
-                Matteo Collina + Yusuke Wada style.</p>
-              <code class="agent-usage">claude agent js-ce-modern-nodejs-reviewer</code>
+              <p class="agent-description">Logic errors, edge cases, state-management bugs, and intent-vs-implementation
+                mismatches. Runs on every review.</p>
+              <code class="agent-usage">dispatched by /js-ce:code-review</code>
             </div>
             <div class="agent-card">
               <div class="agent-header">
-                <span class="agent-name">js-ce-kieran-nodejs-reviewer</span>
-                <span class="agent-badge">Node.js</span>
+                <span class="agent-name">security-reviewer</span>
+                <span class="agent-badge critical">conditional</span>
               </div>
-              <p class="agent-description">Node.js code review with strict conventions. Focus on async patterns, error
-                handling, and clean architecture.</p>
-              <code class="agent-usage">claude agent js-ce-kieran-nodejs-reviewer</code>
-            </div>
-            <div class="agent-card">
-              <div class="agent-header">
-                <span class="agent-name">js-ce-kieran-python-reviewer</span>
-                <span class="agent-badge">Python</span>
-              </div>
-              <p class="agent-description">Python code review with strict conventions. PEP 8 compliance, type hints, and
-                Pythonic patterns.</p>
-              <code class="agent-usage">claude agent js-ce-kieran-python-reviewer</code>
-            </div>
-            <div class="agent-card">
-              <div class="agent-header">
-                <span class="agent-name">js-ce-kieran-typescript-reviewer</span>
-                <span class="agent-badge">TypeScript</span>
-              </div>
-              <p class="agent-description">TypeScript review with focus on type safety, modern patterns, and clean
-                architecture.</p>
-              <code class="agent-usage">claude agent js-ce-kieran-typescript-reviewer</code>
-            </div>
-            <div class="agent-card">
-              <div class="agent-header">
-                <span class="agent-name">js-ce-security-sentinel</span>
-                <span class="agent-badge critical">Security</span>
-              </div>
-              <p class="agent-description">Security audits and vulnerability assessments. OWASP top 10, injection
-                attacks, authentication flaws.</p>
-              <code class="agent-usage">claude agent js-ce-security-sentinel</code>
-            </div>
-            <div class="agent-card">
-              <div class="agent-header">
-                <span class="agent-name">js-ce-performance-oracle</span>
-                <span class="agent-badge">Performance</span>
-              </div>
-              <p class="agent-description">Performance analysis and optimization recommendations. N+1 queries, caching
-                strategies, bottleneck identification.</p>
-              <code class="agent-usage">claude agent js-ce-performance-oracle</code>
-            </div>
-            <div class="agent-card">
-              <div class="agent-header">
-                <span class="agent-name">js-ce-architecture-strategist</span>
-                <span class="agent-badge">Architecture</span>
-              </div>
-              <p class="agent-description">Analyze architectural decisions, compliance, and system design patterns.</p>
-              <code class="agent-usage">claude agent js-ce-architecture-strategist</code>
-            </div>
-            <div class="agent-card">
-              <div class="agent-header">
-                <span class="agent-name">js-ce-data-integrity-guardian</span>
-                <span class="agent-badge critical">Data</span>
-              </div>
-              <p class="agent-description">Database migrations and data integrity review. Schema changes, foreign keys,
-                data consistency.</p>
-              <code class="agent-usage">claude agent js-ce-data-integrity-guardian</code>
-            </div>
-            <div class="agent-card">
-              <div class="agent-header">
-                <span class="agent-name">js-ce-pattern-recognition-specialist</span>
-                <span class="agent-badge">Patterns</span>
-              </div>
-              <p class="agent-description">Analyze code for patterns and anti-patterns. Design patterns, code smells,
-                refactoring opportunities.</p>
-              <code class="agent-usage">claude agent js-ce-pattern-recognition-specialist</code>
-            </div>
-            <div class="agent-card">
-              <div class="agent-header">
-                <span class="agent-name">js-ce-code-simplicity-reviewer</span>
-                <span class="agent-badge">Quality</span>
-              </div>
-              <p class="agent-description">Final pass for simplicity and minimalism. Remove unnecessary complexity,
-                improve readability.</p>
-              <code class="agent-usage">claude agent js-ce-code-simplicity-reviewer</code>
-            </div>
-            <div class="agent-card">
-              <div class="agent-header">
-                <span class="agent-name">js-ce-julik-frontend-races-reviewer</span>
-                <span class="agent-badge">JavaScript</span>
-              </div>
-              <p class="agent-description">Review JavaScript and Stimulus code for race conditions, DOM event handling,
-                promise management, and timer cleanup.</p>
-              <code class="agent-usage">claude agent js-ce-julik-frontend-races-reviewer</code>
+              <p class="agent-description">Exploitable vulnerabilities in auth middleware, public endpoints, and user
+                input. Selected when the diff touches those areas.</p>
+              <code class="agent-usage">dispatched by /js-ce:code-review</code>
             </div>
           </div>
+          <p class="paragraph s secondary">Plus maintainability, testing, project-standards, performance, migrations,
+            CLI, async-UI, and Swift reviewers—chosen automatically by what your diff touches.</p>
         </div>
 
-        <!-- Research Agents -->
+        <!-- Example: research personas -->
         <div class="agent-category">
-          <h3><i class="fa-solid fa-microscope"></i> Research Agents (9)</h3>
+          <h3><i class="fa-solid fa-microscope"></i> Research personas inside <code>/js-ce:plan</code></h3>
           <div class="grid columns-2">
             <div class="agent-card">
               <div class="agent-header">
-                <span class="agent-name">js-ce-framework-docs-researcher</span>
+                <span class="agent-name">framework-docs-researcher</span>
                 <span class="agent-badge">Research</span>
               </div>
-              <p class="agent-description">Research framework documentation and best practices. Find official guidance
-                and community patterns.</p>
-              <code class="agent-usage">claude agent js-ce-framework-docs-researcher</code>
+              <p class="agent-description">Pulls official docs and version-specific constraints for the frameworks your
+                plan touches.</p>
+              <code class="agent-usage">dispatched by /js-ce:plan</code>
             </div>
             <div class="agent-card">
               <div class="agent-header">
-                <span class="agent-name">js-ce-best-practices-researcher</span>
-                <span class="agent-badge">Research</span>
-              </div>
-              <p class="agent-description">Gather external best practices and examples from the community and industry
-                standards.</p>
-              <code class="agent-usage">claude agent js-ce-best-practices-researcher</code>
-            </div>
-            <div class="agent-card">
-              <div class="agent-header">
-                <span class="agent-name">js-ce-git-history-analyzer</span>
+                <span class="agent-name">git-history-analyzer</span>
                 <span class="agent-badge">Git</span>
               </div>
-              <p class="agent-description">Analyze git history and code evolution. Understand how code has changed and
-                why.</p>
-              <code class="agent-usage">claude agent js-ce-git-history-analyzer</code>
-            </div>
-            <div class="agent-card">
-              <div class="agent-header">
-                <span class="agent-name">js-ce-repo-research-analyst</span>
-                <span class="agent-badge">Research</span>
-              </div>
-              <p class="agent-description">Research repository structure and conventions. Understand project patterns
-                and organization.</p>
-              <code class="agent-usage">claude agent js-ce-repo-research-analyst</code>
+              <p class="agent-description">Reads how the code evolved and why, so plans build on institutional memory
+                instead of starting cold.</p>
+              <code class="agent-usage">dispatched by /js-ce:plan</code>
             </div>
           </div>
-        </div>
-
-        <!-- Design Agents -->
-        <div class="agent-category">
-          <h3><i class="fa-solid fa-palette"></i> Design Agents (3)</h3>
-          <div class="grid columns-3">
-            <div class="agent-card">
-              <div class="agent-header">
-                <span class="agent-name">js-ce-design-iterator</span>
-                <span class="agent-badge">Design</span>
-              </div>
-              <p class="agent-description">Iteratively refine UI through systematic design iterations with screenshots
-                and feedback loops.</p>
-              <code class="agent-usage">claude agent js-ce-design-iterator</code>
-            </div>
-            <div class="agent-card">
-              <div class="agent-header">
-                <span class="agent-name">js-ce-figma-design-sync</span>
-                <span class="agent-badge">Figma</span>
-              </div>
-              <p class="agent-description">Synchronize web implementations with Figma designs. Pixel-perfect matching.
-              </p>
-              <code class="agent-usage">claude agent js-ce-figma-design-sync</code>
-            </div>
-            <div class="agent-card">
-              <div class="agent-header">
-                <span class="agent-name">js-ce-design-implementation-reviewer</span>
-                <span class="agent-badge">Review</span>
-              </div>
-              <p class="agent-description">Verify UI implementations match Figma designs. Catch visual regressions.</p>
-              <code class="agent-usage">claude agent js-ce-design-implementation-reviewer</code>
-            </div>
-          </div>
-        </div>
-
-        <!-- Document Review Agents -->
-        <div class="agent-category">
-          <h3><i class="fa-solid fa-file-circle-check"></i> Document Review Agents (7)</h3>
-          <div class="grid columns-2">
-            <div class="agent-card">
-              <div class="agent-header">
-                <span class="agent-name">js-ce-feasibility-reviewer</span>
-                <span class="agent-badge">Plans</span>
-              </div>
-              <p class="agent-description">Evaluate whether proposed technical approaches in a plan will survive contact
-                with reality—architecture conflicts, dependency gaps, migration risks.</p>
-              <code class="agent-usage">claude agent js-ce-feasibility-reviewer</code>
-            </div>
-            <div class="agent-card">
-              <div class="agent-header">
-                <span class="agent-name">js-ce-scope-guardian-reviewer</span>
-                <span class="agent-badge">Plans</span>
-              </div>
-              <p class="agent-description">Challenge unjustified complexity, premature frameworks, and scope that exceeds
-                stated goals.</p>
-              <code class="agent-usage">claude agent js-ce-scope-guardian-reviewer</code>
-            </div>
-          </div>
-          <p class="paragraph s secondary">Plus coherence, design-lens, product-lens, security-lens, and adversarial
-            document reviewers—all spawned by the <code>js-ce-document-review</code> skill.</p>
-        </div>
-
-        <!-- Workflow Agents -->
-        <div class="agent-category">
-          <h3><i class="fa-solid fa-gears"></i> Workflow Agents (2)</h3>
-          <div class="grid columns-2">
-            <div class="agent-card">
-              <div class="agent-header">
-                <span class="agent-name">js-ce-pr-comment-resolver</span>
-                <span class="agent-badge">PR</span>
-              </div>
-              <p class="agent-description">Evaluate and resolve PR review threads—assess validity, implement fixes, and
-                return structured reply text. Spawned by the resolve-pr-feedback skill.</p>
-              <code class="agent-usage">claude agent js-ce-pr-comment-resolver</code>
-            </div>
-            <div class="agent-card">
-              <div class="agent-header">
-                <span class="agent-name">js-ce-spec-flow-analyzer</span>
-                <span class="agent-badge">Testing</span>
-              </div>
-              <p class="agent-description">Analyze specifications and feature descriptions for user-flow completeness and
-                gap identification.</p>
-              <code class="agent-usage">claude agent js-ce-spec-flow-analyzer</code>
-            </div>
-          </div>
-        </div>
-
-        <!-- Docs Agent -->
-        <div class="agent-category">
-          <h3><i class="fa-solid fa-file-lines"></i> Documentation Agent (1)</h3>
-          <div class="grid">
-            <div class="agent-card full-width">
-              <div class="agent-header">
-                <span class="agent-name">js-ce-sorhus-readme-writer</span>
-                <span class="agent-badge">Docs</span>
-              </div>
-              <p class="agent-description">Create READMEs following Sindre Sorhus style for npm packages. Clean,
-                concise, comprehensive documentation that gets straight to the point.</p>
-              <code class="agent-usage">claude agent js-ce-sorhus-readme-writer</code>
-            </div>
-          </div>
+          <p class="paragraph s secondary">Personas are prompt files under each skill's
+            <code>references/personas/</code>—no frontmatter, unprefixed names, never invoked directly.</p>
         </div>
       </section>
 
@@ -612,9 +419,9 @@
             <i class="fa-solid fa-terminal color-accent"></i> Workflow Commands (Now Skills)
           </h2>
           <p class="paragraph m secondary">
-            Slash commands that replace entire workflows. <code>/js-ce:review</code> is your code review committee.
+            Slash commands that replace entire workflows. <code>/js-ce:code-review</code> is your code review committee.
             <code>/js-ce:plan</code> is your research team. These were migrated to skills—there's no separate commands
-            list anymore—but you still invoke the eight core workflows as colon-namespaced slash commands.
+            list anymore—but you still invoke the seven core workflows as colon-namespaced slash commands.
           </p>
         </div>
 
@@ -648,11 +455,11 @@
             </div>
             <div class="command-card">
               <div class="command-header">
-                <code class="command-name">/js-ce:review</code>
+                <code class="command-name">/js-ce:code-review</code>
                 <span class="command-type-badge">core</span>
               </div>
-              <p class="command-description">Structured code review with tiered persona agents, confidence gating, and a
-                merge/dedup pipeline.</p>
+              <p class="command-description">Structured code review with dynamically selected reviewer personas,
+                confidence gating, and a merge/dedup pipeline.</p>
             </div>
             <div class="command-card">
               <div class="command-header">
@@ -661,14 +468,6 @@
               </div>
               <p class="command-description">Execute work efficiently while maintaining quality and finishing features.
               </p>
-            </div>
-            <div class="command-card">
-              <div class="command-header">
-                <code class="command-name">/js-ce:work-beta</code>
-                <span class="command-type-badge">core</span>
-              </div>
-              <p class="command-description">Same as work, with experimental Codex delegation mode for token-conserving
-                implementation.</p>
             </div>
             <div class="command-card">
               <div class="command-header">
@@ -690,9 +489,9 @@
 
         <div class="command-category">
           <p class="paragraph m secondary">
-            The rest—debugging, git, todos, testing, release, and more—are hyphenated skills like
-            <code>/js-ce-debug</code>, <code>/js-ce-changelog</code>, and <code>/js-ce-todo-triage</code>. See the
-            <a href="pages/skills.html">Skills reference</a> for all 47.
+            The rest—debugging, git, testing, feedback, and more—are hyphenated skills like
+            <code>/js-ce-debug</code>, <code>/js-ce-commit</code>, and <code>/js-ce-worktree</code>. See the
+            <a href="pages/skills.html">Skills reference</a> for all 29.
           </p>
         </div>
       </section>
@@ -701,125 +500,111 @@
       <section id="skills">
         <div class="heading">
           <h2 class="no-top-margin">
-            <i class="fa-solid fa-wand-magic-sparkles color-accent"></i> 47 Intelligent Skills
+            <i class="fa-solid fa-wand-magic-sparkles color-accent"></i> 29 Intelligent Skills
           </h2>
           <p class="paragraph m secondary">
-            Domain expertise on tap. Need to write an npm package? <code>js-ce-sindre-sorhus-package-writer</code> knows
-            the patterns Sindre uses across 1000+ popular packages. Building a Node.js app?
-            <code>js-ce-modern-nodejs-style</code> enforces clean, minimal conventions. Generating images?
-            <code>js-ce-gemini-imagegen</code> has Google's AI on speed dial. Here's a sampling—see the
-            <a href="pages/skills.html">full reference</a> for all 47.
+            The plugin's entire surface area—each one self-contained, with its specialists built in. Turning a vague
+            idea into a spec? <code>/js-ce:brainstorm</code>. Stuck on a bug? <code>js-ce-debug</code> traces the causal
+            chain and fixes it test-first. Weighing a new library? <code>js-ce-pov</code> gives a decisive,
+            project-grounded verdict. Here's a sampling—see the <a href="pages/skills.html">full reference</a> for all
+            29.
           </p>
         </div>
 
-        <!-- Development & Design -->
+        <!-- Core Loop -->
         <div class="skill-category">
-          <h3><i class="fa-solid fa-code"></i> Development &amp; Design</h3>
-          <div class="grid columns-2">
+          <h3><i class="fa-solid fa-arrows-spin"></i> Core Loop</h3>
+          <div class="grid columns-3">
             <div class="skill-card">
               <div class="skill-header">
-                <span class="skill-name">js-ce-sindre-sorhus-package-writer</span>
-                <span class="skill-badge">npm</span>
+                <span class="skill-name">/js-ce:brainstorm</span>
+                <span class="skill-badge">core</span>
               </div>
-              <p class="skill-description">Write npm packages following Sindre Sorhus patterns. Clean APIs,
-                TypeScript-first, comprehensive testing.</p>
-              <code class="skill-usage">skill: js-ce-sindre-sorhus-package-writer</code>
+              <p class="skill-description">Explore a vague or ambitious idea into a right-sized requirements document.</p>
+              <code class="skill-usage">/js-ce:brainstorm</code>
             </div>
             <div class="skill-card">
               <div class="skill-header">
-                <span class="skill-name">js-ce-modern-nodejs-style</span>
-                <span class="skill-badge">Node.js</span>
+                <span class="skill-name">/js-ce:plan</span>
+                <span class="skill-badge">core</span>
               </div>
-              <p class="skill-description">Write Node.js code with modern, pragmatic patterns. TJ Holowaychuk + Matteo
-                Collina + Sindre Sorhus style.</p>
-              <code class="skill-usage">skill: js-ce-modern-nodejs-style</code>
+              <p class="skill-description">Create structured plans for any multi-step task, with automatic confidence
+                checking.</p>
+              <code class="skill-usage">/js-ce:plan</code>
             </div>
             <div class="skill-card">
               <div class="skill-header">
-                <span class="skill-name">js-ce-frontend-design</span>
-                <span class="skill-badge">Design</span>
+                <span class="skill-name">/js-ce:work</span>
+                <span class="skill-badge">core</span>
               </div>
-              <p class="skill-description">Build web interfaces with genuine design quality, not AI slop—composition,
-                typography, color, and motion.</p>
-              <code class="skill-usage">skill: js-ce-frontend-design</code>
-            </div>
-            <div class="skill-card">
-              <div class="skill-header">
-                <span class="skill-name">js-ce-agent-native-architecture</span>
-                <span class="skill-badge">Architecture</span>
-              </div>
-              <p class="skill-description">Build apps where agents are first-class citizens—features as outcomes,
-                primitive tools, optional self-modification.</p>
-              <code class="skill-usage">skill: js-ce-agent-native-architecture</code>
+              <p class="skill-description">Execute a plan or concrete work prompt end-to-end.</p>
+              <code class="skill-usage">/js-ce:work</code>
             </div>
           </div>
         </div>
 
-        <!-- Workflow & Content -->
+        <!-- Review & Refinement -->
         <div class="skill-category">
-          <h3><i class="fa-solid fa-pen-fancy"></i> Workflow &amp; Content</h3>
+          <h3><i class="fa-solid fa-clipboard-check"></i> Review &amp; Refinement</h3>
+          <div class="grid columns-3">
+            <div class="skill-card">
+              <div class="skill-header">
+                <span class="skill-name">/js-ce:code-review</span>
+                <span class="skill-badge">Review</span>
+              </div>
+              <p class="skill-description">Structured code review with dynamically selected reviewer personas, confidence
+                gating, and a dedup pipeline.</p>
+              <code class="skill-usage">/js-ce:code-review</code>
+            </div>
+            <div class="skill-card">
+              <div class="skill-header">
+                <span class="skill-name">js-ce-simplify-code</span>
+                <span class="skill-badge">Quality</span>
+              </div>
+              <p class="skill-description">Simplify recently changed code for clarity, reuse, and efficiency while
+                preserving behavior.</p>
+              <code class="skill-usage">skill: js-ce-simplify-code</code>
+            </div>
+            <div class="skill-card">
+              <div class="skill-header">
+                <span class="skill-name">js-ce-doc-review</span>
+                <span class="skill-badge">Docs</span>
+              </div>
+              <p class="skill-description">Review requirements, plans, or specs with role-specific persona lenses.</p>
+              <code class="skill-usage">skill: js-ce-doc-review</code>
+            </div>
+          </div>
+        </div>
+
+        <!-- On-Demand & Git -->
+        <div class="skill-category">
+          <h3><i class="fa-solid fa-bolt"></i> On-Demand &amp; Git</h3>
           <div class="grid columns-3">
             <div class="skill-card">
               <div class="skill-header">
                 <span class="skill-name">js-ce-debug</span>
                 <span class="skill-badge">Workflow</span>
               </div>
-              <p class="skill-description">Systematically find root causes and fix bugs—trace causal chains, form
-                hypotheses, fix test-first.</p>
+              <p class="skill-description">Diagnosis loop for bugs and failing behavior—trace causal chains and implement
+                test-first fixes.</p>
               <code class="skill-usage">skill: js-ce-debug</code>
             </div>
             <div class="skill-card">
               <div class="skill-header">
-                <span class="skill-name">js-ce-git-worktree</span>
-                <span class="skill-badge">Git</span>
+                <span class="skill-name">js-ce-pov</span>
+                <span class="skill-badge">Verdict</span>
               </div>
-              <p class="skill-description">Manage Git worktrees for isolated parallel development on multiple branches.</p>
-              <code class="skill-usage">skill: js-ce-git-worktree</code>
+              <p class="skill-description">Give a decisive, project-grounded verdict on an external technology, library,
+                or pattern.</p>
+              <code class="skill-usage">skill: js-ce-pov</code>
             </div>
             <div class="skill-card">
               <div class="skill-header">
-                <span class="skill-name">js-ce-promote</span>
-                <span class="skill-badge">Content</span>
+                <span class="skill-name">js-ce-worktree</span>
+                <span class="skill-badge">Git</span>
               </div>
-              <p class="skill-description">Draft user-facing announcement and marketing copy for a feature that just
-                shipped.</p>
-              <code class="skill-usage">skill: js-ce-promote</code>
-            </div>
-          </div>
-        </div>
-
-        <!-- Image Generation -->
-        <div class="skill-category">
-          <h3><i class="fa-solid fa-image"></i> Image Generation</h3>
-          <div class="grid">
-            <div class="skill-card featured full-width">
-              <div class="skill-header">
-                <span class="skill-name">js-ce-gemini-imagegen</span>
-                <span class="skill-badge highlight">AI Images</span>
-              </div>
-              <p class="skill-description">
-                Generate and edit images using Google's Gemini API. Text-to-image, image editing,
-                multi-turn refinement, and composition from up to 14 reference images.
-              </p>
-              <div class="skill-features">
-                <div class="feature-item">
-                  <i class="fa-solid fa-check"></i> Text-to-image generation
-                </div>
-                <div class="feature-item">
-                  <i class="fa-solid fa-check"></i> Image editing & manipulation
-                </div>
-                <div class="feature-item">
-                  <i class="fa-solid fa-check"></i> Multi-turn refinement
-                </div>
-                <div class="feature-item">
-                  <i class="fa-solid fa-check"></i> Multiple reference images (up to 14)
-                </div>
-                <div class="feature-item">
-                  <i class="fa-solid fa-check"></i> Google Search grounding (Pro)
-                </div>
-              </div>
-              <code class="skill-usage">skill: js-ce-gemini-imagegen</code>
-              <p class="skill-note">Requires: GEMINI_API_KEY environment variable</p>
+              <p class="skill-description">Set up isolated git worktrees for parallel development.</p>
+              <code class="skill-usage">skill: js-ce-worktree</code>
             </div>
           </div>
         </div>
@@ -829,30 +614,31 @@
       <section id="mcp-servers">
         <div class="heading">
           <h2 class="no-top-margin">
-            <i class="fa-solid fa-server color-accent"></i> One MCP Server
+            <i class="fa-solid fa-server color-accent"></i> Zero MCP Servers
           </h2>
           <p class="paragraph m secondary">
-            Context7 gives Claude instant access to docs for 100+ frameworks. Need to know how Next.js handles dynamic
-            routes? Context7 fetches the answer in real-time instead of hallucinating from outdated training data.
+            The plugin bundles no MCP servers. It used to ship Context7 for documentation lookups, but that dependency
+            was removed so the plugin stays self-contained and portable—nothing to configure, nothing that can fail to
+            auto-load. Want doc lookups or another capability? Add any MCP server you like to your own Claude Code
+            config. The <a href="pages/mcp-servers.html">MCP Servers</a> page has a copy-paste example.
           </p>
         </div>
 
         <div class="grid">
           <div class="mcp-card mcp-card-docs">
             <div class="mcp-header">
-              <i class="fa-solid fa-book-open mcp-icon"></i>
-              <span class="mcp-name">Context7</span>
+              <i class="fa-solid fa-feather-pointed mcp-icon"></i>
+              <span class="mcp-name">Self-contained by design</span>
             </div>
-            <p class="mcp-description">Stop getting outdated answers. Context7 fetches current docs from 100+ frameworks
-              in real-time.</p>
+            <p class="mcp-description">Every skill carries the prompts and scripts it needs, so no network dependency is
+              required for the plugin to work and there's no server to wire up on install.</p>
             <div class="mcp-tools">
-              <h4>Tools Provided: <span class="tools-count">2 tools</span></h4>
+              <h4>What this buys you</h4>
               <ul>
-                <li><code>resolve-library-id</code> - Find library ID</li>
-                <li><code>get-library-docs</code> - Get documentation</li>
+                <li>No MCP endpoint to authenticate or troubleshoot</li>
+                <li>Clean conversion to other AI coding tools (7 targets)</li>
+                <li>Bring-your-own servers live in your config, not the plugin's</li>
               </ul>
-              <p class="mcp-note">Supports: Express, Fastify, Hono, React, Next.js, Vue, Django, Laravel, and more than
-                100 others. Set <code>CONTEXT7_API_KEY</code> to avoid anonymous rate limits.</p>
             </div>
           </div>
         </div>
@@ -892,14 +678,14 @@
             <div class="step-content">
               <h3>Ship Faster</h3>
               <div class="card-code-block">
-                <pre><code># Run a multi-agent code review
-/js-ce:review 123
+                <pre><code># Run a multi-persona code review
+/js-ce:code-review 123
 
-# Get a security review
-claude agent js-ce-security-reviewer
+# Plan a multi-step task
+/js-ce:plan "Add OAuth integration"
 
-# Generate an image
-skill: js-ce-gemini-imagegen</code></pre>
+# Diagnose a failing test
+skill: js-ce-debug</code></pre>
               </div>
             </div>
           </div>
@@ -928,35 +714,35 @@ skill: js-ce-gemini-imagegen</code></pre>
           </details>
           <details class="accordion-item" name="faq">
             <summary class="accordion-toggle">
-              <p class="paragraph m bold">How do agents differ from skills?</p>
+              <p class="paragraph m bold">Where did the agents go?</p>
               <span class="accordion-chevron fa-solid fa-chevron-down"></span>
             </summary>
             <div class="accordion-content">
               <p>
-                <strong>Agents</strong> are coworkers with specific jobs. The js-ce-security-reviewer does security
-                reviews. The js-ce-modern-nodejs-reviewer enforces Node.js conventions. They're usually dispatched by
-                workflow skills, but you can call any directly: <code>claude agent js-ce-security-reviewer</code>.
+                The plugin is <strong>agentless</strong>—there are no standalone agents to call and no
+                <code>agents/</code> directory. The specialists you'd expect (security reviewer, performance reviewer,
+                framework-docs researcher) now live inside the skills that use them, as prompt-only personas under each
+                skill's <code>references/personas/</code>. When a skill needs an expert opinion, it dispatches a generic
+                subagent with that persona's prompt.
               </p>
               <p>
-                <strong>Skills</strong> package the plugin's workflows and expertise. The js-ce-modern-nodejs-style
-                knows pragmatic Node.js patterns; the js-ce-gemini-imagegen knows how to generate images. Claude
-                invokes them automatically when relevant, or you can call them explicitly:
-                <code>skill: js-ce-modern-nodejs-style</code>. The workflow commands are skills too—run them as slash
-                commands like <code>/js-ce:plan</code>.
+                So you work with <strong>skills</strong>, not agents. Run a workflow as a slash command
+                (<code>/js-ce:code-review</code>, <code>/js-ce:plan</code>) or invoke a skill by name
+                (<code>skill: js-ce-debug</code>), and it selects and dispatches the right specialists for you.
               </p>
             </div>
           </details>
           <details class="accordion-item" name="faq">
             <summary class="accordion-toggle">
-              <p class="paragraph m bold">Why isn't the MCP server loading automatically?</p>
+              <p class="paragraph m bold">Do I need to configure any MCP servers?</p>
               <span class="accordion-chevron fa-solid fa-chevron-down"></span>
             </summary>
             <div class="accordion-content">
               <p>
-                Usually it just works. If Context7 can't fetch docs, manually add the server to your
-                <code>.claude/settings.json</code> file—check the README or the
-                <a href="pages/mcp-servers.html">MCP servers page</a> for copy-paste config. Takes 30 seconds and
-                you're done.
+                No. The plugin ships zero MCP servers, so there's nothing to configure and nothing that can fail to
+                load. If you want doc lookups or another capability, add any MCP server you like to your own
+                <code>.claude/settings.json</code>—the <a href="pages/mcp-servers.html">MCP servers page</a> has a
+                copy-paste example.
               </p>
             </div>
           </details>
@@ -967,24 +753,25 @@ skill: js-ce-gemini-imagegen</code></pre>
             </summary>
             <div class="accordion-content">
               <p>
-                This fork is optimized for Node.js, TypeScript, and Python. The workflow skills, research agents, and
-                skills like js-ce-gemini-imagegen work with any language. The js-ce-security-reviewer finds SQL
-                injection whether it's in Express, Django, or Laravel.
+                This fork is optimized for Node.js, TypeScript, and Python. The workflow skills and their research and
+                review personas work with any language—the security reviewer finds SQL injection whether it's in
+                Express, Django, or Laravel.
               </p>
             </div>
           </details>
           <details class="accordion-item" name="faq">
             <summary class="accordion-toggle">
-              <p class="paragraph m bold">How do I create my own agents or skills?</p>
+              <p class="paragraph m bold">How do I create my own skill or specialist?</p>
               <span class="accordion-chevron fa-solid fa-chevron-down"></span>
             </summary>
             <div class="accordion-content">
               <p>
-                Drop a new agent in <code>agents/&lt;category&gt;/js-ce-&lt;name&gt;.md</code> or a skill in
-                <code>skills/js-ce-&lt;name&gt;/SKILL.md</code> with the required frontmatter, then add it to the
-                README and bump the counts. Use a skill-authoring helper to scaffold the SKILL.md, and follow the
-                plugin's skill compliance checklist. When you remove a component, update the cleanup registry so the
-                <code>cleanup</code> CLI can back up stale artifacts.
+                Add a skill in <code>skills/js-ce-&lt;name&gt;/SKILL.md</code> with the required frontmatter, then list
+                it in the README and bump the skill count. Need a new specialist? Because the plugin is agentless, don't
+                create a top-level agent—drop the persona prompt (no frontmatter, unprefixed name) under the calling
+                skill's <code>references/personas/</code> and have the skill dispatch a generic subagent with it. When
+                you remove a component, update the cleanup registry so the <code>cleanup</code> CLI can back up stale
+                artifacts.
               </p>
             </div>
           </details>
@@ -998,8 +785,7 @@ skill: js-ce-gemini-imagegen</code></pre>
           <h2>Install Once. Compound Forever.</h2>
           <p class="paragraph m cta-subheading">
             <strong>Your next code review takes seconds.</strong> The one after that? Even faster. That's
-            compounding. Get 51 expert agents, 47 specialized skills, and a context-aware MCP server working for you
-            right now.
+            compounding. Get 29 self-contained, agentless skills working for you right now.
           </p>
           <div class="button-group margin-paragraph centered">
             <a href="#install" class="button primary cta-primary">
@@ -1026,7 +812,7 @@ skill: js-ce-gemini-imagegen</code></pre>
         </div>
         <div>
           <div class="link-list">
-            <a href="#agents" class="ui s">Agents</a>
+            <a href="#agents" class="ui s">Agentless</a>
             <a href="#commands" class="ui s">Commands</a>
             <a href="#skills" class="ui s">Skills</a>
             <a href="pages/getting-started.html" class="ui s">Documentation</a>

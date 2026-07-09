@@ -1,6 +1,5 @@
 import { formatFrontmatter } from "../utils/frontmatter"
 import { type ClaudeAgent, type ClaudeCommand, type ClaudeMcpServer, type ClaudePlugin, filterSkillsByPlatform } from "../types/claude"
-import { normalizeName, sanitizeDescription, uniqueName } from "./claude-to-gemini"
 import type {
   AntigravityBundle,
   AntigravityMcpServer,
@@ -193,4 +192,40 @@ function numberSteps(body: string): string {
   }
 
   return out.join("\n")
+}
+
+const ANTIGRAVITY_DESCRIPTION_MAX_LENGTH = 1024
+
+function normalizeName(value: string): string {
+  const trimmed = value.trim()
+  if (!trimmed) return "item"
+  const normalized = trimmed
+    .toLowerCase()
+    .replace(/[\\/]+/g, "-")
+    .replace(/[:\s]+/g, "-")
+    .replace(/[^a-z0-9_-]+/g, "-")
+    .replace(/-+/g, "-")
+    .replace(/^-+|-+$/g, "")
+  return normalized || "item"
+}
+
+function sanitizeDescription(value: string, maxLength = ANTIGRAVITY_DESCRIPTION_MAX_LENGTH): string {
+  const normalized = value.replace(/\s+/g, " ").trim()
+  if (normalized.length <= maxLength) return normalized
+  const ellipsis = "..."
+  return normalized.slice(0, Math.max(0, maxLength - ellipsis.length)).trimEnd() + ellipsis
+}
+
+function uniqueName(base: string, used: Set<string>): string {
+  if (!used.has(base)) {
+    used.add(base)
+    return base
+  }
+  let index = 2
+  while (used.has(`${base}-${index}`)) {
+    index += 1
+  }
+  const name = `${base}-${index}`
+  used.add(name)
+  return name
 }

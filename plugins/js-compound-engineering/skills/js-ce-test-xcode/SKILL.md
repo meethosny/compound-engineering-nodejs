@@ -1,6 +1,6 @@
 ---
 name: js-ce-test-xcode
-description: "Build and test iOS apps on simulator using XcodeBuildMCP. Use after making iOS code changes, before creating a PR, or when verifying app behavior and checking for crashes on simulator."
+description: "Build and test iOS apps on simulator with XcodeBuildMCP."
 argument-hint: "[scheme name or 'current' to use default]"
 disable-model-invocation: true
 ---
@@ -61,7 +61,6 @@ Call `build_ios_sim_app` with the project path and scheme name.
 
 **On failure:**
 - Capture build errors
-- Create a P1 todo for each build error
 - Report to user with specific error details
 
 **On success:**
@@ -94,8 +93,8 @@ Call `get_sim_logs` with the simulator UUID. Look for:
 - Error-level log messages
 - Failed network requests
 
-**Known automation limitation -- SwiftUI Text links:**
-Simulated taps (via XcodeBuildMCP or any simulator automation tool) do not trigger gesture recognizers on SwiftUI `Text` views with inline `AttributedString` links. Taps report success but have no effect. This is a platform limitation -- inline links are not exposed as separate elements in the accessibility tree. When a tap on a Text link has no visible effect, prompt the user to tap manually in the simulator. If the target URL is known, `xcrun simctl openurl <device> <URL>` can open it directly as a fallback.
+**Known automation limitation — SwiftUI Text links:**
+Simulated taps (via XcodeBuildMCP or any simulator automation tool) do not trigger gesture recognizers on SwiftUI `Text` views with inline `AttributedString` links. Taps report success but have no effect. This is a platform limitation — inline links are not exposed as separate elements in the accessibility tree. When a tap on a Text link has no visible effect, prompt the user to tap manually in the simulator. If the target URL is known, `xcrun simctl openurl <device> <URL>` can open it directly as a fallback.
 
 ### 6. Human Verification (When Required)
 
@@ -108,9 +107,9 @@ Pause for human input when testing touches flows that require device interaction
 | In-app purchases | "Complete a sandbox purchase" |
 | Camera/Photos | "Grant permissions and verify camera works" |
 | Location | "Allow location access and verify map updates" |
-| SwiftUI Text links | "Please tap on [element description] manually -- automated taps cannot trigger inline text links" |
+| SwiftUI Text links | "Please tap on [element description] manually — automated taps cannot trigger inline text links" |
 
-Ask the user (using the platform's question tool -- e.g., `AskUserQuestion` in Claude Code, `request_user_input` in Codex, `ask_user` in Gemini -- or present numbered options and wait):
+Ask the user using the platform's blocking question tool: `AskUserQuestion` in Claude Code (call `ToolSearch` with `select:AskUserQuestion` first if its schema isn't loaded), `request_user_input` in Codex, `ask_question` in Antigravity CLI (`agy`), `ask_user` in Pi (requires the `pi-ask-user` extension). Fall back to numbered options in chat only when no blocking tool exists in the harness or the call errors (e.g., Codex edit modes) — not because a schema load is required. Never silently skip the question:
 
 ```
 Human Verification Needed
@@ -142,14 +141,12 @@ When a test fails:
    Logs: [relevant error messages]
 
    How to proceed?
-   1. Fix now - I'll help debug and fix
-   2. Create todo - Add a todo for later (using the js-ce-todo-create skill)
-   3. Skip - Continue testing other screens
+   1. Fix now - debug, propose a fix, rebuild and retest
+   2. Skip - continue testing other screens
    ```
 
 3. **If "Fix now":** investigate, propose a fix, rebuild and retest
-4. **If "Create todo":** load the `js-ce-todo-create` skill and create a todo with priority p1 and description `xcode-{description}`, continue
-5. **If "Skip":** log as skipped, continue
+4. **If "Skip":** log as skipped, continue
 
 ### 8. Test Summary
 
@@ -183,9 +180,6 @@ After all tests complete, present a summary:
 ### Failures: [count]
 - Settings screen - crash on navigation
 
-### Created Todos: [count]
-- `006-pending-p1-xcode-settings-crash.md`
-
 ### Result: [PASS / FAIL / PARTIAL]
 ```
 
@@ -209,6 +203,6 @@ After testing:
 /js-ce-test-xcode current
 ```
 
-## Integration with js-ce:review
+## Integration with js-ce-code-review
 
-When reviewing PRs that touch iOS code, the `js-ce:review` workflow can spawn an agent to run this skill, build on the simulator, test key screens, and check for crashes.
+When reviewing PRs that touch iOS code, the `js-ce-code-review` workflow can spawn an agent to run this skill, build on the simulator, test key screens, and check for crashes.

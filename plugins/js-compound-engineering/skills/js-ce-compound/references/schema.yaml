@@ -1,4 +1,4 @@
-# Documentation schema for learnings written by js-ce:compound
+# Documentation schema for learnings written by js-ce-compound
 # Treat this as the canonical frontmatter contract for docs/solutions/.
 #
 # The schema has two tracks based on problem_type:
@@ -23,7 +23,7 @@ tracks:
       - integration_issue
       - logic_error
   knowledge:
-    description: "Best practices, workflow improvements, patterns, and documentation"
+    description: "Practices, patterns, conventions, decisions, workflow improvements, and documentation"
     problem_types:
       - best_practice
       - documentation_gap
@@ -70,14 +70,14 @@ required_fields:
   component:
     type: enum
     values:
-      - model
-      - controller
-      - view
+      - orm_model
+      - route_handler
+      - component
       - service_object
       - background_job
       - database
       - frontend_react
-      - frontend_nextjs
+      - spa_navigation
       - email_processing
       - brief_system
       - assistant
@@ -202,10 +202,10 @@ optional_fields:
 
 # --- Fields optional for bug track only -------------------------------------
 bug_optional_fields:
-  node_version:
+  framework_version:
     type: string
     pattern: '^\d+\.\d+\.\d+$'
-    description: "Node.js version in X.Y.Z format. Only relevant for bug-track docs."
+    description: "Framework version in X.Y.Z format. Only relevant for bug-track docs."
 
 # --- Backward compatibility --------------------------------------------------
 # Docs created before the track system was introduced may have bug-track
@@ -226,6 +226,6 @@ validation_rules:
   - "Enum fields must match allowed values exactly"
   - "Array fields must respect min_items/max_items when specified"
   - "date must match YYYY-MM-DD format"
-  - "node_version, if provided, must match X.Y.Z format and only applies to bug-track docs"
+  - "framework_version, if provided, must match X.Y.Z format and only applies to bug-track docs"
   - "tags should be lowercase and hyphen-separated"
   - "Array-of-strings frontmatter items (symptoms, applies_when, tags, related_components, or any future array field) must be wrapped in double quotes when the value starts with a YAML reserved indicator (`, [, *, &, !, |, >, %, @, ?) or contains the substring `: ` — otherwise strict YAML parsers reject the file"

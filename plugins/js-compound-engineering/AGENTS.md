@@ -32,17 +32,17 @@ Before committing ANY changes:
 ### Directory Structure
 
 ```
-agents/
-├── review/           # Code review agents
-├── document-review/  # Plan and requirements document review agents
-├── research/         # Research and analysis agents
-├── design/           # Design and UI agents
-└── docs/             # Documentation agents
-
 skills/
-├── js-ce-*/          # Core workflow skills (js-ce:plan, js-ce:review, etc.)
-└── */                # All other skills
+├── js-ce-<name>/                 # One directory per skill (29 total)
+│   ├── SKILL.md                  # Frontmatter (name + description) and skill body
+│   ├── references/
+│   │   ├── personas/*.md         # Reviewer personas (skill-local prompt assets)
+│   │   └── agents/*.md           # Research / specialist prompt assets
+│   └── scripts/                  # Optional supporting scripts
+└── ...
 ```
+
+This plugin is **agentless**: there is no top-level `agents/` directory. A skill that needs a specialist carries the persona prompt inside its own `references/` directory and dispatches a generic subagent with that prompt. Prompt assets have **no YAML frontmatter** and use unprefixed descriptive names (e.g. `references/personas/correctness-reviewer.md`, not `js-ce-correctness-reviewer.md`). Only the `SKILL.md` `name:` field carries the `js-ce` prefix — core-loop workflow skills use the colon form (`js-ce:plan`, `js-ce:code-review`); other skills use the hyphen form (`js-ce-debug`).
 
 > **Note:** Commands were migrated to skills in v2.39.0. All former
 > `/command-name` slash commands now live under `skills/command-name/SKILL.md`
@@ -175,8 +175,8 @@ grep -E '^description:' skills/*/SKILL.md
 
 ## Adding Components
 
-- **New skill:** Create `skills/js-<name>/SKILL.md` with required YAML frontmatter (`name`, `description`). Reference files go in `skills/js-<name>/references/`. Add the skill to the appropriate category table in `README.md` and update the skill count.
-- **New agent:** Create `agents/<category>/js-<name>.md` with frontmatter. Categories: `review`, `document-review`, `research`, `design`, `docs`, `workflow`. Add the agent to `README.md` and update the agent count.
+- **New skill:** Create `skills/js-ce-<name>/SKILL.md` with required YAML frontmatter (`name`, `description`). Reference files go in `skills/js-ce-<name>/references/`. Add the skill to the appropriate category table in `README.md` and update the skill count.
+- **New specialist persona:** This plugin is agentless — do **not** add a top-level `agents/` file. Place the persona prompt inside the calling skill's directory (`skills/js-ce-<name>/references/personas/<persona>.md` or `references/agents/<persona>.md`) with **no YAML frontmatter** and an unprefixed descriptive filename, then have the skill dispatch a generic subagent with that prompt. Duplicate the prompt into each skill that needs it — skills are self-contained and must not reference files outside their own directory.
 
 ## Beta Skills
 

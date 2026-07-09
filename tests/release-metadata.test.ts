@@ -105,14 +105,13 @@ describe("release metadata", () => {
   test("reports current js-compound-engineering counts from the repo", async () => {
     const counts = await getCompoundEngineeringCounts(process.cwd())
 
+    // Agentless: reviewer/research personas live inside skills as prompt assets,
+    // so there is no standalone agents/ dir and no bundled MCP server.
     expect(counts).toEqual({
-      agents: expect.any(Number),
-      skills: expect.any(Number),
-      mcpServers: expect.any(Number),
+      agents: 0,
+      skills: 29,
+      mcpServers: 0,
     })
-    expect(counts.agents).toBeGreaterThan(0)
-    expect(counts.skills).toBeGreaterThan(0)
-    expect(counts.mcpServers).toBeGreaterThanOrEqual(0)
   })
 
   test("builds a stable js-compound-engineering manifest description", async () => {

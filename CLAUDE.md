@@ -13,7 +13,7 @@ compound-engineering-nodejs/
 │   ├── converters/               # Claude → provider format converters
 │   ├── parsers/                  # Plugin structure parsers
 │   ├── sync/                     # Personal config sync per provider
-│   ├── targets/                  # 10 provider targets
+│   ├── targets/                  # 7 provider targets
 │   ├── types/                    # TypeScript types per provider
 │   └── utils/                    # Shared utilities
 ├── tests/                        # Test suites
@@ -22,8 +22,7 @@ compound-engineering-nodejs/
     ├── js-compound-engineering/  # The main plugin
     │   ├── .claude-plugin/
     │   │   └── plugin.json       # Plugin metadata
-    │   ├── agents/               # 51 specialized AI agents (all prefixed with js-ce-)
-    │   ├── skills/               # 47 skills (all prefixed with js-ce-; commands migrated to skills)
+    │   ├── skills/               # 29 skills (js-ce-*; agentless — reviewer/research personas live in each skill's references/)
     │   ├── README.md             # Plugin documentation
     │   └── CHANGELOG.md          # Version history
     └── js-coding-tutor/          # Coding tutor plugin
@@ -33,6 +32,8 @@ compound-engineering-nodejs/
         ├── skills/
         └── README.md
 ```
+
+> **The plugin is agentless.** There is no top-level `agents/` directory. Reviewer and research specialists are skill-local prompt assets: each skill that needs a specialist carries the persona under its own `references/personas/*.md` or `references/agents/*.md` (no frontmatter, unprefixed filename) and dispatches a generic subagent with that prompt. Counts: **29 skills, 0 standalone agents, 0 MCP servers.**
 
 ## Philosophy: Compounding Engineering
 
@@ -68,12 +69,11 @@ When agents, commands, or skills are added/removed, follow this checklist:
 #### 1. Count all components accurately
 
 ```bash
-# Count agents
-ls plugins/js-compound-engineering/agents/**/*.md | wc -l
-
-# Count skills
+# Count skills (the only shipped component type)
 find plugins/js-compound-engineering/skills -name "SKILL.md" | wc -l
 ```
+
+The plugin is agentless: there is no `agents/` directory to count, and it ships 0 MCP servers. The only component count that changes is skills.
 
 #### 2. Update ALL description strings with correct counts
 
@@ -83,7 +83,7 @@ The description appears in multiple places and must match everywhere:
 - [ ] `.claude-plugin/marketplace.json` → plugin `description` field
 - [ ] `plugins/js-compound-engineering/README.md` → intro paragraph
 
-Format: `"X agents, Y skills, Z MCP server(s)"`
+Format: `"Y skills, 0 agents (agentless), 0 MCP servers"`
 
 #### 3. Do not pre-cut release versions
 
@@ -122,9 +122,9 @@ cat plugins/js-compound-engineering/.claude-plugin/plugin.json | jq .
 #### 6. Verify before committing
 
 ```bash
-# Ensure counts in descriptions match actual files
-grep -o "Includes [0-9]* specialized agents" plugins/js-compound-engineering/.claude-plugin/plugin.json
-ls plugins/js-compound-engineering/agents/*/*.md | wc -l
+# Ensure the skill count in descriptions matches actual files
+grep -o "[0-9]* skills" plugins/js-compound-engineering/.claude-plugin/plugin.json
+find plugins/js-compound-engineering/skills -name "SKILL.md" | wc -l
 ```
 
 ### Marketplace.json Structure
@@ -209,10 +209,10 @@ docs/
 │   └── main.js          # Interactivity (theme toggle, mobile nav)
 └── pages/
     ├── getting-started.html  # Installation and quick start
-    ├── agents.html           # All 51 agents reference
+    ├── agents.html           # Agentless-architecture explainer (specialists are skill-local personas)
     ├── commands.html         # Commands-are-now-skills note (commands migrated to skills)
-    ├── skills.html           # All 47 skills reference
-    ├── mcp-servers.html      # MCP server reference (context7)
+    ├── skills.html           # All 29 skills reference
+    ├── mcp-servers.html      # States that the plugin ships 0 MCP servers (bundled server removed)
     └── changelog.html        # Version history
 ```
 
@@ -238,8 +238,10 @@ If you need to update docs manually:
 
 1. **Landing page stats** - Update the numbers in `docs/index.html`:
    ```html
-   <span class="stat-number">51</span>  <!-- agents -->
-   <span class="stat-number">47</span>  <!-- skills (commands are skills now) -->
+   <div class="stat-number">29</div>  <!-- skills -->
+   <div class="stat-number">0</div>   <!-- standalone agents (agentless) -->
+   <div class="stat-number">0</div>   <!-- MCP servers -->
+   <div class="stat-number">7</div>   <!-- CLI convert targets -->
    ```
 
 2. **Reference pages** - Each page in `docs/pages/` documents all components in that category
@@ -276,10 +278,10 @@ python -m http.server 8000
    claude /plugin install js-compound-engineering
    ```
 
-3. Test agents and commands:
+3. Test skills (the plugin is agentless — specialists run inside skills):
    ```bash
-   claude /js-ce:review
-   claude agent js-kieran-nodejs-reviewer "test message"
+   claude /js-ce:code-review
+   claude skill js-ce-debug "test message"
    ```
 
 ### Validate JSON
@@ -293,12 +295,15 @@ cat plugins/js-compound-engineering/.claude-plugin/plugin.json | jq .
 
 ## Common Tasks
 
-### Adding a New Agent
+### Adding a New Specialist Persona (Agentless)
 
-1. Create `plugins/js-compound-engineering/agents/[category]/js-new-agent.md` (must prefix with `js-`)
-2. Update plugin.json agent count and agent list
-3. Update README.md agent list
-4. Test with `claude agent js-new-agent "test"`
+This plugin is **agentless** — do NOT create a top-level `agents/` file. A specialist (reviewer, researcher, lens) lives as a prompt asset inside the skill that dispatches it:
+
+1. Create the persona under the calling skill's directory: `plugins/js-compound-engineering/skills/js-ce-<skill>/references/personas/<name>.md` (or `references/agents/<name>.md`)
+2. The persona file has **no YAML frontmatter** and an **unprefixed** descriptive filename (e.g. `correctness-reviewer.md`, not `js-ce-correctness-reviewer.md`)
+3. Have the skill dispatch a generic subagent with that prompt (pass the file path, not a registered agent name)
+4. Duplicate the prompt into each skill that needs it — skills are self-contained and must not reference files outside their own directory
+5. No count to update: personas are internal to skills, so the agent count stays 0
 
 ### Adding a New Command
 

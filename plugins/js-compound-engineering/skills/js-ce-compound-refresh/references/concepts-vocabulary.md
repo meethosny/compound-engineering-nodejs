@@ -11,7 +11,7 @@ Two paths populate the file, and they cover different gaps:
 
 ### Seed goal
 
-Define the core domain nouns the area's **declared domain model** exposes that meet the qualifying bar (see "What earns a slot"). The codebase sets the count: seed every term that genuinely qualifies, none added to reach a number and none pulled from beyond the declared model to inflate one. A small domain yields a few; a large one, more. The bound is the **source** (the declared domain model of the area in scope — schema/types, core interfaces, primary models or entities, top-level domain docs — not a full-codebase trawl) and the **bar** (the same "a new engineer would need this defined" test), never a fixed quantity.
+Define the core domain nouns the area's **declared domain model** exposes that meet the qualifying bar (see "What earns a slot"). The codebase sets the count: seed every term that genuinely qualifies, none added to reach a number and none pulled from beyond the declared model to inflate one. A small domain yields a few; a large one, more. The bound is the **source** (the declared domain model of the area in scope — schema, core types, primary models, top-level domain docs — not a full-codebase trawl) and the **bar** (the same "a new engineer would need this defined" test), never a fixed quantity.
 
 ### Scope of a seed
 
@@ -26,7 +26,7 @@ When the team uses several words for the same concept, pick the best one and ret
 
 Each entry teaches its concept to a reader with no access to anything else — no codebase, no PR history, no architecture meetings, no Slack. This rules out:
 
-- Implementation specifics (file paths, class/type names, function signatures, table names, library calls)
+- Implementation specifics (file paths, class names, function signatures, table names, library calls)
 - Status fields, dates, owners on the entries
 - Examples or current-config values drawn from the code — specific thresholds, counts, or enum values that will change. State the behavior, not the number: "each skill sets its own actionable threshold" rather than "surfaces at 50, fixes at 75."
 - Links to PRs, issues, channels, or roadmap milestones

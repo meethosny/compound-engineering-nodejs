@@ -29,7 +29,7 @@ else
 fi
 
 if [ -z "$OWNER" ] || [ -z "$REPO" ]; then
-    echo "Error: could not resolve owner/repo. Run get-thread-for-comment from inside the target git repository, or pass OWNER/REPO as the third argument (e.g., get-thread-for-comment $PR_NUMBER $COMMENT_NODE_ID nicholasgriffintn/compound-engineering-nodejs)." >&2
+    echo "Error: could not resolve owner/repo. Run get-thread-for-comment from inside the target git repository, or pass OWNER/REPO as the third argument (e.g., get-thread-for-comment $PR_NUMBER $COMMENT_NODE_ID EveryInc/cora)." >&2
     exit 1
 fi
 
@@ -50,6 +50,9 @@ query Threads($owner: String!, $repo: String!, $pr: Int!, $endCursor: String) {
           isOutdated
           path
           line
+          originalLine
+          startLine
+          originalStartLine
           comments(first: 100) {
             nodes {
               id

@@ -19,12 +19,6 @@
     "javascript",
     "typescript",
     "knowledge-management",
-    "image-generation"
-  ],
-  "mcpServers": {
-    "context7": {
-      "type": "http",
-      "url": "https://mcp.context7.com/mcp"
-    }
-  }
+    "knowledge-management"
+  ]
 }

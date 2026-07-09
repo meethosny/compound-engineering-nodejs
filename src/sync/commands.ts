@@ -3,10 +3,8 @@ import type { ClaudeHomeConfig } from "../parsers/claude-home"
 import type { ClaudePlugin } from "../types/claude"
 import { backupFile, resolveCommandPath, sanitizePathName, writeText } from "../utils/files"
 import { convertClaudeToCodex } from "../converters/claude-to-codex"
-import { convertClaudeToCopilot } from "../converters/claude-to-copilot"
 import { convertClaudeToCursor } from "../converters/claude-to-cursor"
 import { convertClaudeToDroid } from "../converters/claude-to-droid"
-import { convertClaudeToGemini } from "../converters/claude-to-gemini"
 import { convertClaudeToKiro } from "../converters/claude-to-kiro"
 import { convertClaudeToOpenCode, type ClaudeToOpenCodeOptions } from "../converters/claude-to-opencode"
 import { convertClaudeToPi } from "../converters/claude-to-pi"
@@ -99,33 +97,6 @@ export async function syncDroidCommands(
   const bundle = convertClaudeToDroid(plugin, DEFAULT_SYNC_OPTIONS)
   for (const command of bundle.commands) {
     await writeText(path.join(outputRoot, "commands", `${command.name}.md`), command.content + "\n")
-  }
-}
-
-export async function syncCopilotCommands(
-  config: ClaudeHomeConfig,
-  outputRoot: string,
-): Promise<void> {
-  if (!hasCommands(config)) return
-
-  const plugin = buildClaudeHomePlugin(config)
-  const bundle = convertClaudeToCopilot(plugin, DEFAULT_SYNC_OPTIONS)
-
-  for (const skill of bundle.generatedSkills) {
-    await writeText(path.join(outputRoot, "skills", sanitizePathName(skill.name), "SKILL.md"), skill.content + "\n")
-  }
-}
-
-export async function syncGeminiCommands(
-  config: ClaudeHomeConfig,
-  outputRoot: string,
-): Promise<void> {
-  if (!hasCommands(config)) return
-
-  const plugin = buildClaudeHomePlugin(config)
-  const bundle = convertClaudeToGemini(plugin, DEFAULT_SYNC_OPTIONS)
-  for (const command of bundle.commands) {
-    await writeText(path.join(outputRoot, "commands", `${command.name}.toml`), command.content + "\n")
   }
 }
 

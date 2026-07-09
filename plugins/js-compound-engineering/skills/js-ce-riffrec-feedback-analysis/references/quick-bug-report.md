@@ -4,10 +4,11 @@ Use this path when the input is a short recording (under ~60 seconds), the user 
 
 ## Workflow
 
-1. Run the analyzer to a temp directory so nothing pollutes the repo:
+1. Run the analyzer to a temp directory so nothing pollutes the repo (`SKILL_DIR` is the directory containing the `js-ce-riffrec-feedback-analysis` SKILL.md; set it in the same command — shell state does not persist between Bash calls):
 
    ```bash
-   python scripts/analyze_riffrec_zip.py /path/to/input --output-dir "$(mktemp -d -t riffrec-quick-XXXXXX)"
+   SKILL_DIR="<absolute path of the directory containing the js-ce-riffrec-feedback-analysis SKILL.md>"
+   python "$SKILL_DIR/scripts/analyze_riffrec_zip.py" /path/to/input --output-dir "$(mktemp -d -t riffrec-quick-XXXXXX)"
    ```
 
    Capture the printed output directory; later steps read from it.
@@ -26,7 +27,7 @@ Keep it focused and short. Include only what the recording supports:
 - **Steps to reproduce** — bullet list reconstructed from clicks and transcript.
 - **Expected vs. actual** — what the user said should happen vs. what happened.
 - **Evidence** — transcript quote(s) with timestamps, plus 0–2 screenshot references.
-- **Suggested next step** — single sentence: file an issue, open the `js-ce-debug` skill, or escalate to extensive analysis if more issues surfaced.
+- **Suggested next step** — single sentence: file an issue, open `js-ce-debug`, or escalate to extensive analysis if more issues surfaced.
 
 ## Source mapping (optional, only if obvious)
 
@@ -35,7 +36,7 @@ If the workspace is the product source code AND the broken surface is named clea
 ## What to skip
 
 - No `problem-analysis.md`, no `requirements-kickoff.md`, no Visual / Functional / Requirement / UX category split.
-- No automatic handoff to the `js-ce-brainstorm` skill. The quick path ends with the bug report.
+- No automatic handoff to `js-ce-brainstorm`. The quick path ends with the bug report.
 - No commit of `raw/` or `frames/` — they live only in the temp dir and are discarded by the OS.
 - No source-mapping pass across the codebase.
 

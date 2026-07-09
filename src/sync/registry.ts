@@ -2,19 +2,12 @@ import os from "os"
 import path from "path"
 import type { ClaudeHomeConfig } from "../parsers/claude-home"
 import { syncToCodex } from "./codex"
-import { syncToCopilot } from "./copilot"
 import { syncToDroid } from "./droid"
-import { syncToGemini } from "./gemini"
 import { syncToKiro } from "./kiro"
 import { syncToOpenCode } from "./opencode"
 import { syncToPi } from "./pi"
 import { syncToCursor } from "./cursor"
 import { syncToAntigravity } from "./antigravity"
-import { syncToAgents } from "./agents"
-
-function getCopilotHomeRoot(home: string): string {
-  return path.join(home, ".copilot")
-}
 
 function getGeminiHomeRoot(home: string): string {
   return path.join(home, ".gemini")
@@ -25,12 +18,9 @@ export type SyncTargetName =
   | "codex"
   | "pi"
   | "droid"
-  | "copilot"
-  | "gemini"
   | "kiro"
   | "cursor"
   | "antigravity"
-  | "agents"
 
 export type SyncTargetDefinition = {
   name: SyncTargetName
@@ -68,26 +58,6 @@ export const syncTargets: SyncTargetDefinition[] = [
     sync: syncToDroid,
   },
   {
-    name: "copilot",
-    detectPaths: (home, cwd) => [
-      getCopilotHomeRoot(home),
-      path.join(cwd, ".github", "skills"),
-      path.join(cwd, ".github", "agents"),
-      path.join(cwd, ".github", "copilot-instructions.md"),
-    ],
-    resolveOutputRoot: (home) => getCopilotHomeRoot(home),
-    sync: syncToCopilot,
-  },
-  {
-    name: "gemini",
-    detectPaths: (home, cwd) => [
-      path.join(cwd, ".gemini"),
-      getGeminiHomeRoot(home),
-    ],
-    resolveOutputRoot: (home) => getGeminiHomeRoot(home),
-    sync: syncToGemini,
-  },
-  {
     name: "kiro",
     detectPaths: (home, cwd) => [
       path.join(home, ".kiro"),
@@ -113,15 +83,6 @@ export const syncTargets: SyncTargetDefinition[] = [
     ],
     resolveOutputRoot: (home) => getGeminiHomeRoot(home),
     sync: syncToAntigravity,
-  },
-  {
-    name: "agents",
-    detectPaths: (home, cwd) => [
-      path.join(cwd, ".agents"),
-      path.join(home, ".agents"),
-    ],
-    resolveOutputRoot: (home) => path.join(home, ".agents"),
-    sync: syncToAgents,
   },
 ]
 

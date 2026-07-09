@@ -1,6 +1,6 @@
 # YAML Frontmatter Schema
 
-`schema.yaml` in this directory is the canonical contract for `docs/solutions/` frontmatter written by `js-ce:compound`.
+`schema.yaml` in this directory is the canonical contract for `docs/solutions/` frontmatter written by `js-ce-compound`.
 
 Use this file as the quick reference for:
 - required fields
@@ -23,7 +23,7 @@ The `problem_type` determines which **track** applies. Each track has different 
 - **module**: Module or area affected
 - **date**: ISO date in `YYYY-MM-DD`
 - **problem_type**: One of the values listed in the Tracks table above
-- **component**: One of `model`, `controller`, `view`, `service_object`, `background_job`, `database`, `frontend_react`, `frontend_nextjs`, `email_processing`, `brief_system`, `assistant`, `authentication`, `payments`, `development_workflow`, `testing_framework`, `documentation`, `tooling`
+- **component**: One of `orm_model`, `route_handler`, `component`, `service_object`, `background_job`, `database`, `frontend_react`, `spa_navigation`, `email_processing`, `brief_system`, `assistant`, `authentication`, `payments`, `development_workflow`, `testing_framework`, `documentation`, `tooling`
 - **severity**: One of `critical`, `high`, `medium`, `low`
 
 ## Bug Track Fields
@@ -49,7 +49,7 @@ No additional required fields beyond the shared ones. All fields below are optio
 
 ## Optional Fields (bug track only)
 
-- **node_version**: Node.js version in `X.Y.Z` format
+- **framework_version**: Framework version in `X.Y.Z` format
 
 ## Backward Compatibility
 
@@ -88,7 +88,7 @@ Docs created before the track system may have `symptoms`/`root_cause`/`resolutio
 6. Enum fields must match the allowed values exactly.
 7. Array fields must respect min/max item counts.
 8. `date` must match `YYYY-MM-DD`.
-9. `node_version`, if present, must match `X.Y.Z` and only applies to bug-track docs.
+9. `framework_version`, if present, must match `X.Y.Z` and only applies to bug-track docs.
 
 ## YAML Safety Rules
 
@@ -106,12 +106,12 @@ confuses flow-style parsers.
 Example — before (breaks strict YAML):
 
     symptoms:
-      - `npm run build` exits 0 but emits no output bundle
+      - `sudo dscacheutil -flushcache` does not restore in-container mDNS
 
 Example — after (parses cleanly):
 
     symptoms:
-      - "`npm run build` exits 0 but emits no output bundle"
+      - "`sudo dscacheutil -flushcache` does not restore in-container mDNS"
 
 This rule applies to all array-of-strings frontmatter fields. Scalar string
 fields like `description:` have their own quoting rules (see plugin

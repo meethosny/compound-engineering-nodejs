@@ -1,6 +1,6 @@
 # Compound Engineering Feedback Format
 
-Use this shape when converting recorded-session evidence into a durable brainstorm or planning input.
+Use this shape when converting Riffrec evidence into a durable brainstorm or planning input.
 
 ## Finding
 
@@ -42,7 +42,7 @@ topic: <topic>
 ## Key Flows
 
 - F1. Recorded feedback triage
-  - **Trigger:** A feedback session bundle is available for review.
+  - **Trigger:** A Riffrec zip is available for review.
   - **Actors:** A1, A2
   - **Steps:** <3-7 product steps seen in the recording>
   - **Outcome:** <What should be true after the fix>
@@ -105,7 +105,7 @@ topic: <topic>
 
 ## Next Steps
 
--> /js-ce:brainstorm to confirm, correct, and regroup the captured requirements before any planning.
+-> /js-ce-brainstorm to confirm, correct, and regroup the captured requirements before any planning.
 ```
 
 ## Evidence Rules

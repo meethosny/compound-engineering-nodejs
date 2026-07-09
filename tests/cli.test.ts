@@ -177,9 +177,10 @@ describe("CLI", () => {
     expect(stdout).toContain("Installed js-compound-engineering")
     // OpenCode global config lives at ~/.config/opencode per XDG spec
     expect(await exists(path.join(tempRoot, ".config", "opencode", "opencode.json"))).toBe(true)
-    // Bundled plugin takes priority over GitHub when no --branch is specified,
-    // so agents have the js- prefix from the real plugin
-    expect(await exists(path.join(tempRoot, ".config", "opencode", "agents", "js-ce-repo-research-analyst.md"))).toBe(true)
+    // Bundled plugin takes priority over GitHub when no --branch is specified. The plugin is
+    // agentless -- reviewer/research personas live inside skills as references/ prompt assets --
+    // so the install produces js-ce- prefixed skills (not standalone agents) from the real plugin.
+    expect(await exists(path.join(tempRoot, ".config", "opencode", "skills", "js-ce-plan", "SKILL.md"))).toBe(true)
   })
 
   test("install uses bundled js-compound-engineering plugin for codex output", async () => {
@@ -647,8 +648,6 @@ describe("CLI", () => {
     await fs.mkdir(path.join(tempHome, ".codex"), { recursive: true })
     await fs.mkdir(path.join(tempHome, ".pi"), { recursive: true })
     await fs.mkdir(path.join(tempHome, ".factory"), { recursive: true })
-    await fs.mkdir(path.join(tempHome, ".copilot"), { recursive: true })
-    await fs.mkdir(path.join(tempHome, ".gemini"), { recursive: true })
     await fs.mkdir(path.join(tempHome, ".kiro"), { recursive: true })
     await fs.mkdir(path.join(tempCwd, ".cursor"), { recursive: true })
 
@@ -682,8 +681,6 @@ describe("CLI", () => {
     expect(stdout).toContain("Synced to pi")
     expect(stdout).toContain("Synced to droid")
     expect(stdout).toContain("Synced to kiro")
-    expect(stdout).toContain("Synced to copilot")
-    expect(stdout).toContain("Synced to gemini")
     expect(stdout).toContain("Synced to cursor")
 
     expect(await exists(path.join(tempHome, ".config", "opencode", "commands", "workflows", "plan.md"))).toBe(true)
@@ -694,9 +691,5 @@ describe("CLI", () => {
     expect(await exists(path.join(tempHome, ".factory", "commands", "plan.md"))).toBe(true)
     expect(await exists(path.join(tempHome, ".kiro", "settings", "mcp.json"))).toBe(true)
     expect(await exists(path.join(tempHome, ".kiro", "skills", "workflows-plan", "SKILL.md"))).toBe(true)
-    expect(await exists(path.join(tempHome, ".copilot", "mcp-config.json"))).toBe(true)
-    expect(await exists(path.join(tempHome, ".copilot", "skills", "workflows-plan", "SKILL.md"))).toBe(true)
-    expect(await exists(path.join(tempHome, ".gemini", "settings.json"))).toBe(true)
-    expect(await exists(path.join(tempHome, ".gemini", "commands", "workflows", "plan.toml"))).toBe(true)
   })
 })
